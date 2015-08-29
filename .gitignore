@@ -1,0 +1,7 @@
+*.pyc
+*.o
+*.so
+rewcore.egg-info
+ext/lse/lse.c
+ext/wham/wham.c
+ext/dtram/dtram.c
