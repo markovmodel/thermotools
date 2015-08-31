@@ -1,19 +1,19 @@
 
-from rewcore import log_nu_K_i_setter, log_nu_K_i_equation, f_i_equation, p_K_ij_equation, f_K_equation
+from rewcore import dtram_set_lognu, dtram_lognu, dtram_fi, dtram_p, dtram_fk
 import numpy as np
 from numpy.testing import assert_allclose
 
 def run_dtram(C_K_ij, b_K_i, log_nu_K_i, f_K, f_i, maxiter, ftol):
-    log_nu_K_i_setter(log_nu_K_i, C_K_ij)
+    dtram_set_lognu(log_nu_K_i, C_K_ij)
     scratch_K_i = np.zeros(shape=b_K_i.shape, dtype=np.float64)
     scratch_i = np.zeros(shape=f_i.shape, dtype=np.float64)
     old_f_K = f_K.copy()
     for m in xrange(maxiter):
         tmp_log_nu_K_i = np.copy(log_nu_K_i)
-        log_nu_K_i_equation(tmp_log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_i, log_nu_K_i)
+        dtram_lognu(tmp_log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_i, log_nu_K_i)
         tmp_f_i = np.copy(f_i)
-        f_i_equation(log_nu_K_i, b_K_i, tmp_f_i, C_K_ij, scratch_K_i, scratch_i, f_i)
-        f_K_equation(b_K_i, f_i, scratch_i, f_K)
+        dtram_fi(log_nu_K_i, b_K_i, tmp_f_i, C_K_ij, scratch_K_i, scratch_i, f_i)
+        dtram_fk(b_K_i, f_i, scratch_i, f_K)
         nz = (old_f_K != 0.0)
         if (nz.sum() > 0) and (np.max(np.abs((f_K[nz] - old_f_K[nz])/old_f_K[nz])) < ftol):
             break
@@ -37,5 +37,5 @@ def test_dtram_with_toy_model():
         [0.0, 1.60589690e-04, 9.99839410e-01]], dtype=np.float64)
     scratch_i = np.zeros(shape=f_i.shape, dtype=np.float64)
     p_K_ij = np.zeros(shape=C_K_ij.shape, dtype=np.float64)
-    p_K_ij_equation(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_i, p_K_ij)
+    dtram_p(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_i, p_K_ij)
     assert_allclose(p_K_ij[0, :, :], T, atol=1.0E-8)
