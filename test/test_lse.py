@@ -1,6 +1,6 @@
 
 from nose.tools import assert_true
-from rewcore import logsumexp, logsumexp_pair
+from thermotools import logsumexp, logsumexp_pair
 import numpy as np
 
 def test_logsumexp_zeros_short():

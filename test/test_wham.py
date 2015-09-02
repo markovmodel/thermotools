@@ -1,5 +1,5 @@
 
-from rewcore import wham_fi, wham_fk, wham_normalize
+from thermotools import wham_fi, wham_fk, wham_normalize
 import numpy as np
 from numpy.testing import assert_allclose
 

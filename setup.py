@@ -17,17 +17,17 @@ except ImportError:
     sys_exit(1)
 
 ext_lse = Extension(
-    "rewcore.lse",
+    "thermotools.lse",
     sources=["ext/lse/lse.pyx", "ext/lse/_lse.c"],
     include_dirs=[get_include()],
     extra_compile_args=["-O3"])
 ext_wham = Extension(
-    "rewcore.wham",
+    "thermotools.wham",
     sources=["ext/wham/wham.pyx", "ext/wham/_wham.c", "ext/lse/_lse.c"],
     include_dirs=[get_include()],
     extra_compile_args=["-O3"])
 ext_dtram = Extension(
-    "rewcore.dtram",
+    "thermotools.dtram",
     sources=["ext/dtram/dtram.pyx", "ext/dtram/_dtram.c", "ext/lse/_lse.c"],
     include_dirs=[get_include()],
     extra_compile_args=["-O3"])
@@ -38,10 +38,10 @@ setup(
         ext_lse,
         ext_wham,
         ext_dtram],
-    name='rewcore',
+    name='thermotools',
     version='0.0.0',
-    description='The TRAM package',
-    long_description='The python interface to the TRAM framework for estimating Markov state models from biased MD simulations.',
+    description='Lowlevel implementation of free energy estimators',
+    long_description='Lowlevel implementation of free energy estimators',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Console',
@@ -72,7 +72,7 @@ setup(
         'setuptools>=0.6'],
     tests_require=['numpy>=1.7.1', 'nose>=1.3'],
     install_requires=['numpy>=1.7.1'],
-    packages=['rewcore'],
+    packages=['thermotools'],
     test_suite='nose.collector',
     scripts=[]
 )

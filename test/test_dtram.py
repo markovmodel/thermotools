@@ -1,5 +1,5 @@
 
-from rewcore import dtram_set_lognu, dtram_lognu, dtram_fi, dtram_p, dtram_fk
+from thermotools import dtram_set_lognu, dtram_lognu, dtram_fi, dtram_p, dtram_fk
 import numpy as np
 from numpy.testing import assert_allclose
 
