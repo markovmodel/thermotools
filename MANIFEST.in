@@ -1,7 +1,7 @@
 include COPYING
 include COPYING.LESSER
 include ext/lse/_lse.h
-include ext/wham/_whamh
+include ext/wham/_wham.h
 include ext/dtram/_dtram.h
 include versioneer.py
 include thermotools/_version.py
