@@ -1,6 +1,7 @@
 from setuptools import setup
 from distutils.core import Extension
 from sys import exit as sys_exit
+import versioneer
 
 try:
     from Cython.Distutils import build_ext
@@ -32,14 +33,17 @@ ext_dtram = Extension(
     include_dirs=[get_include()],
     extra_compile_args=["-O3"])
 
+cmd_class = versioneer.get_cmdclass()
+cmd_class.update({'build_ext': build_ext})
+
 setup(
-    cmdclass={'build_ext': build_ext},
+    cmdclass=cmd_class,
     ext_modules=[
         ext_lse,
         ext_wham,
         ext_dtram],
     name='thermotools',
-    version='0.0.0',
+    version=versioneer.get_version(),
     description='Lowlevel implementation of free energy estimators',
     long_description='Lowlevel implementation of free energy estimators',
     classifiers=[
