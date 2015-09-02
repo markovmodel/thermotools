@@ -7,3 +7,4 @@ ext/wham/wham.c
 ext/dtram/dtram.c
 build
 dist
+MANIFEST

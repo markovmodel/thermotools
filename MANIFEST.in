@@ -1,2 +1,5 @@
+include ext/lse/_lse.h
+include ext/wham/_whamh
+include ext/dtram/_dtram.h
 include versioneer.py
 include thermotools/_version.py
