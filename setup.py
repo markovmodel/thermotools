@@ -17,7 +17,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
+r"""
+thermotools is a lowlevel implementation toolbox for the analyis of free energy calculations
+"""
 
 from setuptools import setup
 from distutils.core import Extension
