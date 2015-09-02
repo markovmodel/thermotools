@@ -1,3 +1,5 @@
+include COPYING
+include COPYING.LESSER
 include ext/lse/_lse.h
 include ext/wham/_whamh
 include ext/dtram/_dtram.h
