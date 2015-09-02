@@ -36,6 +36,9 @@ def test_dtram_with_toy_model():
         [5.23046803e-01, 0.0, 4.76953197e-01],
         [0.0, 1.60589690e-04, 9.99839410e-01]], dtype=np.float64)
     scratch_i = np.zeros(shape=f_i.shape, dtype=np.float64)
-    p_K_ij = np.zeros(shape=C_K_ij.shape, dtype=np.float64)
-    dtram_p(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_i, p_K_ij)
-    assert_allclose(p_K_ij[0, :, :], T, atol=1.0E-8)
+    C_0_ij = np.ascontiguousarray(C_K_ij[0, :, :])
+    b_0_i = np.ascontiguousarray(b_K_i[0, :])
+    log_nu_0_i = np.ascontiguousarray(log_nu_K_i[0, :])
+    p_ij = np.zeros(shape=C_0_ij.shape, dtype=np.float64)
+    dtram_p(log_nu_0_i, b_0_i, f_i, C_0_ij, scratch_i, p_ij)
+    assert_allclose(p_ij, T, atol=1.0E-8)
