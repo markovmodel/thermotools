@@ -1,0 +1,26 @@
+language: python
+python:
+- 2.7
+sudo: false
+before_install:
+- wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+- bash miniconda.sh -b
+- export PATH=$HOME/miniconda/bin:$PATH
+- conda update --yes conda
+install:
+- conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy cython nose
+- python setup.py develop
+- pip install coveralls
+script:
+- coverage run --source=thermotools setup.py test
+after_success:
+- coveralls
+# deploy:
+#   provider: pypi
+#   user: cwehmeyer_deployment
+#   password:
+#     secure: 
+#   on:
+#     tags: true
+#     repo: markovmodel/thermotools
+#     branch: master
