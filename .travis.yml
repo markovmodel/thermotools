@@ -12,7 +12,7 @@ install:
 - python setup.py develop
 - pip install coveralls
 script:
-- coverage run --source=thermotools setup.py test
+- nosetests --with-coverage --cover-package=thermotools
 after_success:
 - coveralls
 # deploy:
