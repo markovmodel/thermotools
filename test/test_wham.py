@@ -112,8 +112,8 @@ def test_wham_fi_with_ascending_K():
     assert_allclose(f_i, ref, atol=1.0E-15)
 
 def test_run_wham_from_uniform_guess():
-    n_samples = 10000
-    maxiter = 10000
+    n_samples = 20000
+    maxiter = 100000
     ftol = 1.0E-15
     A_i = np.array([-2.0, 0.0, -4.0], dtype=np.float64)
     f_i, b_K_i, f_K, pi_K_i = get_2therm_parameters(A_i)
@@ -123,5 +123,5 @@ def test_run_wham_from_uniform_guess():
     F_K = np.zeros(shape=f_K.shape, dtype=np.float64)
     F_i = np.zeros(shape=f_i.shape, dtype=np.float64)
     run_wham(log_N_K, log_N_i, F_K, F_i, b_K_i, maxiter, ftol)
-    assert_allclose(F_K, f_K, atol=0.05)
-    assert_allclose(F_i, f_i, atol=0.05)
+    assert_allclose(F_K, f_K, atol=0.2)
+    assert_allclose(F_i, f_i, atol=0.2)
