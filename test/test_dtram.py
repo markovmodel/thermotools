@@ -24,7 +24,7 @@ def run_dtram(C_K_ij, b_K_i, log_nu_K_i, f_K, f_i, maxiter, ftol):
     scratch_K_i = np.zeros(shape=b_K_i.shape, dtype=np.float64)
     scratch_i = np.zeros(shape=f_i.shape, dtype=np.float64)
     old_f_K = f_K.copy()
-    for m in xrange(maxiter):
+    for m in range(maxiter):
         tmp_log_nu_K_i = np.copy(log_nu_K_i)
         dtram_lognu(tmp_log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_i, log_nu_K_i)
         tmp_f_i = np.copy(f_i)
