@@ -13,8 +13,8 @@ install:
 - pip install coveralls
 script:
 - nosetests --with-coverage --cover-package=thermotools
-after_success:
-- coveralls
+# after_success:
+# - coveralls
 # deploy:
 #   provider: pypi
 #   user: cwehmeyer_deployment
