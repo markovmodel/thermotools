@@ -14,4 +14,4 @@ Upcoming:
 
     - Adding Travis-CI
     - Relaxing unreasonably strict test case for WHAM
-
+    - Python 3 compatibility
