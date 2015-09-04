@@ -1,0 +1,17 @@
+
+thermotools changelog
+=====================
+
+Version 0.1.0 (Alpha):
+
+    - Providing WHAM + dTRAM
+
+Version 0.1.1 (Alpha):
+
+    - Fixing include error for _wham.h
+
+Upcoming:
+
+    - Adding Travis-CI
+    - Relaxing unreasonably strict test case for WHAM
+
