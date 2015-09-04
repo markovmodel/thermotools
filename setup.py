@@ -29,15 +29,15 @@ import versioneer
 try:
     from Cython.Distutils import build_ext
 except ImportError:
-    print "ERROR - please install the cython dependency manually:"
-    print "pip install cython"
+    print("ERROR - please install the cython dependency manually:")
+    print("pip install cython")
     sys_exit(1)
 
 try:
     from numpy import get_include
 except ImportError:
-    print "ERROR - please install the numpy dependency manually:"
-    print "pip install numpy"
+    print("ERROR - please install the numpy dependency manually:")
+    print("pip install numpy")
     sys_exit(1)
 
 ext_lse = Extension(
