@@ -36,6 +36,49 @@ def run_dtram(C_K_ij, b_K_i, log_nu_K_i, f_K, f_i, maxiter, ftol):
         else:
             old_f_K[:] = f_K[:]
 
+
+
+def test_lognu_zero_counts():
+    nm = 200
+    nt = 100
+    log_nu_K_i = np.zeros(shape=(nt, nm), dtype=np.float64)
+    b_K_i = np.zeros(shape=(nt, nm), dtype=np.float64)
+    f_i = np.zeros(shape=(nm,), dtype=np.float64)
+    C_K_ij = np.zeros(shape=(nt, nm, nm), dtype=np.intc) # C_K_ii = 1.0E-10 (internal prior)
+    scratch_i = np.zeros(shape=(nm,), dtype=np.float64)
+    new_log_nu_K_i = np.zeros(shape=(nt, nm), dtype=np.float64)
+    ref_log_nu_K_i = np.log(1.0E-10*np.ones(shape=(nt, nm), dtype=np.float64)) # (prior)
+    dtram_lognu(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_i, new_log_nu_K_i)
+    assert_allclose(new_log_nu_K_i, ref_log_nu_K_i, atol=1.0E-16)
+
+def test_lognu_all_factors_unity():
+    nm = 200
+    nt = 100
+    log_nu_K_i = np.zeros(shape=(nt, nm), dtype=np.float64)
+    b_K_i = np.zeros(shape=(nt, nm), dtype=np.float64)
+    f_i = np.zeros(shape=(nm,), dtype=np.float64)
+    C_K_ij = np.ones(shape=(nt, nm, nm), dtype=np.intc)
+    scratch_i = np.zeros(shape=(nm,), dtype=np.float64)
+    new_log_nu_K_i = np.zeros(shape=(nt, nm), dtype=np.float64)
+    ref_log_nu_K_i = np.log(nm*np.ones(shape=(nt, nm), dtype=np.float64))
+    dtram_lognu(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_i, new_log_nu_K_i)
+    assert_allclose(new_log_nu_K_i, ref_log_nu_K_i, atol=1.0E-16)
+
+def test_lognu_K_range():
+    nm = 200
+    nt = 100
+    log_nu_K_i = np.zeros(shape=(nt, nm), dtype=np.float64)
+    for K in range(nt):
+        log_nu_K_i[K, :] = np.log(K + 1.0)
+    b_K_i = np.zeros(shape=(nt, nm), dtype=np.float64)
+    f_i = np.zeros(shape=(nm,), dtype=np.float64)
+    C_K_ij = np.ones(shape=(nt, nm, nm), dtype=np.intc)
+    scratch_i = np.zeros(shape=(nm,), dtype=np.float64)
+    new_log_nu_K_i = np.zeros(shape=(nt, nm), dtype=np.float64)
+    ref_log_nu_K_i = np.log(nm*np.ones(shape=(nt, nm), dtype=np.float64))
+    dtram_lognu(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_i, new_log_nu_K_i)
+    assert_allclose(new_log_nu_K_i, ref_log_nu_K_i, atol=1.0E-16)
+
 def test_dtram_with_toy_model():
     C_K_ij = np.array([
         [[2358, 29, 0], [29, 0, 32], [0, 32, 197518]],
