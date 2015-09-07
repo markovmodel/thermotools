@@ -10,9 +10,11 @@ Version 0.1.1 (Alpha):
 
     - Fixing include error for _wham.h
 
-Upcoming:
+Version 0.1.2 (Alpha):
 
     - Adding Travis-CI
     - Relaxing unreasonably strict test case for WHAM
     - Python 3 compatibility
     - Adding unit tests for dTRAM
+
+Upcoming:

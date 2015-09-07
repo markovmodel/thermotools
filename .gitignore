@@ -8,3 +8,4 @@ ext/dtram/dtram.c
 build
 dist
 MANIFEST
+.coverage

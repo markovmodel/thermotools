@@ -4,8 +4,6 @@ thermotools
 
 .. image:: https://travis-ci.org/markovmodel/thermotools.svg?branch=devel
    :target: https://travis-ci.org/markovmodel/thermotools
-.. image:: https://coveralls.io/repos/markovmodel/thermotools/badge.svg?branch=devel
-   :target: https://coveralls.io/r/markovmodel/thermotools?branch=devel
 .. image:: https://badge.fury.io/py/thermotools.svg
    :target: https://pypi.python.org/pypi/thermotools
 
