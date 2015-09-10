@@ -5,6 +5,7 @@ thermotools.egg-info
 ext/lse/lse.c
 ext/wham/wham.c
 ext/dtram/dtram.c
+ext/bar/bar.c
 build
 dist
 MANIFEST
