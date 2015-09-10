@@ -45,6 +45,11 @@ ext_lse = Extension(
     sources=["ext/lse/lse.pyx", "ext/lse/_lse.c"],
     include_dirs=[get_include()],
     extra_compile_args=["-O3"])
+ext_bar = Extension(
+    "thermotools.bar",
+    sources=["ext/bar/bar.pyx", "ext/bar/_bar.c", "ext/lse/_lse.c"],
+    include_dirs=[get_include()],
+    extra_compile_args=["-O3"])
 ext_wham = Extension(
     "thermotools.wham",
     sources=["ext/wham/wham.pyx", "ext/wham/_wham.c", "ext/lse/_lse.c"],
@@ -63,6 +68,7 @@ setup(
     cmdclass=cmd_class,
     ext_modules=[
         ext_lse,
+        ext_bar,
         ext_wham,
         ext_dtram],
     name='thermotools',
