@@ -20,4 +20,5 @@ Version 0.1.2 (Alpha):
 Upcoming:
 
 	- Refactoring subpackages and function names
+    - Implemented BAR with logsumexp
 	
