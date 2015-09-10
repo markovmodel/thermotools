@@ -97,9 +97,9 @@ setup(
         'Markov state model',
         'WHAM',
         'dTRAM'],
-    url='',
-    author='Christoph Wehmeyer',
-    author_email='christoph.wehmeyer@fu-berlin.de',
+    url='https://github.com/markovmodel/thermotools',
+    maintainer='Christoph Wehmeyer',
+    maintainer_email='christoph.wehmeyer@fu-berlin.de',
     license='LGPLv3+',
     setup_requires=[
         'numpy>=1.7.1',

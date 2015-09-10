@@ -25,7 +25,7 @@ from . import wham
 from . import dtram
 from ._version import get_versions
 
-__author__ = "Christoph Wehmeyer"
+__author__ = "Christoph Wehmeyer, Antonia Mey"
 __copyright__ = "Copyright 2015 Computational Molecular Biology Group, FU-Berlin"
 __credits__ = [
     "Christoph Wehmeyer",

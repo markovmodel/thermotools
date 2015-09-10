@@ -23,13 +23,13 @@ import numpy as np
 def delta_f_gaussian():
     f1 = scipy.integrate.quad(make_gauss(N=100000, sigma=1, mu=0), -np.inf, np.inf)
     f2 = scipy.integrate.quad(make_gauss(N=100000, sigma=5, mu=0), -np.inf, np.inf)
-    return (-np.log(f1[0]) -(-np.log(f2[0])))
+    return np.log(f2[0]) - np.log(f1[0])
 
 def make_gauss(N, sigma, mu):
     k = 1
-    s = -1.0 / (2 * sigma * sigma)
+    s = -1.0 / (2 * sigma**2)
     def f(x):
-        return k * np.exp(s * (x - mu)*(x - mu))
+        return k * np.exp(s * (x - mu)**2)
     return f
 
 def test_bar():
@@ -39,10 +39,8 @@ def test_bar():
     u_x2_x2 = 12.5 * x2**2
     u_x1_x2 = 0.5 * x2**2
     u_x2_x1 = 12.5 * x1**2
-
-    dbIJ = u_x1_x1-u_x2_x1
-    dbJI = u_x2_x2-u_x1_x2
-
+    dbIJ = u_x1_x1 - u_x2_x1
+    dbJI = u_x2_x2 - u_x1_x2
     bar = df(dbIJ, dbJI, np.zeros(dbJI.shape[0]))
     assert_true(np.fabs(delta_f_gaussian() - bar) < 0.05)
 
