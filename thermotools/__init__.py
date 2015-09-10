@@ -19,9 +19,9 @@ r"""
 thermotools is a lowlevel implementation toolbox for the analyis of free energy calculations
 """
 
-from .lse import logsumexp, logsumexp_pair
-from .wham import wham_fi, wham_fk, wham_normalize
-from .dtram import dtram_set_lognu, dtram_lognu, dtram_fi, dtram_pk, dtram_p, dtram_fk
+from . import lse
+from . import wham
+from . import dtram
 from ._version import get_versions
 
 __author__ = "Christoph Wehmeyer"

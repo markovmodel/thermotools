@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from nose.tools import assert_true
-from thermotools import logsumexp, logsumexp_pair
+from thermotools.lse import logsumexp, logsumexp_pair
 import numpy as np
 
 def test_logsumexp_zeros_short():

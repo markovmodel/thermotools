@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from thermotools import wham_fi, wham_fk, wham_normalize
+from thermotools.wham import iterate_fi, iterate_fk, normalize_fi
 import numpy as np
 from numpy.testing import assert_allclose
 
@@ -40,14 +40,14 @@ def run_wham(log_N_K, log_N_i, f_K, f_i, b_K_i, maxiter, ftol):
     scratch_i = np.zeros(shape=f_i.shape, dtype=np.float64)
     stop = False
     for m in range(maxiter):
-        wham_fk(f_i, b_K_i, scratch_i, f_K)
+        iterate_fk(f_i, b_K_i, scratch_i, f_K)
         nz = (old_f_K != 0.0)
         if (nz.sum() > 0) and (np.max(np.abs((f_K[nz] - old_f_K[nz])/old_f_K[nz])) < ftol):
             stop = True
         else:
             old_f_K[:] = f_K[:]
-        wham_fi(log_N_K, log_N_i, f_K, b_K_i, scratch_K, f_i)
-        wham_normalize(f_i, scratch_i)
+        iterate_fi(log_N_K, log_N_i, f_K, b_K_i, scratch_K, f_i)
+        normalize_fi(f_i, scratch_i)
         if stop:
             break
 
@@ -69,7 +69,7 @@ def test_wham_fk_with_zeros():
     scratch = np.zeros(shape=(M,), dtype=np.float64)
     f_K = np.zeros(shape=(T,), dtype=np.float64)
     ref = -np.log(M)
-    wham_fk(f_i, b_K_i, scratch, f_K)
+    iterate_fk(f_i, b_K_i, scratch, f_K)
     assert_allclose(f_K, ref, atol=1.0E-15)
 
 def test_wham_fk_with_ascending_K():
@@ -80,7 +80,7 @@ def test_wham_fk_with_ascending_K():
     scratch = np.zeros(shape=(M,), dtype=np.float64)
     f_K = np.zeros(shape=(T,), dtype=np.float64)
     ref = -np.log(np.arange(T).astype(np.float64) + 1)
-    wham_fk(f_i, b_K_i, scratch, f_K)
+    iterate_fk(f_i, b_K_i, scratch, f_K)
     assert_allclose(f_K, ref, atol=1.0E-15)
 
 def test_wham_fi_with_zeros():
@@ -94,7 +94,7 @@ def test_wham_fi_with_zeros():
     scratch = np.zeros(shape=(T,), dtype=np.float64)
     f_K = np.zeros(shape=(T,), dtype=np.float64)
     ref = np.log(M)
-    wham_fi(log_N_K, log_N_i, f_K, b_K_i, scratch, f_i)
+    iterate_fi(log_N_K, log_N_i, f_K, b_K_i, scratch, f_i)
     assert_allclose(f_i, ref, atol=1.0E-15)
 
 def test_wham_fi_with_ascending_K():
@@ -108,7 +108,7 @@ def test_wham_fi_with_ascending_K():
     scratch = np.zeros(shape=(T,), dtype=np.float64)
     f_K = np.zeros(shape=(T,), dtype=np.float64)
     ref = -np.log(np.arange(M).astype(np.float64) + 1)
-    wham_fi(log_N_K, log_N_i, f_K, b_K_i, scratch, f_i)
+    iterate_fi(log_N_K, log_N_i, f_K, b_K_i, scratch, f_i)
     assert_allclose(f_i, ref, atol=1.0E-15)
 
 def test_run_wham_from_uniform_guess():
