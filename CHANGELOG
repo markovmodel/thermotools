@@ -19,7 +19,7 @@ Version 0.1.2 (Alpha):
 
 Version 0.1.3 (Alpha):
 
-	- Refactoring subpackages and function names
+    - Refactoring subpackages and function names
     - Implemented BAR with logsumexp
     - Updated docstrings
 
