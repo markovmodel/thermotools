@@ -90,7 +90,7 @@ def draw_transition_counts(P_K_ij, n_samples, x0):
     C_K_ij = np.zeros(P_K_ij.shape, dtype=np.intc)
     for K in range(P_K_ij.shape[0]):
         x = x0
-        for s in xrange(n_samples):
+        for s in range(n_samples):
             x_new = tower_sample(P_K_ij[K, x, :])
             C_K_ij[K, x, x_new] += 1
             x = x_new
@@ -115,7 +115,7 @@ class TestThreeTwoModel(object):
         metropolis[(metropolis < 0.0)] = 0.0
         selection = np.array([[0.5, 0.5, 0.0], [0.5, 0.0, 0.5], [0.0, 0.5, 0.5]], dtype=np.float64)
         metr_hast = selection * np.exp(-metropolis)
-        for i in xrange(metr_hast.shape[0]):
+        for i in range(metr_hast.shape[0]):
             metr_hast[i, i] = 0.0
             metr_hast[i, i] = 1.0 - metr_hast[i, :].sum()
         cls.P_K_ij = np.array([metr_hast, selection])
