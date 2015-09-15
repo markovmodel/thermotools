@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from thermotools.dtram import set_lognu, iterate_lognu, iterate_fi, get_p, get_fk
+from thermotools.dtram import set_lognu, iterate_lognu, iterate_fi, get_pk, get_fk, get_p
 import numpy as np
 from numpy.testing import assert_allclose
 
@@ -79,6 +79,73 @@ def test_lognu_K_range():
     iterate_lognu(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_i, new_log_nu_K_i)
     assert_allclose(new_log_nu_K_i, ref_log_nu_K_i, atol=1.0E-16)
 
+
+def test_fi_zero_counts():
+    nm = 200
+    nt = 100
+    log_nu_K_i = np.zeros(shape=(nt, nm), dtype=np.float64)
+    b_K_i = np.zeros(shape=(nt, nm), dtype=np.float64)
+    f_i = np.zeros(shape=(nm,), dtype=np.float64)
+    C_K_ij = np.zeros(shape=(nt, nm, nm), dtype=np.intc)
+    scratch_TM = np.zeros(shape=(nt, nm), dtype=np.float64)
+    scratch_M = np.zeros(shape=(nm,), dtype=np.float64)
+    new_f_i = np.zeros(shape=(nm,), dtype=np.float64)
+    ref_f_i = np.log(nm*np.ones(shape=(nm,), dtype=np.float64))
+    iterate_fi(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_TM, scratch_M, new_f_i)
+    assert_allclose(new_f_i, ref_f_i, atol=1.0E-16)
+
+def test_fi_all_factors_unity():
+    nm = 200
+    nt = 100
+    log_nu_K_i = np.zeros(shape=(nt, nm), dtype=np.float64)
+    b_K_i = np.zeros(shape=(nt, nm), dtype=np.float64)
+    f_i = np.zeros(shape=(nm,), dtype=np.float64)
+    C_K_ij = np.ones(shape=(nt, nm, nm), dtype=np.intc)
+    scratch_TM = np.zeros(shape=(nt, nm), dtype=np.float64)
+    scratch_M = np.zeros(shape=(nm,), dtype=np.float64)
+    new_f_i = np.zeros(shape=(nm,), dtype=np.float64)
+    ref_f_i = np.log(nm*np.ones(shape=(nm,), dtype=np.float64))
+    iterate_fi(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_TM, scratch_M, new_f_i)
+    assert_allclose(new_f_i, ref_f_i, atol=1.0E-16)
+
+
+def test_pij_zero_counts():
+    nm = 200
+    nt = 100
+    log_nu_K_i = np.zeros(shape=(nt, nm), dtype=np.float64)
+    b_K_i = np.zeros(shape=(nt, nm), dtype=np.float64)
+    f_i = np.zeros(shape=(nm,), dtype=np.float64)
+    C_K_ij = np.zeros(shape=(nt, nm, nm), dtype=np.intc)
+    scratch_M = np.zeros(shape=(nm,), dtype=np.float64)
+    p_K_ij = get_pk(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_M)
+    ref_p_ij = np.eye(nm, dtype=np.float64)
+    for K in range(nt):
+        assert_allclose(p_K_ij[K, :, :], ref_p_ij, atol=1.0E-16)
+
+def test_pij_all_factors_unity():
+    nm = 200
+    nt = 100
+    log_nu_K_i = np.zeros(shape=(nt, nm), dtype=np.float64)
+    b_K_i = np.zeros(shape=(nt, nm), dtype=np.float64)
+    f_i = np.zeros(shape=(nm,), dtype=np.float64)
+    C_K_ij = np.ones(shape=(nt, nm, nm), dtype=np.intc)
+    scratch_M = np.zeros(shape=(nm,), dtype=np.float64)
+    p_K_ij = get_pk(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_M)
+    ref_p_ij = np.ones(shape=(nm, nm), dtype=np.float64) + np.eye(nm, dtype=np.float64)*1.0E-10
+    ref_p_ij /= ref_p_ij.sum(axis=1)[:, np.newaxis]
+    for K in range(nt):
+        assert_allclose(p_K_ij[K, :, :], ref_p_ij, atol=1.0E-16)
+
+
+
+
+
+
+
+
+
+
+
 def test_dtram_with_toy_model():
     C_K_ij = np.array([
         [[2358, 29, 0], [29, 0, 32], [0, 32, 197518]],
@@ -95,9 +162,5 @@ def test_dtram_with_toy_model():
         [5.23046803e-01, 0.0, 4.76953197e-01],
         [0.0, 1.60589690e-04, 9.99839410e-01]], dtype=np.float64)
     scratch_i = np.zeros(shape=f_i.shape, dtype=np.float64)
-    C_0_ij = np.ascontiguousarray(C_K_ij[0, :, :])
-    b_0_i = np.ascontiguousarray(b_K_i[0, :])
-    log_nu_0_i = np.ascontiguousarray(log_nu_K_i[0, :])
-    p_ij = np.zeros(shape=C_0_ij.shape, dtype=np.float64)
-    get_p(log_nu_0_i, b_0_i, f_i, C_0_ij, scratch_i, p_ij)
-    assert_allclose(p_ij, T, atol=1.0E-8)
+    p_ij = get_p(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_i, 0)
+    assert_allclose(p_ij, T, atol=1.0E-5)
