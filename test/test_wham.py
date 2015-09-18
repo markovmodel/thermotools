@@ -19,16 +19,6 @@ from thermotools.wham import iterate_fi, iterate_fk
 import numpy as np
 from numpy.testing import assert_allclose
 
-def get_2therm_parameters(A_i):
-    pi_i = np.exp(-A_i)
-    pi_i /= pi_i.sum()
-    f_i = -np.log(pi_i)
-    b_K_i = np.array([np.zeros(shape=f_i.shape), f_i.max()-f_i], dtype=np.float64)
-    pi_K_i = np.exp(-(b_K_i + f_i[np.newaxis, :]))
-    f_K = 1.0/pi_K_i.sum(axis=1)
-    pi_K_i = pi_K_i / f_K[:, np.newaxis]
-    return f_i, b_K_i, np.log(f_K), pi_K_i
-
 def test_wham_fk_with_zeros():
     T = 5
     M = 10
