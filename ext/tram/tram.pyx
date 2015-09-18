@@ -16,30 +16,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-thermotools is a lowlevel implementation toolbox for the analyis of free energy calculations
+Python interface to the TRAM estimator's lowlevel functions.
 """
 
-from . import lse
-from . import bar
-from . import wham
-#from . import tram
-from . import dtram
-#from . import xtram
-from ._version import get_versions
+import numpy as _np
+cimport numpy as _np
 
-__author__ = "Christoph Wehmeyer, Antonia Mey"
-__copyright__ = "Copyright 2015 Computational Molecular Biology Group, FU-Berlin"
-__credits__ = [
-    "Christoph Wehmeyer",
-    "Antonia Mey",
-    "Fabian Paul",
-    "Benjamin Trendelkamp-Schroer",
-    "Martin Scherer",
-    "Hao Wu",
-    "John D. Chodera",
-    "Frank Noe"],
-__license__ = "LGPLv3+"
-__version__ = get_versions()['version']
-__email__ = "christoph.wehmeyer@fu-berlin.de"
-
-del get_versions
+__all__ = []

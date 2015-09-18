@@ -55,11 +55,21 @@ ext_wham = Extension(
     sources=["ext/wham/wham.pyx", "ext/wham/_wham.c", "ext/lse/_lse.c"],
     include_dirs=[get_include()],
     extra_compile_args=["-O3"])
+# ext_tram = Extension(
+#     "thermotools.tram",
+#     sources=["ext/tram/tram.pyx", "ext/tram/_tram.c", "ext/lse/_lse.c"],
+#     include_dirs=[get_include()],
+#     extra_compile_args=["-O3"])
 ext_dtram = Extension(
     "thermotools.dtram",
     sources=["ext/dtram/dtram.pyx", "ext/dtram/_dtram.c", "ext/lse/_lse.c"],
     include_dirs=[get_include()],
     extra_compile_args=["-O3"])
+# ext_xtram = Extension(
+#     "thermotools.xtram",
+#     sources=["ext/xtram/xtram.pyx", "ext/xtram/_xtram.c", "ext/lse/_lse.c"],
+#     include_dirs=[get_include()],
+#     extra_compile_args=["-O3"])
 
 cmd_class = versioneer.get_cmdclass()
 cmd_class.update({'build_ext': build_ext})
@@ -70,7 +80,10 @@ setup(
         ext_lse,
         ext_bar,
         ext_wham,
-        ext_dtram],
+        #ext_tram,
+        ext_dtram,
+        #ext_xtram,
+        ],
     name='thermotools',
     version=versioneer.get_version(),
     description='Lowlevel implementation of free energy estimators',
@@ -95,8 +108,11 @@ setup(
     keywords=[
         'free energy',
         'Markov state model',
+        'BAR',
         'WHAM',
-        'dTRAM'],
+        'TRAM',
+        'dTRAM',
+        'xTRAM'],
     url='https://github.com/markovmodel/thermotools',
     maintainer='Christoph Wehmeyer',
     maintainer_email='christoph.wehmeyer@fu-berlin.de',
