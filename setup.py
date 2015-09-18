@@ -119,7 +119,7 @@ setup(
     license='LGPLv3+',
     setup_requires=[
         'numpy>=1.7.1',
-        'cython>=0.15',
+        'cython>=0.20',
         'setuptools>=0.6'],
     tests_require=['numpy>=1.7.1', 'nose>=1.3'],
     install_requires=['numpy>=1.7.1'],
