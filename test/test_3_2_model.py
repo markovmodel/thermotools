@@ -29,19 +29,18 @@ def run_wham(N_K_i, b_K_i, maxiter, ftol):
     log_N_i = np.log(N_K_i.sum(axis=0))
     f_K = np.zeros(shape=b_K_i.shape[0], dtype=np.float64)
     f_i = np.zeros(shape=b_K_i.shape[1], dtype=np.float64)
-    scratch_K = np.zeros(shape=f_K.shape, dtype=np.float64)
-    scratch_i = np.zeros(shape=f_i.shape, dtype=np.float64)
+    scratch_T = np.zeros(shape=f_K.shape, dtype=np.float64)
+    scratch_M = np.zeros(shape=f_i.shape, dtype=np.float64)
     old_f_K = f_K.copy()
     stop = False
     for m in range(maxiter):
-        wham.iterate_fk(f_i, b_K_i, scratch_i, f_K)
+        wham.iterate_fk(f_i, b_K_i, scratch_M, f_K)
         nz = (old_f_K != 0.0)
         if (nz.sum() > 0) and (np.max(np.abs((f_K[nz] - old_f_K[nz])/old_f_K[nz])) < ftol):
             stop = True
         else:
             old_f_K[:] = f_K[:]
-        wham.iterate_fi(log_N_K, log_N_i, f_K, b_K_i, scratch_K, f_i)
-        wham.normalize_fi(f_i, scratch_i)
+        wham.iterate_fi(log_N_K, log_N_i, f_K, b_K_i, scratch_M, scratch_T, f_i)
         if stop:
             break
     return f_K, f_i
