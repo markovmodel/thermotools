@@ -4,7 +4,9 @@
 thermotools.egg-info
 ext/lse/lse.c
 ext/wham/wham.c
+ext/tram/tram.c
 ext/dtram/dtram.c
+ext/xtram/xtram.c
 ext/bar/bar.c
 build
 dist
