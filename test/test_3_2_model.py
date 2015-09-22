@@ -87,7 +87,11 @@ def run_tram(C_K_ij, N_K_i, b_K_x, M_x, maxiter, ftol):
             break
         else:
             old_f_K_i[:] = f_K_i[:]
-    return f_K_i #, tram.get_pk(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_M)
+    
+    f_ground_i = np.zeros(shape=N_K_i.shape[1], dtype=np.float64)
+    tram.f_ground_state(b_K_x, M_x, log_R_K_i, scratch_M, scratch_T, f_ground_i)
+            
+    return f_K_i,f_ground_i #, tram.get_pk(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_M)
     
     
 #   ************************************************************************************************
@@ -174,11 +178,12 @@ class TestThreeTwoModel(object):
         assert_allclose(P_K_ij, self.P_K_ij, atol=maxerr)
     def test_tram(self):
         b_K_x = np.ascontiguousarray(self.b_K_i[:,self.M_x])
-        f_K_i = run_tram(self.C_K_ij, self.N_K_i_TRAM, b_K_x, self.M_x, 10000, 1.0E-15) # , P_K_ij
+        f_K_i,f_ground_i = run_tram(self.C_K_ij, self.N_K_i_TRAM, b_K_x, self.M_x, 10000, 1.0E-15) # , P_K_ij
         z_K_i = np.exp(-f_K_i)
         f_K = -np.log(z_K_i.sum(axis=1))
         f_i = -np.log(z_K_i[0,:]/z_K_i[0,:].sum())
         maxerr = 1.0E-1
         assert_allclose(f_K, self.f_K, atol=maxerr)
         assert_allclose(f_i, self.f_i, atol=maxerr)
+        assert_allclose(f_ground_i, self.f_i, atol=maxerr)
 
