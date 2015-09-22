@@ -17,6 +17,7 @@
 
 import thermotools.wham as wham
 import thermotools.dtram as dtram
+import thermotools.tram as tram
 import numpy as np
 from numpy.testing import assert_allclose
 
@@ -66,6 +67,29 @@ def run_dtram(C_K_ij, b_K_i, maxiter, ftol):
             old_f_K[:] = f_K[:]
     return f_K, f_i, dtram.get_pk(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_M)
 
+def run_tram(C_K_ij, N_K_i, b_K_x, M_x, maxiter, ftol):
+    log_nu_K_i = np.zeros(shape=N_K_i.shape, dtype=np.float64)
+    f_K_i = np.zeros(shape=N_K_i.shape, dtype=np.float64)
+    log_R_K_i = np.zeros(shape=N_K_i.shape, dtype=np.float64)
+    scratch_T = np.zeros(shape=C_K_ij.shape[0], dtype=np.float64)
+    scratch_M = np.zeros(shape=C_K_ij.shape[1], dtype=np.float64)
+    tram.set_lognu(log_nu_K_i, C_K_ij)
+
+    old_f_K_i = f_K_i.copy()
+    for m in range(maxiter):
+        tmp_log_nu_K_i = np.copy(log_nu_K_i)
+        tram.iterate_lognu(tmp_log_nu_K_i, f_K_i, C_K_ij, scratch_M, log_nu_K_i)
+        tmp_f_K_i = np.copy(f_K_i)
+        tram.iterate_fki(log_nu_K_i, tmp_f_K_i, C_K_ij, b_K_x, M_x,
+            N_K_i, log_R_K_i, scratch_M, scratch_T, f_K_i)
+        nz = (old_f_K_i != 0.0)
+        if (nz.sum() > 0) and (np.max(np.abs((f_K_i[nz] - old_f_K_i[nz])/old_f_K_i[nz])) < ftol):
+            break
+        else:
+            old_f_K_i[:] = f_K_i[:]
+    return f_K_i #, tram.get_pk(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_M)
+    
+    
 #   ************************************************************************************************
 #   data generation functions
 #   ************************************************************************************************
@@ -87,13 +111,22 @@ def draw_independent_samples(pi_K_i, n_samples):
 def draw_transition_counts(P_K_ij, n_samples, x0):
     """generates a discrete Markov chain"""
     C_K_ij = np.zeros(P_K_ij.shape, dtype=np.intc)
+    M_x = np.zeros(P_K_ij.shape[0]*(n_samples+1), dtype=np.intc)
+    N_K_i = np.zeros(shape=P_K_ij.shape[0:2], dtype=np.intc)
+    h = 0
     for K in range(P_K_ij.shape[0]):
         x = x0
+        N_K_i[K, x] += 1
+        M_x[h] = x
+        h += 1
         for s in range(n_samples):
             x_new = tower_sample(P_K_ij[K, x, :])
             C_K_ij[K, x, x_new] += 1
             x = x_new
-    return C_K_ij
+            N_K_i[K, x] += 1
+            M_x[h] = x
+            h += 1
+    return C_K_ij, M_x, N_K_i
 
 #   ************************************************************************************************
 #   test class
@@ -120,7 +153,7 @@ class TestThreeTwoModel(object):
         cls.P_K_ij = np.array([metr_hast, selection])
         cls.n_samples = 10000
         cls.N_K_i = draw_independent_samples(cls.pi_K_i, cls.n_samples)
-        cls.C_K_ij = draw_transition_counts(cls.P_K_ij, cls.n_samples, 0)
+        cls.C_K_ij,cls.M_x,cls.N_K_i_TRAM = draw_transition_counts(cls.P_K_ij, cls.n_samples, 0)
     @classmethod
     def teardown_class(cls):
         pass
@@ -139,3 +172,13 @@ class TestThreeTwoModel(object):
         assert_allclose(f_K, self.f_K, atol=maxerr)
         assert_allclose(f_i, self.f_i, atol=maxerr)
         assert_allclose(P_K_ij, self.P_K_ij, atol=maxerr)
+    def test_tram(self):
+        b_K_x = np.ascontiguousarray(self.b_K_i[:,self.M_x])
+        f_K_i = run_tram(self.C_K_ij, self.N_K_i_TRAM, b_K_x, self.M_x, 10000, 1.0E-15) # , P_K_ij
+        z_K_i = np.exp(-f_K_i)
+        f_K = -np.log(z_K_i.sum(axis=1))
+        f_i = -np.log(z_K_i[0,:]/z_K_i[0,:].sum())
+        maxerr = 1.0E-1
+        assert_allclose(f_K, self.f_K, atol=maxerr)
+        assert_allclose(f_i, self.f_i, atol=maxerr)
+
