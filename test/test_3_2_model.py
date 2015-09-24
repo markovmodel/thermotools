@@ -90,6 +90,7 @@ def run_tram(C_K_ij, N_K_i, b_K_x, M_x, maxiter, ftol):
             old_f_K_i[:] = f_K_i[:]
             old_log_nu_K_i[:] = log_nu_K_i[:]
     f_i = tram.get_fi(b_K_x, M_x, log_R_K_i, scratch_M, scratch_T)
+    tram.normalize_fki(f_i, f_K_i, scratch_M)
     P_K_ij = tram.get_pk(log_nu_K_i, f_K_i, C_K_ij, scratch_M)
     return f_K_i, f_i, P_K_ij
 
