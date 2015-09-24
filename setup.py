@@ -55,6 +55,11 @@ ext_wham = Extension(
     sources=["ext/wham/wham.pyx", "ext/wham/_wham.c", "ext/lse/_lse.c"],
     include_dirs=[get_include()],
     extra_compile_args=["-O3"])
+ext_mbar = Extension(
+    "thermotools.mbar",
+    sources=["ext/mbar/mbar.pyx", "ext/mbar/_mbar.c", "ext/lse/_lse.c"],
+    include_dirs=[get_include()],
+    extra_compile_args=["-O3"])
 # ext_tram = Extension(
 #     "thermotools.tram",
 #     sources=["ext/tram/tram.pyx", "ext/tram/_tram.c", "ext/lse/_lse.c"],
@@ -80,6 +85,7 @@ setup(
         ext_lse,
         ext_bar,
         ext_wham,
+        ext_mbar,
         #ext_tram,
         ext_dtram,
         #ext_xtram,
@@ -110,6 +116,7 @@ setup(
         'Markov state model',
         'BAR',
         'WHAM',
+        'MBAR',
         'TRAM',
         'dTRAM',
         'xTRAM'],
