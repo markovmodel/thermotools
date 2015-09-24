@@ -3,6 +3,7 @@ include COPYING.LESSER
 include ext/lse/_lse.h
 include ext/bar/_bar.h
 include ext/wham/_wham.h
+include ext/wham/_mbar.h
 include ext/tram/_tram.h
 include ext/dtram/_dtram.h
 include ext/xtram/_xtram.h
