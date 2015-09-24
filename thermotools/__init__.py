@@ -22,12 +22,12 @@ thermotools is a lowlevel implementation toolbox for the analyis of free energy 
 from . import lse
 from . import bar
 from . import wham
-#from . import tram
+from . import tram
 from . import dtram
 #from . import xtram
 from ._version import get_versions
 
-__author__ = "Christoph Wehmeyer, Antonia Mey"
+__author__ = "Christoph Wehmeyer, Antonia Mey, Fabian Paul"
 __copyright__ = "Copyright 2015 Computational Molecular Biology Group, FU-Berlin"
 __credits__ = [
     "Christoph Wehmeyer",
