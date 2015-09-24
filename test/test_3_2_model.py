@@ -30,42 +30,46 @@ def run_wham(N_K_i, b_K_i, maxiter, ftol):
     log_N_i = np.log(N_K_i.sum(axis=0))
     f_K = np.zeros(shape=b_K_i.shape[0], dtype=np.float64)
     f_i = np.zeros(shape=b_K_i.shape[1], dtype=np.float64)
+    f_K_i = b_K_i.copy()
     scratch_T = np.zeros(shape=f_K.shape, dtype=np.float64)
     scratch_M = np.zeros(shape=f_i.shape, dtype=np.float64)
-    old_f_K = f_K.copy()
+    old_f_K_i = np.zeros(shape=f_K_i.shape, dtype=np.float64)
     stop = False
     for m in range(maxiter):
         wham.iterate_fk(f_i, b_K_i, scratch_M, f_K)
-        nz = (old_f_K != 0.0)
-        if (nz.sum() > 0) and (np.max(np.abs((f_K[nz] - old_f_K[nz])/old_f_K[nz])) < ftol):
+        wham.iterate_fi(log_N_K, log_N_i, f_K, b_K_i, scratch_M, scratch_T, f_i)
+        f_K_i = f_i[np.newaxis, :] + b_K_i
+        if np.max(np.abs((f_K_i - old_f_K_i))) < ftol:
             stop = True
         else:
-            old_f_K[:] = f_K[:]
-        wham.iterate_fi(log_N_K, log_N_i, f_K, b_K_i, scratch_M, scratch_T, f_i)
+            old_f_K_i[:] = f_K_i[:]
         if stop:
             break
-    return f_K, f_i
+    return f_K, f_i, f_K_i
 
 def run_dtram(C_K_ij, b_K_i, maxiter, ftol):
     log_nu_K_i = np.zeros(shape=b_K_i.shape, dtype=np.float64)
-    f_K = np.zeros(shape=b_K_i.shape[0], dtype=np.float64)
     f_i = np.zeros(shape=b_K_i.shape[1], dtype=np.float64)
+    f_K_i = b_K_i.copy()
     dtram.set_lognu(log_nu_K_i, C_K_ij)
     scratch_TM = np.zeros(shape=b_K_i.shape, dtype=np.float64)
     scratch_M = np.zeros(shape=f_i.shape, dtype=np.float64)
-    old_f_K = f_K.copy()
+    old_f_K_i = np.zeros(shape=f_K_i.shape, dtype=np.float64)
+    old_log_nu_K_i = log_nu_K_i.copy()
+    old_f_i = f_i.copy()
     for m in range(maxiter):
-        tmp_log_nu_K_i = np.copy(log_nu_K_i)
-        dtram.iterate_lognu(tmp_log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_M, log_nu_K_i)
-        tmp_f_i = np.copy(f_i)
-        dtram.iterate_fi(log_nu_K_i, b_K_i, tmp_f_i, C_K_ij, scratch_TM, scratch_M, f_i)
-        dtram.get_fk(b_K_i, f_i, scratch_M, f_K)
-        nz = (old_f_K != 0.0)
-        if (nz.sum() > 0) and (np.max(np.abs((f_K[nz] - old_f_K[nz])/old_f_K[nz])) < ftol):
+        dtram.iterate_lognu(old_log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_M, log_nu_K_i)
+        dtram.iterate_fi(log_nu_K_i, b_K_i, old_f_i, C_K_ij, scratch_TM, scratch_M, f_i)
+        f_K_i = f_i[np.newaxis, :] + b_K_i
+        if np.max(np.abs(f_K_i - old_f_K_i)) < ftol:
             break
         else:
-            old_f_K[:] = f_K[:]
-    return f_K, f_i, dtram.get_pk(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_M)
+            old_f_i[:] = f_i[:]
+            old_f_K_i[:] = f_K_i[:]
+            old_log_nu_K_i[:] = log_nu_K_i[:]
+    f_K = dtram.get_fk(b_K_i, f_i, scratch_M)
+    P_K_ij = dtram.get_pk(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_M)
+    return f_K, f_i, f_K_i, P_K_ij
 
 def run_tram(C_K_ij, N_K_i, b_K_x, M_x, maxiter, ftol):
     log_nu_K_i = np.zeros(shape=N_K_i.shape, dtype=np.float64)
@@ -140,10 +144,11 @@ class TestThreeTwoModel(object):
         cls.b_K_i = np.array([[0.0, 0.0, 0.0], 2.0 - cls.energy], dtype=np.float64)
         cls.pi_i = np.exp(-cls.energy) / np.exp(-cls.energy).sum()
         cls.f_i = -np.log(cls.pi_i)
-        cls.Z_K = (np.exp(-cls.b_K_i) * cls.pi_i[np.newaxis, :]).sum(axis=1)
+        cls.f_K_i = cls.f_i[np.newaxis, :] + cls.b_K_i
+        cls.Z_K_i = np.exp(-cls.f_K_i)
+        cls.Z_K = cls.Z_K_i.sum(axis=1)
         cls.f_K = -np.log(cls.Z_K)
-        cls.pi_K_i = (1.0 / cls.Z_K[:, np.newaxis]) * np.exp(-cls.b_K_i) * cls.pi_i[np.newaxis, :]
-        cls.f_K_i = -np.log(cls.pi_K_i)
+        cls.pi_K_i = np.exp(-cls.b_K_i) * cls.pi_i[np.newaxis, :] / cls.Z_K[:, np.newaxis]
         metropolis = cls.energy[np.newaxis, :] - cls.energy[:, np.newaxis]
         metropolis[(metropolis < 0.0)] = 0.0
         selection = np.array([[0.5, 0.5, 0.0], [0.5, 0.0, 0.5], [0.0, 0.5, 0.5]], dtype=np.float64)
@@ -163,15 +168,17 @@ class TestThreeTwoModel(object):
     def teardown(self):
         pass
     def test_wham(self):
-        f_K, f_i = run_wham(self.N_K_i, self.b_K_i, 50000, 1.0E-15)
+        f_K, f_i, f_K_i = run_wham(self.N_K_i, self.b_K_i, 50000, 1.0E-15)
         maxerr = 1.0E-1
         assert_allclose(f_K, self.f_K, atol=maxerr)
         assert_allclose(f_i, self.f_i, atol=maxerr)
+        assert_allclose(f_K_i, self.f_K_i, atol=maxerr)
     def test_dtram(self):
-        f_K, f_i, P_K_ij = run_dtram(self.C_K_ij, self.b_K_i, 10000, 1.0E-15)
+        f_K, f_i, f_K_i, P_K_ij = run_dtram(self.C_K_ij, self.b_K_i, 10000, 1.0E-15)
         maxerr = 1.0E-1
         assert_allclose(f_K, self.f_K, atol=maxerr)
         assert_allclose(f_i, self.f_i, atol=maxerr)
+        assert_allclose(f_K_i, self.f_K_i, atol=maxerr)
         assert_allclose(P_K_ij, self.P_K_ij, atol=maxerr)
     def test_tram(self):
         b_K_x = np.ascontiguousarray(self.b_K_i[:,self.M_x])

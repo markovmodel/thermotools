@@ -31,3 +31,5 @@ Version 0.1.4 (Alpha):
     - Adding placeholders for TRAM/xTRAM
 
 Upcoming:
+
+    - Changing f_K_i to be b_K_i + f_i in dTRAM/WHAM
