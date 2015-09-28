@@ -50,11 +50,10 @@ def test_wham_fi_with_zeros():
     log_N_i = np.log(N_K_i.sum(axis=0))
     f_i = np.zeros(shape=(M,), dtype=np.float64)
     b_K_i = np.zeros(shape=(T, M), dtype=np.float64)
-    scratch_M = np.zeros(shape=(M,), dtype=np.float64)
     scratch_T = np.zeros(shape=(T,), dtype=np.float64)
     f_K = np.zeros(shape=(T,), dtype=np.float64)
-    ref = np.log(M)
-    iterate_fi(log_N_K, log_N_i, f_K, b_K_i, scratch_M, scratch_T, f_i)
+    ref = 0.0
+    iterate_fi(log_N_K, log_N_i, f_K, b_K_i, scratch_T, f_i)
     assert_allclose(f_i, ref, atol=1.0E-15)
 
 def test_wham_fi_with_ascending_K():
@@ -65,9 +64,9 @@ def test_wham_fi_with_ascending_K():
     log_N_i = np.log(N_K_i.sum(axis=0))
     f_i = np.zeros(shape=(M,), dtype=np.float64)
     b_K_i = np.log(np.array([[i*M for i in range(1, M + 1)] for K in range(T)], dtype=np.float64))
-    scratch_M = np.zeros(shape=(M,), dtype=np.float64)
     scratch_T = np.zeros(shape=(T,), dtype=np.float64)
     f_K = np.zeros(shape=(T,), dtype=np.float64)
     ref = -np.log((np.arange(M).astype(np.float64) + 1) / (0.5 * M * (M + 1)))
-    iterate_fi(log_N_K, log_N_i, f_K, b_K_i, scratch_M, scratch_T, f_i)
+    ref -= ref.min() 
+    iterate_fi(log_N_K, log_N_i, f_K, b_K_i, scratch_T, f_i)
     assert_allclose(f_i, ref, atol=1.0E-15)
