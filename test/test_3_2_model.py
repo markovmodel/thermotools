@@ -24,31 +24,6 @@ from numpy.testing import assert_allclose
 #   fixed-point iterations
 #   ************************************************************************************************
 
-def run_wham(N_K_i, b_K_i, maxiter, ftol):
-    log_N_K = np.log(N_K_i.sum(axis=1))
-    log_N_i = np.log(N_K_i.sum(axis=0))
-    f_K = np.zeros(shape=b_K_i.shape[0], dtype=np.float64)
-    f_i = np.zeros(shape=b_K_i.shape[1], dtype=np.float64)
-    old_f_K = f_K.copy()
-    old_f_i = f_i.copy()
-    scratch_T = np.zeros(shape=f_K.shape, dtype=np.float64)
-    scratch_M = np.zeros(shape=f_i.shape, dtype=np.float64)
-    stop = False
-    for m in range(maxiter):
-        wham.iterate_fk(f_i, b_K_i, scratch_M, f_K)
-        wham.iterate_fi(log_N_K, log_N_i, f_K, b_K_i, scratch_T, f_i)
-        delta_f_K = np.max(np.abs((f_K - old_f_K)))
-        delta_f_i = np.max(np.abs((f_i - old_f_i)))
-        if delta_f_K < ftol and delta_f_i < ftol:
-            stop = True
-        else:
-            old_f_K[:] = f_K[:]
-            old_f_i[:] = f_i[:]
-        if stop:
-            break
-    wham.normalize(f_K, f_i, scratch_M)
-    return f_K, f_i
-
 def run_dtram(C_K_ij, b_K_i, maxiter, ftol):
     log_nu_K_i = np.zeros(shape=b_K_i.shape, dtype=np.float64)
     f_i = np.zeros(shape=b_K_i.shape[1], dtype=np.float64)
