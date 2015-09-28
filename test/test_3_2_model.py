@@ -44,7 +44,8 @@ def run_wham(N_K_i, b_K_i, maxiter, ftol):
             old_f_K_i[:] = f_K_i[:]
         if stop:
             break
-    return f_K, f_i, f_K_i
+    wham.normalize(f_K, f_i, scratch_M)
+    return f_K, f_i
 
 def run_dtram(C_K_ij, b_K_i, maxiter, ftol):
     log_nu_K_i = np.zeros(shape=b_K_i.shape, dtype=np.float64)
@@ -134,11 +135,10 @@ class TestThreeTwoModel(object):
     def teardown(self):
         pass
     def test_wham(self):
-        f_K, f_i, f_K_i = run_wham(self.N_K_i, self.b_K_i, 50000, 1.0E-15)
+        f_K, f_i = run_wham(self.N_K_i, self.b_K_i, 50000, 1.0E-15)
         maxerr = 1.0E-1
         assert_allclose(f_K, self.f_K, atol=maxerr)
         assert_allclose(f_i, self.f_i, atol=maxerr)
-        assert_allclose(f_K_i, self.f_K_i, atol=maxerr)
     def test_dtram(self):
         f_K, f_i, f_K_i, P_K_ij = run_dtram(self.C_K_ij, self.b_K_i, 10000, 1.0E-15)
         maxerr = 1.0E-1
