@@ -36,7 +36,7 @@ def run_wham(N_K_i, b_K_i, maxiter, ftol):
     stop = False
     for m in range(maxiter):
         wham.iterate_fk(f_i, b_K_i, scratch_M, f_K)
-        wham.iterate_fi(log_N_K, log_N_i, f_K, b_K_i, scratch_M, scratch_T, f_i)
+        wham.iterate_fi(log_N_K, log_N_i, f_K, b_K_i, scratch_T, f_i)
         f_K_i = f_i[np.newaxis, :] + b_K_i
         if np.max(np.abs((f_K_i - old_f_K_i))) < ftol:
             stop = True
