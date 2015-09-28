@@ -71,8 +71,8 @@ def test_fi_zero_counts():
     scratch_TM = np.zeros(shape=(nt, nm), dtype=np.float64)
     scratch_M = np.zeros(shape=(nm,), dtype=np.float64)
     new_f_i = np.zeros(shape=(nm,), dtype=np.float64)
-    ref_f_i = np.log(nm*np.ones(shape=(nm,), dtype=np.float64))
-    iterate_fi(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_TM, scratch_M, new_f_i)
+    ref_f_i = 0.0
+    iterate_fi(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_TM, new_f_i)
     assert_allclose(new_f_i, ref_f_i, atol=1.0E-16)
 
 def test_fi_all_factors_unity():
@@ -85,8 +85,8 @@ def test_fi_all_factors_unity():
     scratch_TM = np.zeros(shape=(nt, nm), dtype=np.float64)
     scratch_M = np.zeros(shape=(nm,), dtype=np.float64)
     new_f_i = np.zeros(shape=(nm,), dtype=np.float64)
-    ref_f_i = np.log(nm*np.ones(shape=(nm,), dtype=np.float64))
-    iterate_fi(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_TM, scratch_M, new_f_i)
+    ref_f_i = 0.0
+    iterate_fi(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_TM, new_f_i)
     assert_allclose(new_f_i, ref_f_i, atol=1.0E-16)
 
 
