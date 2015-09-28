@@ -34,5 +34,5 @@ Upcoming:
 
     - Changing f_K_i to be b_K_i + f_i in dTRAM/WHAM
     - Adding MBAR
-    - Refactoring WHAM
-    - Adding self-consistent iteration functions to pyx files in WHAM/MBAR
+    - Refactoring WHAM/dTRAM
+    - Adding self-consistent iteration functions to pyx files in WHAM/MBAR/dTRAM
