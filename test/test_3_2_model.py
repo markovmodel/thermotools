@@ -25,28 +25,6 @@ from numpy.testing import assert_allclose
 #   fixed-point iterations
 #   ************************************************************************************************
 
-def run_wham(N_K_i, b_K_i, maxiter, ftol):
-    log_N_K = np.log(N_K_i.sum(axis=1))
-    log_N_i = np.log(N_K_i.sum(axis=0))
-    f_K = np.zeros(shape=b_K_i.shape[0], dtype=np.float64)
-    f_i = np.zeros(shape=b_K_i.shape[1], dtype=np.float64)
-    f_K_i = b_K_i.copy()
-    scratch_T = np.zeros(shape=f_K.shape, dtype=np.float64)
-    scratch_M = np.zeros(shape=f_i.shape, dtype=np.float64)
-    old_f_K_i = np.zeros(shape=f_K_i.shape, dtype=np.float64)
-    stop = False
-    for m in range(maxiter):
-        wham.iterate_fk(f_i, b_K_i, scratch_M, f_K)
-        wham.iterate_fi(log_N_K, log_N_i, f_K, b_K_i, scratch_M, scratch_T, f_i)
-        f_K_i = f_i[np.newaxis, :] + b_K_i
-        if np.max(np.abs((f_K_i - old_f_K_i))) < ftol:
-            stop = True
-        else:
-            old_f_K_i[:] = f_K_i[:]
-        if stop:
-            break
-    return f_K, f_i, f_K_i
-
 def run_dtram(C_K_ij, b_K_i, maxiter, ftol):
     log_nu_K_i = np.zeros(shape=b_K_i.shape, dtype=np.float64)
     f_i = np.zeros(shape=b_K_i.shape[1], dtype=np.float64)
@@ -168,11 +146,10 @@ class TestThreeTwoModel(object):
     def teardown(self):
         pass
     def test_wham(self):
-        f_K, f_i, f_K_i = run_wham(self.N_K_i, self.b_K_i, 50000, 1.0E-15)
-        maxerr = 1.0E-1
-        assert_allclose(f_K, self.f_K, atol=maxerr)
-        assert_allclose(f_i, self.f_i, atol=maxerr)
-        assert_allclose(f_K_i, self.f_K_i, atol=maxerr)
+        f_K, f_i = wham.estimate(self.N_K_i, self.b_K_i, maxiter=50000, maxerr=1.0E-15)
+        atol = 1.0E-1
+        assert_allclose(f_K, self.f_K, atol=atol)
+        assert_allclose(f_i, self.f_i, atol=atol)
     def test_dtram(self):
         f_K, f_i, f_K_i, P_K_ij = run_dtram(self.C_K_ij, self.b_K_i, 10000, 1.0E-15)
         maxerr = 1.0E-1
