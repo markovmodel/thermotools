@@ -30,9 +30,11 @@ Version 0.1.4 (Alpha):
     - Placing normalisation into iterate_fi
     - Adding placeholders for TRAM/xTRAM
 
-Upcoming:
+Version 0.1.5 (Alpha):
 
     - Changing f_K_i to be b_K_i + f_i in dTRAM/WHAM
     - Adding MBAR
     - Refactoring WHAM/dTRAM
     - Adding self-consistent iteration functions to pyx files in WHAM/MBAR/dTRAM
+
+Upcoming:
