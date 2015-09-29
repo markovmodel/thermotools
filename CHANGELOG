@@ -42,3 +42,5 @@ Version 0.1.6 (Alpha):
     - Fixing MANIFEST.in
 
 Upcoming:
+
+    - Fixing docstrings
