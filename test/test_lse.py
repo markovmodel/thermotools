@@ -35,7 +35,7 @@ def test_logsumexp_converged_geometric_series():
     data = np.arange(10000).astype(np.float64)
     assert_true(np.abs(logsumexp(-data) - 0.45867514538708193) < 1.0E-15)
     
-def test_logsumexp_truncated_diverging_gemoetric_series():
+def test_logsumexp_truncated_diverging_geometric_series():
     data = np.arange(10000).astype(np.float64)
     assert_true(np.abs(logsumexp(data) - 9999.4586751453862) < 1.0E-15)
 
