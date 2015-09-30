@@ -12,10 +12,12 @@ requirements:
     - setuptools
     - cython >=0.20
     - numpy >=1.7
+    - msmtools >=1.1
 
   run:
     - python
     - numpy >=1.7
+    - msmtools >=1.1
 
 test:
   requires:
