@@ -35,3 +35,47 @@ def test_break_points_st_like_trajs():
         np.array([0] * 10 + [1] * 20 + [0] * 30 + [1], dtype=np.intc))
     assert_true(bp.shape[0] == 4)
     assert_true(np.all(bp == [0, 10, 30, 60]))
+
+def test_count_matrices_single_counts():
+    dtraj = [
+        np.array(
+            [[0, 0], [0, 0], [0, 1], [0, 1], [0, 2], [0, 2], [0, 0], [0, 2], [0, 1], [0, 0]],
+            dtype=np.intc),
+        np.array(
+            [[1, 0], [1, 0], [1, 1], [1, 1], [1, 2], [1, 2], [1, 0], [1, 2], [1, 1], [1, 0]],
+            dtype=np.intc)]
+    C_K = util.count_matrices(dtraj, 1, sliding=True, sparse_return=False, nstates=None)
+    assert_true(np.all(C_K == np.ones(shape=(2, 3, 3))))
+
+def test_count_matrices_st_traj():
+    dtraj = [np.array([
+        [0, 0], [0, 0],
+        [1, 0], [1, 1], [1, 0],
+        [0, 1], [0, 1],
+        [2, 1], [2, 2], [2, 1],
+        [0, 2], [0, 2]], dtype=np.intc)]
+    C_K = util.count_matrices(dtraj, 1, sliding=True, sparse_return=False, nstates=4)
+    ref = np.zeros(shape=(3, 4, 4), dtype=np.intc)
+    ref[0, 0, 0] = 1
+    ref[0, 1, 1] = 1
+    ref[0, 2, 2] = 1
+    ref[1, 0, 1] = 1
+    ref[1, 1, 0] = 1
+    ref[2, 1, 2] = 1
+    ref[2, 2, 1] = 1
+    print ref
+    print C_K
+    print ref - C_K
+    assert_true(np.all(C_K == ref))
+
+test_count_matrices_st_traj()
+
+
+
+
+
+
+
+
+
+
