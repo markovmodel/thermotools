@@ -63,9 +63,6 @@ def test_count_matrices_st_traj():
     ref[1, 1, 0] = 1
     ref[2, 1, 2] = 1
     ref[2, 2, 1] = 1
-    print ref
-    print C_K
-    print ref - C_K
     assert_true(np.all(C_K == ref))
 
 test_count_matrices_st_traj()
