@@ -75,6 +75,11 @@ ext_dtram = Extension(
 #     sources=["ext/xtram/xtram.pyx", "ext/xtram/_xtram.c", "ext/lse/_lse.c"],
 #     include_dirs=[get_include()],
 #     extra_compile_args=["-O3"])
+ext_util = Extension(
+    "thermotools.util",
+    sources=["ext/util/util.pyx", "ext/util/_util.c"],
+    include_dirs=[get_include()],
+    extra_compile_args=["-O3"])
 
 cmd_class = versioneer.get_cmdclass()
 cmd_class.update({'build_ext': build_ext})
@@ -89,6 +94,7 @@ setup(
         #ext_tram,
         ext_dtram,
         #ext_xtram,
+        ext_util,
         ],
     name='thermotools',
     version=versioneer.get_version(),
