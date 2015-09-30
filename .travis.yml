@@ -9,8 +9,9 @@ before_install:
 - bash miniconda.sh -b
 - export PATH=$HOME/miniconda/bin:$PATH
 - conda update --yes conda
+- conda config --add channels http://conda.binstar.org/omnia
 install:
-- conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy cython nose
+- conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy cython nose msmtools
 - python setup.py develop
 - pip install coveralls
 script:

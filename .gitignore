@@ -9,6 +9,7 @@ ext/tram/tram.c
 ext/dtram/dtram.c
 ext/xtram/xtram.c
 ext/bar/bar.c
+ext/util/util.c
 build
 dist
 MANIFEST

@@ -7,5 +7,6 @@ include ext/mbar/_mbar.h
 include ext/tram/_tram.h
 include ext/dtram/_dtram.h
 include ext/xtram/_xtram.h
+include ext/util/_util.h
 include versioneer.py
 include thermotools/_version.py
