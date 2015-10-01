@@ -65,7 +65,11 @@ def test_count_matrices_st_traj():
     ref[2, 2, 1] = 1
     assert_true(np.all(C_K == ref))
 
-test_count_matrices_st_traj()
+def test_state_counts():
+    dtraj = [ np.zeros(shape=(10, 2), dtype=np.intc), 2 * np.ones(shape=(20, 2), dtype=np.intc)]
+    ref = [[10, 0, 0], [0] * 3, [0, 0, 20]]
+    N = util.state_counts(dtraj)
+    assert_true(np.all(N == ref))
 
 
 
