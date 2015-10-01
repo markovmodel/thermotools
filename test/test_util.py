@@ -56,7 +56,7 @@ def test_count_matrices_st_traj():
         [0, 1], [0, 1],
         [2, 1], [2, 2], [2, 1],
         [0, 2], [0, 2]], dtype=np.intc)]
-    C_K = util.count_matrices(dtraj, 1, sliding=True, sparse_return=False, ntherm=4, nstates=4)
+    C_K = util.count_matrices(dtraj, 1, sliding=True, sparse_return=False, nthermo=4, nstates=4)
     ref = np.zeros(shape=(4, 4, 4), dtype=np.intc)
     ref[0, 0, 0] = 1
     ref[0, 1, 1] = 1
@@ -70,5 +70,5 @@ def test_count_matrices_st_traj():
 def test_state_counts():
     dtraj = [np.zeros(shape=(10, 2), dtype=np.intc), 2 * np.ones(shape=(20, 2), dtype=np.intc)]
     ref = np.array([[10, 0, 0, 0], [0] * 4, [0, 0, 20, 0], [0] * 4], dtype=np.intc)
-    N = util.state_counts(dtraj, ntherm=4, nstates=4)
+    N = util.state_counts(dtraj, nthermo=4, nstates=4)
     assert_array_equal(N, ref)
