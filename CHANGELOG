@@ -41,6 +41,10 @@ Version 0.1.6 (Alpha):
 
     - Fixing MANIFEST.in
 
-Upcoming:
+Version 0.1.7 (Alpha):
 
     - Fixing docstrings
+    - Adding util module for counting state visits and transitions
+    - Adding msmtools (>=1.1) and scipy (>=0.11) dependencies
+
+Upcoming:
