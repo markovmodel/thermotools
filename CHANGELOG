@@ -48,3 +48,6 @@ Version 0.1.7 (Alpha):
     - Adding msmtools (>=1.1) and scipy (>=0.11) dependencies
 
 Upcoming:
+
+    - Fixing float argument for range()
+    - Refactoring API

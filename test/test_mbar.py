@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from thermotools.mbar import iterate_fk
+from thermotools.mbar import update_therm_energies
 from thermotools.lse import logsumexp
 import numpy as np
 from numpy.testing import assert_allclose
@@ -23,24 +23,24 @@ from numpy.testing import assert_allclose
 def test_mbar_fk_with_zeros():
     T = 5
     X = 10
-    log_N_K = np.zeros(shape=(T,), dtype=np.float64)
-    b_K_x = np.zeros(shape=(T, X), dtype=np.float64)
+    log_therm_state_counts = np.zeros(shape=(T,), dtype=np.float64)
+    bias_energies = np.zeros(shape=(T, X), dtype=np.float64)
     scratch = np.zeros(shape=(T,), dtype=np.float64)
-    f_K = np.zeros(shape=(T,), dtype=np.float64)
-    new_f_K = np.zeros(shape=(T,), dtype=np.float64)
+    therm_energies = np.zeros(shape=(T,), dtype=np.float64)
+    new_therm_energies = np.zeros(shape=(T,), dtype=np.float64)
     ref = 0.0
-    iterate_fk(log_N_K, f_K, b_K_x, scratch, new_f_K)
-    assert_allclose(new_f_K, ref, atol=1.0E-15)
+    update_therm_energies(log_therm_state_counts, therm_energies, bias_energies, scratch, new_therm_energies)
+    assert_allclose(new_therm_energies, ref, atol=1.0E-15)
 
 def test_mbar_fk_with_ascending_bias():
     T = 5
     X = 10
-    log_N_K = np.zeros(shape=(T,), dtype=np.float64)
-    b_K_x = np.array([[K]*X for K in range(T)], dtype=np.float64)
+    log_therm_state_counts = np.zeros(shape=(T,), dtype=np.float64)
+    bias_energies = np.array([[K]*X for K in range(T)], dtype=np.float64)
     scratch = np.zeros(shape=(T,), dtype=np.float64)
-    f_K = np.zeros(shape=(T,), dtype=np.float64)
-    new_f_K = np.zeros(shape=(T,), dtype=np.float64)
+    therm_energies = np.zeros(shape=(T,), dtype=np.float64)
+    new_therm_energies = np.zeros(shape=(T,), dtype=np.float64)
     ref = np.array([float(K) - np.log(X) for K in range(T)], dtype=np.float64)
     ref -= ref.min()
-    iterate_fk(log_N_K, f_K, b_K_x, scratch, new_f_K)
-    assert_allclose(new_f_K, ref, atol=1.0E-15)
+    update_therm_energies(log_therm_state_counts, therm_energies, bias_energies, scratch, new_therm_energies)
+    assert_allclose(new_therm_energies, ref, atol=1.0E-15)
