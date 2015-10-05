@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from thermotools.mbar import update_fk
+from thermotools.mbar import update_therm_energies
 from thermotools.lse import logsumexp
 import numpy as np
 from numpy.testing import assert_allclose
@@ -29,7 +29,7 @@ def test_mbar_fk_with_zeros():
     f_K = np.zeros(shape=(T,), dtype=np.float64)
     new_f_K = np.zeros(shape=(T,), dtype=np.float64)
     ref = 0.0
-    update_fk(log_N_K, f_K, b_K_x, scratch, new_f_K)
+    update_therm_energies(log_N_K, f_K, b_K_x, scratch, new_f_K)
     assert_allclose(new_f_K, ref, atol=1.0E-15)
 
 def test_mbar_fk_with_ascending_bias():
@@ -42,5 +42,5 @@ def test_mbar_fk_with_ascending_bias():
     new_f_K = np.zeros(shape=(T,), dtype=np.float64)
     ref = np.array([float(K) - np.log(X) for K in range(T)], dtype=np.float64)
     ref -= ref.min()
-    update_fk(log_N_K, f_K, b_K_x, scratch, new_f_K)
+    update_therm_energies(log_N_K, f_K, b_K_x, scratch, new_f_K)
     assert_allclose(new_f_K, ref, atol=1.0E-15)

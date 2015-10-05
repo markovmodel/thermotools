@@ -94,7 +94,7 @@ class TestThreeTwoModel(object):
         assert_allclose(f_i, self.f_i, atol=atol)
     def test_dtram(self):
         f_K, f_i, log_nu_K_i = dtram.estimate(self.C_K_ij, self.b_K_i, 10000, 1.0E-15)
-        P_K_ij = dtram.get_pk(
+        P_K_ij = dtram.estimate_transition_matrices(
             log_nu_K_i, self.b_K_i, f_i, self.C_K_ij, np.zeros(shape=f_i.shape, dtype=np.float64))
         maxerr = 1.0E-1
         assert_allclose(f_K, self.f_K, atol=maxerr)

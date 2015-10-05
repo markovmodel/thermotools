@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from thermotools.dtram import update_lognu, update_fi, get_pk
+from thermotools.dtram import update_lagrangian_mult, update_conf_energies, estimate_transition_matrices
 import numpy as np
 from numpy.testing import assert_allclose
 
@@ -29,7 +29,7 @@ def test_lognu_zero_counts():
     scratch_i = np.zeros(shape=(nm,), dtype=np.float64)
     new_log_nu_K_i = np.zeros(shape=(nt, nm), dtype=np.float64)
     ref_log_nu_K_i = np.log(1.0E-10*np.ones(shape=(nt, nm), dtype=np.float64)) # (prior)
-    update_lognu(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_i, new_log_nu_K_i)
+    update_lagrangian_mult(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_i, new_log_nu_K_i)
     assert_allclose(new_log_nu_K_i, ref_log_nu_K_i, atol=1.0E-16)
 
 def test_lognu_all_factors_unity():
@@ -42,7 +42,7 @@ def test_lognu_all_factors_unity():
     scratch_i = np.zeros(shape=(nm,), dtype=np.float64)
     new_log_nu_K_i = np.zeros(shape=(nt, nm), dtype=np.float64)
     ref_log_nu_K_i = np.log(nm*np.ones(shape=(nt, nm), dtype=np.float64))
-    update_lognu(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_i, new_log_nu_K_i)
+    update_lagrangian_mult(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_i, new_log_nu_K_i)
     assert_allclose(new_log_nu_K_i, ref_log_nu_K_i, atol=1.0E-16)
 
 def test_lognu_K_range():
@@ -57,7 +57,7 @@ def test_lognu_K_range():
     scratch_i = np.zeros(shape=(nm,), dtype=np.float64)
     new_log_nu_K_i = np.zeros(shape=(nt, nm), dtype=np.float64)
     ref_log_nu_K_i = np.log(nm*np.ones(shape=(nt, nm), dtype=np.float64))
-    update_lognu(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_i, new_log_nu_K_i)
+    update_lagrangian_mult(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_i, new_log_nu_K_i)
     assert_allclose(new_log_nu_K_i, ref_log_nu_K_i, atol=1.0E-16)
 
 
@@ -72,7 +72,7 @@ def test_fi_zero_counts():
     scratch_M = np.zeros(shape=(nm,), dtype=np.float64)
     new_f_i = np.zeros(shape=(nm,), dtype=np.float64)
     ref_f_i = 0.0
-    update_fi(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_TM, new_f_i)
+    update_conf_energies(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_TM, new_f_i)
     assert_allclose(new_f_i, ref_f_i, atol=1.0E-16)
 
 def test_fi_all_factors_unity():
@@ -86,7 +86,7 @@ def test_fi_all_factors_unity():
     scratch_M = np.zeros(shape=(nm,), dtype=np.float64)
     new_f_i = np.zeros(shape=(nm,), dtype=np.float64)
     ref_f_i = 0.0
-    update_fi(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_TM, new_f_i)
+    update_conf_energies(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_TM, new_f_i)
     assert_allclose(new_f_i, ref_f_i, atol=1.0E-16)
 
 
@@ -98,7 +98,7 @@ def test_pij_zero_counts():
     f_i = np.zeros(shape=(nm,), dtype=np.float64)
     C_K_ij = np.zeros(shape=(nt, nm, nm), dtype=np.intc)
     scratch_M = np.zeros(shape=(nm,), dtype=np.float64)
-    p_K_ij = get_pk(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_M)
+    p_K_ij = estimate_transition_matrices(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_M)
     ref_p_ij = np.eye(nm, dtype=np.float64)
     for K in range(nt):
         assert_allclose(p_K_ij[K, :, :], ref_p_ij, atol=1.0E-16)
@@ -111,7 +111,7 @@ def test_pij_all_factors_unity():
     f_i = np.zeros(shape=(nm,), dtype=np.float64)
     C_K_ij = np.ones(shape=(nt, nm, nm), dtype=np.intc)
     scratch_M = np.zeros(shape=(nm,), dtype=np.float64)
-    p_K_ij = get_pk(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_M)
+    p_K_ij = estimate_transition_matrices(log_nu_K_i, b_K_i, f_i, C_K_ij, scratch_M)
     ref_p_ij = np.ones(shape=(nm, nm), dtype=np.float64) + np.eye(nm, dtype=np.float64)*1.0E-10
     ref_p_ij /= ref_p_ij.sum(axis=1)[:, np.newaxis]
     for K in range(nt):

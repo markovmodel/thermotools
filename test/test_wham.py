@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from thermotools.wham import update_fi, update_fk
+from thermotools.wham import update_conf_energies, update_therm_energies
 from thermotools.lse import logsumexp
 import numpy as np
 from numpy.testing import assert_allclose
@@ -28,7 +28,7 @@ def test_wham_fk_with_zeros():
     scratch = np.zeros(shape=(M,), dtype=np.float64)
     f_K = np.zeros(shape=(T,), dtype=np.float64)
     ref = -np.log(M)
-    update_fk(f_i, b_K_i, scratch, f_K)
+    update_therm_energies(f_i, b_K_i, scratch, f_K)
     assert_allclose(f_K, ref, atol=1.0E-15)
 
 def test_wham_fk_with_ascending_K():
@@ -39,7 +39,7 @@ def test_wham_fk_with_ascending_K():
     scratch = np.zeros(shape=(M,), dtype=np.float64)
     f_K = np.zeros(shape=(T,), dtype=np.float64)
     ref = -np.log(np.arange(T).astype(np.float64) + 1)
-    update_fk(f_i, b_K_i, scratch, f_K)
+    update_therm_energies(f_i, b_K_i, scratch, f_K)
     assert_allclose(f_K, ref, atol=1.0E-15)
 
 def test_wham_fi_with_zeros():
@@ -53,7 +53,7 @@ def test_wham_fi_with_zeros():
     scratch_T = np.zeros(shape=(T,), dtype=np.float64)
     f_K = np.zeros(shape=(T,), dtype=np.float64)
     ref = 0.0
-    update_fi(log_N_K, log_N_i, f_K, b_K_i, scratch_T, f_i)
+    update_conf_energies(log_N_K, log_N_i, f_K, b_K_i, scratch_T, f_i)
     assert_allclose(f_i, ref, atol=1.0E-15)
 
 def test_wham_fi_with_ascending_K():
@@ -68,5 +68,5 @@ def test_wham_fi_with_ascending_K():
     f_K = np.zeros(shape=(T,), dtype=np.float64)
     ref = -np.log((np.arange(M).astype(np.float64) + 1) / (0.5 * M * (M + 1)))
     ref -= ref.min() 
-    update_fi(log_N_K, log_N_i, f_K, b_K_i, scratch_T, f_i)
+    update_conf_energies(log_N_K, log_N_i, f_K, b_K_i, scratch_T, f_i)
     assert_allclose(f_i, ref, atol=1.0E-15)
