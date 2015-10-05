@@ -35,23 +35,23 @@ def tower_sample(distribution):
     idx = np.where(ind == True)
     return np.min(idx)
 
-def draw_independent_samples(pi_K_i, n_samples):
-    N_K_i = np.zeros(shape=pi_K_i.shape, dtype=np.intc)
-    for K in range(pi_K_i.shape[0]):
+def draw_independent_samples(biased_stationary_distribution, n_samples):
+    state_counts = np.zeros(shape=biased_stationary_distribution.shape, dtype=np.intc)
+    for K in range(biased_stationary_distribution.shape[0]):
         for s in range(n_samples):
-            N_K_i[K, tower_sample(pi_K_i[K, :])] += 1
-    return N_K_i
+            state_counts[K, tower_sample(biased_stationary_distribution[K, :])] += 1
+    return state_counts
 
-def draw_transition_counts(P_K_ij, n_samples, x0):
+def draw_transition_counts(transition_matrices, n_samples, x0):
     """generates a discrete Markov chain"""
-    C_K_ij = np.zeros(P_K_ij.shape, dtype=np.intc)
-    for K in range(P_K_ij.shape[0]):
+    count_matrices = np.zeros(transition_matrices.shape, dtype=np.intc)
+    for K in range(transition_matrices.shape[0]):
         x = x0
         for s in range(n_samples):
-            x_new = tower_sample(P_K_ij[K, x, :])
-            C_K_ij[K, x, x_new] += 1
+            x_new = tower_sample(transition_matrices[K, x, :])
+            count_matrices[K, x, x_new] += 1
             x = x_new
-    return C_K_ij
+    return count_matrices
 
 #   ************************************************************************************************
 #   test class
@@ -61,14 +61,14 @@ class TestThreeTwoModel(object):
     @classmethod
     def setup_class(cls):
         cls.energy = np.array([1.0, 2.0, 0.0], dtype=np.float64)
-        cls.b_K_i = np.array([[0.0, 0.0, 0.0], 2.0 - cls.energy], dtype=np.float64)
-        cls.pi_i = np.exp(-cls.energy) / np.exp(-cls.energy).sum()
-        cls.f_i = -np.log(cls.pi_i)
-        cls.f_K_i = cls.f_i[np.newaxis, :] + cls.b_K_i
-        cls.Z_K_i = np.exp(-cls.f_K_i)
-        cls.Z_K = cls.Z_K_i.sum(axis=1)
-        cls.f_K = -np.log(cls.Z_K)
-        cls.pi_K_i = np.exp(-cls.b_K_i) * cls.pi_i[np.newaxis, :] / cls.Z_K[:, np.newaxis]
+        cls.bias_energies = np.array([[0.0, 0.0, 0.0], 2.0 - cls.energy], dtype=np.float64)
+        cls.stationary_distribution = np.exp(-cls.energy) / np.exp(-cls.energy).sum()
+        cls.conf_energies = -np.log(cls.stationary_distribution)
+        cls.biased_conf_energies = cls.conf_energies[np.newaxis, :] + cls.bias_energies
+        cls.conf_partition_function = np.exp(-cls.biased_conf_energies)
+        cls.partition_function = cls.conf_partition_function.sum(axis=1)
+        cls.therm_energies = -np.log(cls.partition_function)
+        cls.biased_stationary_distribution = np.exp(-cls.bias_energies) * cls.stationary_distribution[np.newaxis, :] / cls.partition_function[:, np.newaxis]
         metropolis = cls.energy[np.newaxis, :] - cls.energy[:, np.newaxis]
         metropolis[(metropolis < 0.0)] = 0.0
         selection = np.array([[0.5, 0.5, 0.0], [0.5, 0.0, 0.5], [0.0, 0.5, 0.5]], dtype=np.float64)
@@ -76,10 +76,10 @@ class TestThreeTwoModel(object):
         for i in range(metr_hast.shape[0]):
             metr_hast[i, i] = 0.0
             metr_hast[i, i] = 1.0 - metr_hast[i, :].sum()
-        cls.P_K_ij = np.array([metr_hast, selection])
+        cls.transition_matrices = np.array([metr_hast, selection])
         cls.n_samples = 10000
-        cls.N_K_i = draw_independent_samples(cls.pi_K_i, cls.n_samples)
-        cls.C_K_ij = draw_transition_counts(cls.P_K_ij, cls.n_samples, 0)
+        cls.state_counts = draw_independent_samples(cls.biased_stationary_distribution, cls.n_samples)
+        cls.count_matrices = draw_transition_counts(cls.transition_matrices, cls.n_samples, 0)
     @classmethod
     def teardown_class(cls):
         pass
@@ -88,15 +88,15 @@ class TestThreeTwoModel(object):
     def teardown(self):
         pass
     def test_wham(self):
-        f_K, f_i = wham.estimate(self.N_K_i, self.b_K_i, maxiter=50000, maxerr=1.0E-15)
+        therm_energies, conf_energies = wham.estimate(self.state_counts, self.bias_energies, maxiter=50000, maxerr=1.0E-15)
         atol = 1.0E-1
-        assert_allclose(f_K, self.f_K, atol=atol)
-        assert_allclose(f_i, self.f_i, atol=atol)
+        assert_allclose(therm_energies, self.therm_energies, atol=atol)
+        assert_allclose(conf_energies, self.conf_energies, atol=atol)
     def test_dtram(self):
-        f_K, f_i, log_nu_K_i = dtram.estimate(self.C_K_ij, self.b_K_i, 10000, 1.0E-15)
-        P_K_ij = dtram.estimate_transition_matrices(
-            log_nu_K_i, self.b_K_i, f_i, self.C_K_ij, np.zeros(shape=f_i.shape, dtype=np.float64))
+        therm_energies, conf_energies, log_lagrangian_mult = dtram.estimate(self.count_matrices, self.bias_energies, 10000, 1.0E-15)
+        transition_matrices = dtram.estimate_transition_matrices(
+            log_lagrangian_mult, self.bias_energies, conf_energies, self.count_matrices, np.zeros(shape=conf_energies.shape, dtype=np.float64))
         maxerr = 1.0E-1
-        assert_allclose(f_K, self.f_K, atol=maxerr)
-        assert_allclose(f_i, self.f_i, atol=maxerr)
-        assert_allclose(P_K_ij, self.P_K_ij, atol=maxerr)
+        assert_allclose(therm_energies, self.therm_energies, atol=maxerr)
+        assert_allclose(conf_energies, self.conf_energies, atol=maxerr)
+        assert_allclose(transition_matrices, self.transition_matrices, atol=maxerr)
