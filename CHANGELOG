@@ -50,3 +50,4 @@ Version 0.1.7 (Alpha):
 Upcoming:
 
     - Fixing float argument for range()
+    - Refactoring API
