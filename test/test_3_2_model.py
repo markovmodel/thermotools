@@ -109,11 +109,11 @@ class TestThreeTwoModel(object):
     def test_tram(self):
         bias_energies = np.ascontiguousarray(self.bias_energies[:,self.M_x])
         biased_conf_energies, conf_energies, therm_energies, log_lagrangian_mult = tram.estimate(
-            self.transition_matrices, self.N_K_i_TRAM, bias_energies, self.M_x, maxiter=10000, maxerr=1.0E-15)
-        P_K_ij = tram.get_pk(
-            log_lagrangian_mult, biased_conf_energies, self.transition_matrices, np.zeros(shape=conf_energies.shape, dtype=np.float64))
+            self.count_matrices, self.state_counts_TRAM, bias_energies, self.M_x, maxiter=10000, maxerr=1.0E-15)
+        transition_matrices = tram.get_pk(
+            log_lagrangian_mult, biased_conf_energies, self.count_matrices, np.zeros(shape=conf_energies.shape, dtype=np.float64))
         maxerr = 1.0E-1
         assert_allclose(biased_conf_energies, self.biased_conf_energies, atol=maxerr)
         assert_allclose(conf_energies, self.conf_energies, atol=maxerr)
         assert_allclose(therm_energies, self.therm_energies, atol=maxerr)
-        assert_allclose(P_K_ij, self.P_K_ij, atol=maxerr)
+        assert_allclose(transition_matrices, self.transition_matrices, atol=maxerr)
