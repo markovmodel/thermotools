@@ -51,3 +51,4 @@ Upcoming:
 
     - Fixing float argument for range()
     - Refactoring API
+    - Adding function to restrict samples and state sequence to a set of conf states
