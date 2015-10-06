@@ -72,3 +72,28 @@ def test_state_counts():
     ref = np.array([[10, 0, 0, 0], [0] * 4, [0, 0, 20, 0], [0] * 4, [0] * 4], dtype=np.intc)
     N = util.state_counts(dtraj, nthermo=5, nstates=4)
     assert_array_equal(N, ref)
+
+def test_restriction():
+    T = 10
+    M = 100
+    X = 1000
+    state_sequence = np.array([[0, i] for i in range(M)] * 10, dtype=np.intc)
+    bias_energy_sequence = np.array([[i] * T for i in range(X)], dtype=np.float64)
+    cset = [i for i in range(M) if i % 2 == 0]
+    ref_state_sequence = np.array([[0, i] for i in range(int(M / 2))] * 10, dtype=np.intc)
+    ref_bias_energy_sequence = np.array([[i] * T for i in range(X) if i % 2 == 0], dtype=np.float64)
+    new_state_sequence, new_bias_energy_sequence = util.restrict_samples_to_cset(
+        state_sequence, bias_energy_sequence, cset)
+    assert_array_equal(new_state_sequence, ref_state_sequence)
+    assert_array_equal(new_bias_energy_sequence, ref_bias_energy_sequence)
+
+
+
+
+
+
+
+
+
+
+
