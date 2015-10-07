@@ -78,10 +78,12 @@ def test_restriction():
     M = 100
     X = 1000
     state_sequence = np.array([[0, i] for i in range(M)] * 10, dtype=np.intc)
-    bias_energy_sequence = np.array([[i] * T for i in range(X)], dtype=np.float64)
+    bias_energy_sequence = np.ascontiguousarray(
+        np.array([[i] * T for i in range(X)], dtype=np.float64).transpose())
     cset = [i for i in range(M) if i % 2 == 0]
     ref_state_sequence = np.array([[0, i] for i in range(int(M / 2))] * 10, dtype=np.intc)
-    ref_bias_energy_sequence = np.array([[i] * T for i in range(X) if i % 2 == 0], dtype=np.float64)
+    ref_bias_energy_sequence = np.ascontiguousarray(
+        np.array([[i] * T for i in range(X) if i % 2 == 0], dtype=np.float64).transpose())
     new_state_sequence, new_bias_energy_sequence = util.restrict_samples_to_cset(
         state_sequence, bias_energy_sequence, cset)
     assert_array_equal(new_state_sequence, ref_state_sequence)

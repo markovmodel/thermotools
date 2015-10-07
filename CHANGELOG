@@ -54,3 +54,5 @@ Version 0.1.8 (Alpha):
     - Adding function to restrict samples and state sequence to a set of conf states
 
 Upcoming:
+
+    - Changing bias_energy_sequence axes in util's sample restriction function
