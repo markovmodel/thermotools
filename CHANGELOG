@@ -56,3 +56,4 @@ Version 0.1.8 (Alpha):
 Upcoming:
 
     - Changing bias_energy_sequence axes in util's sample restriction function
+    - Minor changes in util's transition count function
