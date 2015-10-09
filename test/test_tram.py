@@ -71,10 +71,17 @@ class TestTRAM(unittest.TestCase):
         state_sequence = Markov_state_sequence
         log_R_K_i = np.log(R)
 
-        compare = thermotools.tram.log_likelihood(log_lagrangian_mult, biased_conf_energies, count_matrices, bias_energy_sequence, state_sequence,
-                        state_counts, log_R_K_i, scratch_M, scratch_T)
+        log_R_K_i_compare = np.zeros_like(log_R_K_i)
+        new_biased_conf_energies = np.zeros_like(biased_conf_energies)
+        thermotools.tram.update_biased_conf_energies(log_lagrangian_mult, biased_conf_energies, count_matrices, bias_energy_sequence, state_sequence,
+            state_counts, log_R_K_i_compare, scratch_M, scratch_T, new_biased_conf_energies)
 
-        assert abs(reference-compare)<1.E-3
+        assert np.allclose(log_R_K_i, log_R_K_i_compare)
+
+        compare = thermotools.tram.log_likelihood(log_lagrangian_mult, biased_conf_energies, count_matrices, bias_energy_sequence, state_sequence,
+                        state_counts, log_R_K_i_compare, scratch_M, scratch_T)
+
+        assert np.allclose(reference, compare)
 
 if __name__ == "__main__":
     unittest.main()
