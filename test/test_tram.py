@@ -23,7 +23,8 @@ import thermotools.tram
 
 class TestTRAM(unittest.TestCase):
     def test_log_likelihood(self):
-        nu = np.random.rand(2,2)*100.0
+        THERMOTOOLS_TRAM_PRIOR = 1.0E-10
+        nu = np.random.rand(2,2)*10.0
         CKij = np.random.randint(1,10,size=(2,2,2)).astype(np.intc)
         Z = np.random.rand(2,2)
         state_counts = np.maximum(CKij.sum(axis=0), CKij.sum(axis=1)).astype(np.intc)
@@ -32,31 +33,30 @@ class TestTRAM(unittest.TestCase):
 
         scratch_M = np.zeros(2)
         scratch_T = np.zeros(2)
+        
+        my_CKij = np.zeros_like(CKij)
+        for k in range(2):
+            my_CKij[k,:,:] = CKij[k,:,:] + np.eye(2)*THERMOTOOLS_TRAM_PRIOR
+        my_state_counts = state_counts.astype(float)+THERMOTOOLS_TRAM_PRIOR
 
         # regular case
         T = np.zeros((2,2,2))
         for k in range(2):
             for i in range(2):
                 for j in range(2):
-                    T[k,i,j] = (CKij[k,i,j]+CKij[k,j,i])*Z[k,j] / (Z[k,i]*nu[k,j]+Z[k,j]*nu[k,i])
-        for k in range(2):
-            for i in range(2):
-                T[k,i,i] = 0
-        for k in range(2):
-            for i in range(2):
-                T[k,i,i] = 1.0-T[k,i,:].sum()
+                    T[k,i,j] = (my_CKij[k,i,j]+my_CKij[k,j,i])*Z[k,j] / (Z[k,i]*nu[k,j]+Z[k,j]*nu[k,i])
 
         R = np.zeros((2,2))
         for k in range(2):
             for i in range(2):
                 for j in range(2):
-                    R[k,i] += (CKij[k,i,j]+CKij[k,j,i])*nu[k,j] / (Z[k,i]*nu[k,j]+Z[k,j]*nu[k,i])
-                R[k,i] += (state_counts[k,i]-CKij[k,:,i].sum()) / Z[k,i]
+                    R[k,i] += (my_CKij[k,i,j]+my_CKij[k,j,i])*nu[k,j] / (Z[k,i]*nu[k,j]+Z[k,j]*nu[k,i])
+                R[k,i] += (my_state_counts[k,i]-my_CKij[k,:,i].sum()) / Z[k,i]
 
         fKi = -np.log(Z)
 
-        a = (CKij*np.log(T)).sum()
-        b = (state_counts*fKi).sum()
+        a = (my_CKij*np.log(T)).sum()
+        b = (my_state_counts*fKi).sum()
         tmp = (R[:,Markov_state_sequence]*np.exp(-bias_energy_sequence)).sum(axis=0)
         c = -np.log(tmp).sum()
 
@@ -81,6 +81,7 @@ class TestTRAM(unittest.TestCase):
         compare = thermotools.tram.log_likelihood(log_lagrangian_mult, biased_conf_energies, count_matrices, bias_energy_sequence, state_sequence,
                         state_counts, log_R_K_i_compare, scratch_M, scratch_T)
 
+        print a,b,c
         assert np.allclose(reference, compare)
 
 if __name__ == "__main__":
