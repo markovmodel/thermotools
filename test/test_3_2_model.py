@@ -113,7 +113,7 @@ class TestThreeTwoModel(object):
         assert_allclose(conf_energies, self.conf_energies, atol=maxerr)
         assert_allclose(therm_energies, self.therm_energies, atol=maxerr)
     def test_dtram(self):
-        therm_energies, conf_energies, log_lagrangian_mult = dtram.estimate(self.count_matrices, self.bias_energies, 10000, 1.0E-15)
+        therm_energies, conf_energies, log_lagrangian_mult, err, lll = dtram.estimate(self.count_matrices, self.bias_energies, 10000, 1.0E-15)
         transition_matrices = dtram.estimate_transition_matrices(
             log_lagrangian_mult, self.bias_energies, conf_energies, self.count_matrices, np.zeros(shape=conf_energies.shape, dtype=np.float64))
         maxerr = 1.0E-1
