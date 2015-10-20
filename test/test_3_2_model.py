@@ -126,7 +126,7 @@ class TestThreeTwoModel(object):
         biased_conf_energies, conf_energies, therm_energies, log_lagrangian_mult = tram.estimate(
             self.count_matrices, self.state_counts, bias_energies, self.conf_state_sequence, maxiter=10000, maxerr=1.0E-12)
         transition_matrices = tram.estimate_transition_matrices(
-            log_lagrangian_mult, biased_conf_energies, None, self.count_matrices)
+            log_lagrangian_mult, biased_conf_energies, self.count_matrices, None)
         maxerr = 1.0E-1
         assert_allclose(biased_conf_energies, self.biased_conf_energies, atol=maxerr)
         assert_allclose(conf_energies, self.conf_energies, atol=maxerr)
