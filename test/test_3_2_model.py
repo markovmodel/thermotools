@@ -16,8 +16,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import thermotools.wham as wham
-import thermotools.tram as tram
+import thermotools.mbar as mbar
 import thermotools.dtram as dtram
+import thermotools.tram as tram
 import numpy as np
 from numpy.testing import assert_allclose
 
@@ -34,30 +35,33 @@ def tower_sample(distribution):
 
 def draw_independent_samples(biased_stationary_distribution, n_samples):
     state_counts = np.zeros(shape=biased_stationary_distribution.shape, dtype=np.intc)
+    conf_state_sequence = np.zeros(biased_stationary_distribution.shape[0]*n_samples, dtype=np.intc)
     for K in range(biased_stationary_distribution.shape[0]):
         for s in range(n_samples):
-            state_counts[K, tower_sample(biased_stationary_distribution[K, :])] += 1
-    return state_counts
+            i = tower_sample(biased_stationary_distribution[K, :])
+            state_counts[K, i] += 1
+            conf_state_sequence[K * n_samples + s] = i
+    return conf_state_sequence, state_counts
 
 def draw_transition_counts(transition_matrices, n_samples, x0):
     """generates a discrete Markov chain"""
-    count_matrices = np.zeros(transition_matrices.shape, dtype=np.intc)
-    M_x = np.zeros(transition_matrices.shape[0]*(n_samples+1), dtype=np.intc)
+    count_matrices = np.zeros(shape=transition_matrices.shape, dtype=np.intc)
+    conf_state_sequence = np.zeros(shape=(transition_matrices.shape[0]*(n_samples+1),), dtype=np.intc)
     state_counts = np.zeros(shape=transition_matrices.shape[0:2], dtype=np.intc)
     h = 0
     for K in range(transition_matrices.shape[0]):
         x = x0
         state_counts[K, x] += 1
-        M_x[h] = x
+        conf_state_sequence[h] = x
         h += 1
         for s in range(n_samples):
             x_new = tower_sample(transition_matrices[K, x, :])
             count_matrices[K, x, x_new] += 1
             x = x_new
             state_counts[K, x] += 1
-            M_x[h] = x
+            conf_state_sequence[h] = x
             h += 1
-    return count_matrices, M_x, state_counts
+    return count_matrices, conf_state_sequence, state_counts
 
 #   ************************************************************************************************
 #   test class
@@ -84,8 +88,8 @@ class TestThreeTwoModel(object):
             metr_hast[i, i] = 1.0 - metr_hast[i, :].sum()
         cls.transition_matrices = np.array([metr_hast, selection])
         cls.n_samples = 10000
-        cls.state_counts = draw_independent_samples(cls.biased_stationary_distribution, cls.n_samples)
-        cls.count_matrices, cls.M_x, cls.state_counts_TRAM = draw_transition_counts(cls.transition_matrices, cls.n_samples, 0)
+        cls.conf_state_sequence_ind, cls.state_counts_ind = draw_independent_samples(cls.biased_stationary_distribution, cls.n_samples)
+        cls.count_matrices, cls.conf_state_sequence, cls.state_counts = draw_transition_counts(cls.transition_matrices, cls.n_samples, 0)
     @classmethod
     def teardown_class(cls):
         pass
@@ -94,10 +98,21 @@ class TestThreeTwoModel(object):
     def teardown(self):
         pass
     def test_wham(self):
-        therm_energies, conf_energies = wham.estimate(self.state_counts, self.bias_energies, maxiter=50000, maxerr=1.0E-15)
+        therm_energies, conf_energies = wham.estimate(self.state_counts_ind, self.bias_energies, maxiter=50000, maxerr=1.0E-15)
         atol = 1.0E-1
         assert_allclose(therm_energies, self.therm_energies, atol=atol)
         assert_allclose(conf_energies, self.conf_energies, atol=atol)
+    def test_mbar(self):
+        bias_energy_sequence = np.ascontiguousarray(self.bias_energies[:, self.conf_state_sequence_ind])
+        therm_energies, conf_energies, biased_conf_energies = mbar.estimate(
+            self.state_counts_ind.sum(axis=1),
+            bias_energy_sequence,
+            self.conf_state_sequence_ind,
+            maxiter=10000, maxerr=1.0E-15)
+        maxerr = 1.0E-1
+        assert_allclose(biased_conf_energies, self.biased_conf_energies, atol=maxerr)
+        assert_allclose(conf_energies, self.conf_energies, atol=maxerr)
+        assert_allclose(therm_energies, self.therm_energies, atol=maxerr)
     def test_dtram(self):
         therm_energies, conf_energies, log_lagrangian_mult = dtram.estimate(self.count_matrices, self.bias_energies, 10000, 1.0E-15)
         transition_matrices = dtram.estimate_transition_matrices(
@@ -107,11 +122,11 @@ class TestThreeTwoModel(object):
         assert_allclose(conf_energies, self.conf_energies, atol=maxerr)
         assert_allclose(transition_matrices, self.transition_matrices, atol=maxerr)
     def test_tram(self):
-        bias_energies = np.ascontiguousarray(self.bias_energies[:,self.M_x])
-        biased_conf_energies, conf_energies, therm_energies, log_lagrangian_mult, _ = tram.estimate(
-            self.count_matrices, self.state_counts_TRAM, bias_energies, self.M_x, maxiter=10000, maxerr=1.0E-14)
+        bias_energies = np.ascontiguousarray(self.bias_energies[:,self.conf_state_sequence])
+        biased_conf_energies, conf_energies, therm_energies, log_lagrangian_mult = tram.estimate(
+            self.count_matrices, self.state_counts, bias_energies, self.conf_state_sequence, maxiter=10000, maxerr=1.0E-12)
         transition_matrices = tram.estimate_transition_matrices(
-            log_lagrangian_mult, biased_conf_energies, self.count_matrices)
+            log_lagrangian_mult, biased_conf_energies, None, self.count_matrices)
         maxerr = 1.0E-1
         assert_allclose(biased_conf_energies, self.biased_conf_energies, atol=maxerr)
         assert_allclose(conf_energies, self.conf_energies, atol=maxerr)
