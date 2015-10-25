@@ -29,9 +29,7 @@ from numpy.testing import assert_allclose
 def tower_sample(distribution):
     cdf = np.cumsum(distribution)
     rnd = np.random.rand() * cdf[-1]
-    ind = (cdf > rnd)
-    idx = np.where(ind == True)
-    return np.min(idx)
+    return np.searchsorted(cdf, rnd)
 
 def draw_independent_samples(biased_stationary_distribution, n_samples):
     state_counts = np.zeros(shape=biased_stationary_distribution.shape, dtype=np.intc)
