@@ -16,12 +16,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import thermotools.wham as wham
-<<<<<<< HEAD
 import thermotools.tram as tram
 import thermotools.tram_direct as tram_direct
-=======
 import thermotools.mbar as mbar
->>>>>>> dev_tram_likelihood
 import thermotools.dtram as dtram
 import thermotools.tram as tram
 import numpy as np
@@ -129,7 +126,7 @@ class TestThreeTwoModel(object):
         def logL_logger(**kwargs):
             logL_history.append(kwargs['log_likelihood'])
         bias_energies = np.ascontiguousarray(self.bias_energies[:,self.conf_state_sequence])
-        biased_conf_energies, conf_energies, therm_energies, log_lagrangian_mult = tram.estimate(
+        biased_conf_energies, conf_energies, therm_energies, log_lagrangian_mult = tram_direct.estimate(
             self.count_matrices, self.state_counts, bias_energies, self.conf_state_sequence,
             maxiter=10000, maxerr=1.0E-12, call_back=logL_logger)
         transition_matrices = tram.estimate_transition_matrices(
