@@ -24,6 +24,20 @@ from numpy.testing import assert_array_equal
 #   sorting
 ####################################################################################################
 
+def test_mixed_sort_reverse():
+    # testing against numpy.sort()
+    x = np.ascontiguousarray(np.arange(1000)[::-1].astype(np.float64))
+    y = np.sort(x)
+    util.mixed_sort(x)
+    assert_array_equal(x, y)
+
+def test_mixed_sort_random():
+    # testing against numpy.sort()
+    x = np.random.rand(1000).astype(np.float64)
+    y = np.sort(x)
+    util.mixed_sort(x)
+    assert_array_equal(x, y)
+
 ####################################################################################################
 #   direct summation schemes
 ####################################################################################################
