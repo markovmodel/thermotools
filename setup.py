@@ -67,7 +67,7 @@ ext_mbar = Extension(
 #     extra_compile_args=["-O3"])
 ext_dtram = Extension(
     "thermotools.dtram",
-    sources=["ext/dtram/dtram.pyx", "ext/dtram/_dtram.c", "ext/lse/_lse.c"],
+    sources=["ext/dtram/dtram.pyx", "ext/dtram/_dtram.c", "ext/util/_util.c"],
     include_dirs=[get_include()],
     extra_compile_args=["-O3"])
 # ext_xtram = Extension(
