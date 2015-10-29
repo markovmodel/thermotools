@@ -18,7 +18,7 @@
 import thermotools.util as util
 import numpy as np
 from nose.tools import assert_true
-from numpy.testing import assert_array_equal
+from numpy.testing import assert_array_equal, assert_almost_equal
 
 ####################################################################################################
 #   sorting
@@ -47,14 +47,75 @@ def test_kahan_summation():
     array = np.array([1.0E-8, 1.0, 1.0E+8] * 100000, dtype=np.float64)
     result = util.kahan_summation(array, sort_array=False)
     assert_true(result == 10000000100000.001)
-    result = util.kahan_summation(array, sort_array=True, sort_inplace=False)
+    result = util.kahan_summation(array, sort_array=True, inplace=False)
     assert_true(result == 10000000100000.001)
-    result = util.kahan_summation(array, sort_array=True, sort_inplace=True)
+    result = util.kahan_summation(array, sort_array=True, inplace=True)
     assert_true(result == 10000000100000.001)
 
 ####################################################################################################
 #   logspace summation schemes
 ####################################################################################################
+
+def test_logsumexp_zeros_short():
+    N = 5
+    data = np.zeros(shape=(N,), dtype=np.float64)
+    assert_almost_equal(util.logsumexp(data, inplace=False), np.log(N), decimal=15)
+    assert_almost_equal(util.logsumexp(-data, inplace=False), np.log(N), decimal=15)
+
+def test_logsumexp_zeros_long():
+    N = 10000
+    data = np.zeros(shape=(N,), dtype=np.float64)
+    assert_almost_equal(util.logsumexp(data, inplace=False), np.log(N), decimal=15)
+    assert_almost_equal(util.logsumexp(-data, inplace=False), np.log(N), decimal=15)
+
+def test_logsumexp_converged_geometric_series():
+    data = np.ascontiguousarray(np.arange(10000)[::-1].astype(np.float64))
+    assert_almost_equal(
+        util.logsumexp(-data, inplace=False, sort_array=False, use_kahan=False),
+        0.45867514538708193, decimal=15)
+    assert_almost_equal(
+        util.logsumexp(-data, inplace=False, sort_array=False, use_kahan=True),
+        0.45867514538708193, decimal=15)
+    assert_almost_equal(
+        util.logsumexp(-data, inplace=False, sort_array=True, use_kahan=False),
+        0.45867514538708193, decimal=15)
+    assert_almost_equal(
+        util.logsumexp(-data, inplace=False, sort_array=True, use_kahan=True),
+        0.45867514538708193, decimal=15)
+    assert_almost_equal(
+        util.logsumexp(-data, inplace=True, sort_array=True, use_kahan=True),
+        0.45867514538708193, decimal=15)
+    
+def test_logsumexp_truncated_diverging_geometric_series():
+    data = np.ascontiguousarray(np.arange(10000)[::-1].astype(np.float64))
+    assert_almost_equal(
+        util.logsumexp(data, inplace=False, sort_array=False, use_kahan=False),
+        9999.4586751453862, decimal=15)
+    assert_almost_equal(
+        util.logsumexp(data, inplace=False, sort_array=False, use_kahan=True),
+        9999.4586751453862, decimal=15)
+    assert_almost_equal(
+        util.logsumexp(data, inplace=False, sort_array=True, use_kahan=False),
+        9999.4586751453862, decimal=15)
+    assert_almost_equal(
+        util.logsumexp(data, inplace=False, sort_array=True, use_kahan=True),
+        9999.4586751453862, decimal=15)
+    assert_almost_equal(
+        util.logsumexp(data, inplace=True, sort_array=True, use_kahan=True),
+        9999.4586751453862, decimal=15)
+
+def test_logsumexp_pair():
+    assert_almost_equal(util.logsumexp_pair(0.0, 0.0), np.log(2.0), decimal=15)
+    assert_almost_equal(util.logsumexp_pair(1.0, 1.0), 1.0 + np.log(2.0), decimal=15)
+    assert_almost_equal(util.logsumexp_pair(10.0, 10.0), 10.0 + np.log(2.0), decimal=15)
+    assert_almost_equal(util.logsumexp_pair(100.0, 100.0), 100.0 + np.log(2.0), decimal=15)
+    assert_almost_equal(util.logsumexp_pair(1000.0, 1000.0), 1000.0 + np.log(2.0), decimal=15)
+    assert_almost_equal(util.logsumexp_pair(10.0, 0.0), 10.000045398899218, decimal=15)
+    assert_almost_equal(util.logsumexp_pair(0.0, 10.0), 10.000045398899218, decimal=15)
+    assert_almost_equal(util.logsumexp_pair(100.0, 0.0), 100.0, decimal=15)
+    assert_almost_equal(util.logsumexp_pair(0.0, 100.0), 100.0, decimal=15)
+    assert_almost_equal(util.logsumexp_pair(1000.0, 0.0), 1000.0, decimal=15)
+    assert_almost_equal(util.logsumexp_pair(0.0, 1000.0), 1000.0, decimal=15)
 
 ####################################################################################################
 #   counting states and transitions
