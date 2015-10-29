@@ -56,12 +56,6 @@ def test_kahan_summation():
 #   logspace summation schemes
 ####################################################################################################
 
-def test_logsumexp_zeros_short():
-    N = 5
-    data = np.zeros(shape=(N,), dtype=np.float64)
-    assert_almost_equal(util.logsumexp(data, inplace=False), np.log(N), decimal=15)
-    assert_almost_equal(util.logsumexp(-data, inplace=False), np.log(N), decimal=15)
-
 def test_logsumexp_zeros_long():
     N = 10000
     data = np.zeros(shape=(N,), dtype=np.float64)
