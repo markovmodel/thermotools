@@ -42,6 +42,16 @@ def test_mixed_sort_random():
 #   direct summation schemes
 ####################################################################################################
 
+def test_kahan_summation():
+    # np.sum() fails for this array when unsorted
+    array = np.array([1.0E-8, 1.0, 1.0E+8] * 100000, dtype=np.float64)
+    result = util.kahan_summation(array, sort_array=False)
+    assert_true(result == 10000000100000.001)
+    result = util.kahan_summation(array, sort_array=True, sort_inplace=False)
+    assert_true(result == 10000000100000.001)
+    result = util.kahan_summation(array, sort_array=True, sort_inplace=True)
+    assert_true(result == 10000000100000.001)
+
 ####################################################################################################
 #   logspace summation schemes
 ####################################################################################################
