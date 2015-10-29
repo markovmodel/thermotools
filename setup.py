@@ -47,7 +47,7 @@ ext_lse = Extension(
     extra_compile_args=["-O3"])
 ext_bar = Extension(
     "thermotools.bar",
-    sources=["ext/bar/bar.pyx", "ext/bar/_bar.c", "ext/lse/_lse.c"],
+    sources=["ext/bar/bar.pyx", "ext/bar/_bar.c", "ext/util/_util.c"],
     include_dirs=[get_include()],
     extra_compile_args=["-O3"])
 ext_wham = Extension(
