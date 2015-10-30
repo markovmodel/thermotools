@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from thermotools.dtram import update_lagrangian_mult, update_conf_energies, estimate_transition_matrices
-from thermotools.dtram import update_lagrangian_mult_mk2, update_conf_energies_mk2, estimate_transition_matrices_mk2
+import thermotools.dtram as dtram
 import numpy as np
 from numpy.testing import assert_allclose
 
@@ -33,7 +33,9 @@ def test_lognu_zero_counts_mk2():
     C_K_ij = np.zeros(shape=(nt, nm, nm), dtype=np.intc)
     scratch_i = np.zeros(shape=(nm,), dtype=np.float64)
     new_log_lagrangian_mult = np.zeros(shape=(nt, nm), dtype=np.float64)
-    update_lagrangian_mult_mk2(log_lagrangian_mult, bias_energies, conf_energies, C_K_ij, scratch_i, new_log_lagrangian_mult)
+    dtram.update_lagrangian_mult_mk2(
+        log_lagrangian_mult, bias_energies, conf_energies, C_K_ij,
+        scratch_i, new_log_lagrangian_mult)
     assert_allclose(new_log_lagrangian_mult, -np.inf, atol=1.0E-16)
 
 def test_lognu_all_factors_unity_mk2():
@@ -45,7 +47,9 @@ def test_lognu_all_factors_unity_mk2():
     C_K_ij = np.ones(shape=(nt, nm, nm), dtype=np.intc)
     scratch_i = np.zeros(shape=(nm,), dtype=np.float64)
     new_log_lagrangian_mult = np.zeros(shape=(nt, nm), dtype=np.float64)
-    update_lagrangian_mult_mk2(log_lagrangian_mult, bias_energies, conf_energies, C_K_ij, scratch_i, new_log_lagrangian_mult)
+    dtram.update_lagrangian_mult_mk2(
+        log_lagrangian_mult, bias_energies, conf_energies, C_K_ij,
+        scratch_i, new_log_lagrangian_mult)
     assert_allclose(new_log_lagrangian_mult, np.log(nm), atol=1.0E-16)
 
 def test_lognu_K_range_mk2():
@@ -59,7 +63,9 @@ def test_lognu_K_range_mk2():
     C_K_ij = np.ones(shape=(nt, nm, nm), dtype=np.intc)
     scratch_i = np.zeros(shape=(nm,), dtype=np.float64)
     new_log_lagrangian_mult = np.zeros(shape=(nt, nm), dtype=np.float64)
-    update_lagrangian_mult_mk2(log_lagrangian_mult, bias_energies, conf_energies, C_K_ij, scratch_i, new_log_lagrangian_mult)
+    dtram.update_lagrangian_mult_mk2(
+        log_lagrangian_mult, bias_energies, conf_energies, C_K_ij,
+        scratch_i, new_log_lagrangian_mult)
     assert_allclose(new_log_lagrangian_mult, np.log(nm), atol=1.0E-16)
 
 
@@ -73,7 +79,9 @@ def test_fi_zero_counts_mk2():
     scratch_TM = np.zeros(shape=(nt, nm), dtype=np.float64)
     scratch_M = np.zeros(shape=(nm,), dtype=np.float64)
     new_conf_energies = np.zeros(shape=(nm,), dtype=np.float64)
-    update_conf_energies_mk2(log_lagrangian_mult, bias_energies, conf_energies, C_K_ij, scratch_TM, new_conf_energies)
+    dtram.update_conf_energies_mk2(
+        log_lagrangian_mult, bias_energies, conf_energies, C_K_ij,
+        scratch_TM, new_conf_energies)
     assert_allclose(new_conf_energies, np.inf, atol=1.0E-16)
 
 def test_fi_all_factors_unity_mk2():
@@ -86,7 +94,9 @@ def test_fi_all_factors_unity_mk2():
     scratch_TM = np.zeros(shape=(nt, nm), dtype=np.float64)
     scratch_M = np.zeros(shape=(nm,), dtype=np.float64)
     new_conf_energies = np.zeros(shape=(nm,), dtype=np.float64)
-    update_conf_energies_mk2(log_lagrangian_mult, bias_energies, conf_energies, C_K_ij, scratch_TM, new_conf_energies)
+    dtram.update_conf_energies_mk2(
+        log_lagrangian_mult, bias_energies, conf_energies, C_K_ij,
+        scratch_TM, new_conf_energies)
     assert_allclose(new_conf_energies, 0.0, atol=1.0E-16)
 
 
@@ -98,7 +108,8 @@ def test_pij_zero_counts_mk2():
     conf_energies = np.zeros(shape=(nm,), dtype=np.float64)
     C_K_ij = np.zeros(shape=(nt, nm, nm), dtype=np.intc)
     scratch_M = np.zeros(shape=(nm,), dtype=np.float64)
-    p_K_ij = estimate_transition_matrices_mk2(log_lagrangian_mult, bias_energies, conf_energies, C_K_ij, scratch_M)
+    p_K_ij = dtram.estimate_transition_matrices_mk2(
+        log_lagrangian_mult, bias_energies, conf_energies, C_K_ij, scratch_M)
     ref_p_ij = np.eye(nm, dtype=np.float64)
     for K in range(nt):
         assert_allclose(p_K_ij[K, :, :], ref_p_ij, atol=1.0E-16)
@@ -111,7 +122,8 @@ def test_pij_all_factors_unity_mk2():
     conf_energies = np.zeros(shape=(nm,), dtype=np.float64)
     C_K_ij = np.ones(shape=(nt, nm, nm), dtype=np.intc)
     scratch_M = np.zeros(shape=(nm,), dtype=np.float64)
-    p_K_ij = estimate_transition_matrices_mk2(log_lagrangian_mult, bias_energies, conf_energies, C_K_ij, scratch_M)
+    p_K_ij = dtram.estimate_transition_matrices_mk2(
+        log_lagrangian_mult, bias_energies, conf_energies, C_K_ij, scratch_M)
     ref_p_ij = np.ones(shape=(nm, nm), dtype=np.float64)
     for K in range(nt):
         assert_allclose(p_K_ij[K, :, :], ref_p_ij, atol=1.0E-16)
