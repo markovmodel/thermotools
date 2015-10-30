@@ -73,9 +73,8 @@ def test_fi_zero_counts_mk2():
     scratch_TM = np.zeros(shape=(nt, nm), dtype=np.float64)
     scratch_M = np.zeros(shape=(nm,), dtype=np.float64)
     new_conf_energies = np.zeros(shape=(nm,), dtype=np.float64)
-    ref_conf_energies = 0.0
     update_conf_energies_mk2(log_lagrangian_mult, bias_energies, conf_energies, C_K_ij, scratch_TM, new_conf_energies)
-    assert_allclose(new_conf_energies, ref_conf_energies, atol=1.0E-16)
+    assert_allclose(new_conf_energies, np.inf, atol=1.0E-16)
 
 def test_fi_all_factors_unity_mk2():
     nm = 200
@@ -87,9 +86,8 @@ def test_fi_all_factors_unity_mk2():
     scratch_TM = np.zeros(shape=(nt, nm), dtype=np.float64)
     scratch_M = np.zeros(shape=(nm,), dtype=np.float64)
     new_conf_energies = np.zeros(shape=(nm,), dtype=np.float64)
-    ref_conf_energies = 0.0
     update_conf_energies_mk2(log_lagrangian_mult, bias_energies, conf_energies, C_K_ij, scratch_TM, new_conf_energies)
-    assert_allclose(new_conf_energies, ref_conf_energies, atol=1.0E-16)
+    assert_allclose(new_conf_energies, 0.0, atol=1.0E-16)
 
 
 def test_pij_zero_counts_mk2():
