@@ -112,8 +112,7 @@ def test_pij_all_factors_unity_mk2():
     C_K_ij = np.ones(shape=(nt, nm, nm), dtype=np.intc)
     scratch_M = np.zeros(shape=(nm,), dtype=np.float64)
     p_K_ij = estimate_transition_matrices_mk2(log_lagrangian_mult, bias_energies, conf_energies, C_K_ij, scratch_M)
-    ref_p_ij = np.ones(shape=(nm, nm), dtype=np.float64) + np.eye(nm, dtype=np.float64)*1.0E-10
-    ref_p_ij /= ref_p_ij.sum(axis=1)[:, np.newaxis]
+    ref_p_ij = np.ones(shape=(nm, nm), dtype=np.float64)
     for K in range(nt):
         assert_allclose(p_K_ij[K, :, :], ref_p_ij, atol=1.0E-16)
 
