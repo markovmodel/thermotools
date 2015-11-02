@@ -58,3 +58,5 @@ Upcoming:
     - Changing bias_energy_sequence axes in util's sample restriction function
     - Minor changes in util's transition count function
     - Replacing lse module by additional functions in util module
+    - Adding optional estimation process for dTRAM
+    - Fix missing break statement in dTRAM estimation
