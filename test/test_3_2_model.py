@@ -125,9 +125,6 @@ class TestThreeTwoModel(object):
             log_lagrangian_mult, self.bias_energies, conf_energies, self.count_matrices,
             np.zeros(shape=conf_energies.shape, dtype=np.float64))
         maxerr = 1.0E-1
-        print log_lagrangian_mult
-        print therm_energies
-        print self.count_matrices
-        #assert_allclose(therm_energies, self.therm_energies, atol=maxerr)
+        assert_allclose(therm_energies, self.therm_energies, atol=maxerr)
         assert_allclose(conf_energies, self.conf_energies, atol=maxerr)
         assert_allclose(transition_matrices, self.transition_matrices, atol=maxerr)
