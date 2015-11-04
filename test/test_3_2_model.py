@@ -102,7 +102,7 @@ class TestThreeTwoModel(object):
     def teardown(self):
         pass
     def test_wham(self):
-        therm_energies, conf_energies = wham.estimate(
+        therm_energies, conf_energies, err = wham.estimate(
             self.state_counts_ind, self.bias_energies, maxiter=50000, maxerr=1.0E-15)
         atol = 1.0E-1
         assert_allclose(therm_energies, self.therm_energies, atol=atol)
