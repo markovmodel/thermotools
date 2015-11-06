@@ -13,7 +13,7 @@ before_install:
   - conda config --set always_yes true
   - conda config --add channels omnia
 install:
-  - conda install python=$TRAVIS_PYTHON_VERSION numpy scipy cython nose msmtools
+  - conda install numpy scipy cython nose msmtools
   - python setup.py develop
   - pip install coveralls
 script:
