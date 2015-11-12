@@ -60,6 +60,11 @@ ext_mbar = Extension(
     sources=["ext/mbar/mbar.pyx", "ext/mbar/_mbar.c", "ext/util/_util.c"],
     include_dirs=[get_include()],
     extra_compile_args=["-O3"])
+ext_mbar_direct = Extension(
+    "thermotools.mbar_direct",
+    sources=["ext/mbar_direct/mbar_direct.pyx", "ext/mbar_direct/_mbar_direct.c", "ext/util/_util.c"],
+    include_dirs=[get_include()],
+    extra_compile_args=["-O3"])
 ext_tram = Extension(
     "thermotools.tram",
     sources=["ext/tram/tram.pyx", "ext/tram/_tram.c", "ext/util/_util.c"],
@@ -96,6 +101,7 @@ setup(
         ext_bar,
         ext_wham,
         ext_mbar,
+        ext_mbar_direct,
         ext_tram,
         ext_tram_direct,
         ext_dtram,
