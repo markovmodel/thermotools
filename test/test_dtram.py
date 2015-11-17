@@ -19,16 +19,19 @@ import thermotools.dtram as dtram
 import numpy as np
 from numpy.testing import assert_allclose
 
+def test_prior():
+    assert_allclose(np.log(dtram.get_prior()), dtram.get_log_prior(), atol=1.0E-16)
+
 def test_lognu_zero_counts():
     nm = 200
     nt = 100
     log_lagrangian_mult = np.zeros(shape=(nt, nm), dtype=np.float64)
     bias_energies = np.zeros(shape=(nt, nm), dtype=np.float64)
     conf_energies = np.zeros(shape=(nm,), dtype=np.float64)
-    C_K_ij = np.zeros(shape=(nt, nm, nm), dtype=np.intc) # C_K_ii = 1.0E-10 (internal prior)
+    C_K_ij = np.zeros(shape=(nt, nm, nm), dtype=np.intc) # C_K_ii may have an internal prior
     scratch_i = np.zeros(shape=(nm,), dtype=np.float64)
     new_log_lagrangian_mult = np.zeros(shape=(nt, nm), dtype=np.float64)
-    ref_log_lagrangian_mult = np.log(1.0E-10*np.ones(shape=(nt, nm), dtype=np.float64)) # (prior)
+    ref_log_lagrangian_mult = np.log(dtram.get_prior() * np.ones(shape=(nt, nm), dtype=np.float64)) # (prior)
     dtram.update_lagrangian_mult(log_lagrangian_mult, bias_energies, conf_energies, C_K_ij, scratch_i, new_log_lagrangian_mult)
     assert_allclose(new_log_lagrangian_mult, ref_log_lagrangian_mult, atol=1.0E-16)
 
@@ -110,7 +113,7 @@ def test_pij_all_factors_unity():
     C_K_ij = np.ones(shape=(nt, nm, nm), dtype=np.intc)
     scratch_M = np.zeros(shape=(nm,), dtype=np.float64)
     p_K_ij = dtram.estimate_transition_matrices(log_lagrangian_mult, bias_energies, conf_energies, C_K_ij, scratch_M)
-    ref_p_ij = np.ones(shape=(nm, nm), dtype=np.float64) + np.eye(nm, dtype=np.float64)*1.0E-10
+    ref_p_ij = np.ones(shape=(nm, nm), dtype=np.float64) + np.eye(nm, dtype=np.float64) * dtram.get_prior()
     ref_p_ij /= ref_p_ij.sum(axis=1)[:, np.newaxis]
     for K in range(nt):
         assert_allclose(p_K_ij[K, :, :], ref_p_ij, atol=1.0E-16)
