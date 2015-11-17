@@ -40,11 +40,6 @@ except ImportError:
     print("pip install numpy")
     sys_exit(1)
 
-ext_lse = Extension(
-    "thermotools.lse",
-    sources=["ext/lse/lse.pyx", "ext/lse/_lse.c"],
-    include_dirs=[get_include()],
-    extra_compile_args=["-O3"])
 ext_bar = Extension(
     "thermotools.bar",
     sources=["ext/bar/bar.pyx", "ext/bar/_bar.c", "ext/util/_util.c"],
@@ -87,7 +82,6 @@ cmd_class.update({'build_ext': build_ext})
 setup(
     cmdclass=cmd_class,
     ext_modules=[
-        ext_lse,
         ext_bar,
         ext_wham,
         ext_mbar,

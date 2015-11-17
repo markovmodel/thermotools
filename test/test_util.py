@@ -187,19 +187,3 @@ def test_restriction():
 ####################################################################################################
 #   transition matrix renormalization
 ####################################################################################################
-
-####################################################################################################
-#   misc functions
-####################################################################################################
-
-def test_mirrored_sigmoid_symmetry():
-    assert_almost_equal(
-        util.mirrored_sigmoid(0.0) + util.mirrored_sigmoid(-0.0), 1.0, decimal=15)
-    assert_almost_equal(
-        util.mirrored_sigmoid(1.0) + util.mirrored_sigmoid(-1.0), 1.0, decimal=15)
-    assert_almost_equal(
-        util.mirrored_sigmoid(10.0) + util.mirrored_sigmoid(-10.0), 1.0, decimal=15)
-    assert_almost_equal(
-        util.mirrored_sigmoid(100.0) + util.mirrored_sigmoid(-100.0), 1.0, decimal=15)
-    assert_almost_equal(
-        util.mirrored_sigmoid(1000.0) + util.mirrored_sigmoid(-1000.0), 1.0, decimal=15)
