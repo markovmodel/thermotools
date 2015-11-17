@@ -19,7 +19,6 @@ r"""
 thermotools is a lowlevel implementation toolbox for the analyis of free energy calculations
 """
 
-from . import lse
 from . import bar
 from . import wham
 from . import mbar

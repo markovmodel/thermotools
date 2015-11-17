@@ -2,7 +2,6 @@
 *.o
 *.so
 thermotools.egg-info
-ext/lse/lse.c
 ext/wham/wham.c
 ext/mbar/mbar.c
 ext/tram/tram.c
