@@ -60,4 +60,4 @@ Upcoming:
     - Replacing lse module by additional functions in util module
     - Fix missing break statement in dTRAM estimation
     - Making dTRAM prior available on Python level
-    - dTRAM code cleanup
+    - WHAM/dTRAM code cleanup
