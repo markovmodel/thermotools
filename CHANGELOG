@@ -53,12 +53,14 @@ Version 0.1.8 (Alpha):
     - Refactoring API
     - Adding function to restrict samples and state sequence to a set of conf states
 
-Upcoming:
+Version 0.1.9 (Alpha):
 
     - Changing bias_energy_sequence axes in util's sample restriction function
     - Minor changes in util's transition count function
     - Replacing lse module by additional functions in util module
     - Fix missing break statement in dTRAM estimation
     - Making dTRAM prior available on Python level
-    - Adding loglikelihood tracking to WHAM
+    - Adding loglikelihood/increment tracking to WHAM/dTRAM
     - WHAM/dTRAM code cleanup
+
+Upcoming:
