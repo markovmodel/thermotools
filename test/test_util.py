@@ -18,7 +18,102 @@
 import thermotools.util as util
 import numpy as np
 from nose.tools import assert_true
-from numpy.testing import assert_array_equal
+from numpy.testing import assert_array_equal, assert_almost_equal
+
+####################################################################################################
+#   sorting
+####################################################################################################
+
+def test_mixed_sort_reverse():
+    # testing against numpy.sort()
+    x = np.ascontiguousarray(np.arange(1000)[::-1].astype(np.float64))
+    y = np.sort(x)
+    util.mixed_sort(x)
+    assert_array_equal(x, y)
+
+def test_mixed_sort_random():
+    # testing against numpy.sort()
+    x = np.random.rand(1000).astype(np.float64)
+    y = np.sort(x)
+    util.mixed_sort(x)
+    assert_array_equal(x, y)
+
+####################################################################################################
+#   direct summation schemes
+####################################################################################################
+
+def test_kahan_summation():
+    # np.sum() fails for this array when unsorted
+    array = np.array([1.0E-8, 1.0, 1.0E+8] * 100000, dtype=np.float64)
+    result = util.kahan_summation(array, sort_array=False)
+    assert_true(result == 10000000100000.001)
+    result = util.kahan_summation(array, sort_array=True, inplace=False)
+    assert_true(result == 10000000100000.001)
+    result = util.kahan_summation(array, sort_array=True, inplace=True)
+    assert_true(result == 10000000100000.001)
+
+####################################################################################################
+#   logspace summation schemes
+####################################################################################################
+
+def test_logsumexp_zeros():
+    N = 10000
+    data = np.zeros(shape=(N,), dtype=np.float64)
+    assert_almost_equal(util.logsumexp(data, inplace=False), np.log(N), decimal=15)
+    assert_almost_equal(util.logsumexp(-data, inplace=False), np.log(N), decimal=15)
+
+def test_logsumexp_converged_geometric_series():
+    data = np.ascontiguousarray(np.arange(10000)[::-1].astype(np.float64))
+    assert_almost_equal(
+        util.logsumexp(-data, inplace=False, sort_array=False, use_kahan=False),
+        0.45867514538708193, decimal=15)
+    assert_almost_equal(
+        util.logsumexp(-data, inplace=False, sort_array=False, use_kahan=True),
+        0.45867514538708193, decimal=15)
+    assert_almost_equal(
+        util.logsumexp(-data, inplace=False, sort_array=True, use_kahan=False),
+        0.45867514538708193, decimal=15)
+    assert_almost_equal(
+        util.logsumexp(-data, inplace=False, sort_array=True, use_kahan=True),
+        0.45867514538708193, decimal=15)
+    assert_almost_equal(
+        util.logsumexp(-data, inplace=True, sort_array=True, use_kahan=True),
+        0.45867514538708193, decimal=15)
+    
+def test_logsumexp_truncated_diverging_geometric_series():
+    data = np.ascontiguousarray(np.arange(10000)[::-1].astype(np.float64))
+    assert_almost_equal(
+        util.logsumexp(data, inplace=False, sort_array=False, use_kahan=False),
+        9999.4586751453862, decimal=15)
+    assert_almost_equal(
+        util.logsumexp(data, inplace=False, sort_array=False, use_kahan=True),
+        9999.4586751453862, decimal=15)
+    assert_almost_equal(
+        util.logsumexp(data, inplace=False, sort_array=True, use_kahan=False),
+        9999.4586751453862, decimal=15)
+    assert_almost_equal(
+        util.logsumexp(data, inplace=False, sort_array=True, use_kahan=True),
+        9999.4586751453862, decimal=15)
+    assert_almost_equal(
+        util.logsumexp(data, inplace=True, sort_array=True, use_kahan=True),
+        9999.4586751453862, decimal=15)
+
+def test_logsumexp_pair():
+    assert_almost_equal(util.logsumexp_pair(0.0, 0.0), np.log(2.0), decimal=15)
+    assert_almost_equal(util.logsumexp_pair(1.0, 1.0), 1.0 + np.log(2.0), decimal=15)
+    assert_almost_equal(util.logsumexp_pair(10.0, 10.0), 10.0 + np.log(2.0), decimal=15)
+    assert_almost_equal(util.logsumexp_pair(100.0, 100.0), 100.0 + np.log(2.0), decimal=15)
+    assert_almost_equal(util.logsumexp_pair(1000.0, 1000.0), 1000.0 + np.log(2.0), decimal=15)
+    assert_almost_equal(util.logsumexp_pair(10.0, 0.0), 10.000045398899218, decimal=15)
+    assert_almost_equal(util.logsumexp_pair(0.0, 10.0), 10.000045398899218, decimal=15)
+    assert_almost_equal(util.logsumexp_pair(100.0, 0.0), 100.0, decimal=15)
+    assert_almost_equal(util.logsumexp_pair(0.0, 100.0), 100.0, decimal=15)
+    assert_almost_equal(util.logsumexp_pair(1000.0, 0.0), 1000.0, decimal=15)
+    assert_almost_equal(util.logsumexp_pair(0.0, 1000.0), 1000.0, decimal=15)
+
+####################################################################################################
+#   counting states and transitions
+####################################################################################################
 
 def test_break_points_us_like_trajs():
     X = 2000
@@ -78,22 +173,17 @@ def test_restriction():
     M = 100
     X = 1000
     state_sequence = np.array([[0, i] for i in range(M)] * 10, dtype=np.intc)
-    bias_energy_sequence = np.array([[i] * T for i in range(X)], dtype=np.float64)
+    bias_energy_sequence = np.ascontiguousarray(
+        np.array([[i] * T for i in range(X)], dtype=np.float64).transpose())
     cset = [i for i in range(M) if i % 2 == 0]
     ref_state_sequence = np.array([[0, i] for i in range(int(M / 2))] * 10, dtype=np.intc)
-    ref_bias_energy_sequence = np.array([[i] * T for i in range(X) if i % 2 == 0], dtype=np.float64)
+    ref_bias_energy_sequence = np.ascontiguousarray(
+        np.array([[i] * T for i in range(X) if i % 2 == 0], dtype=np.float64).transpose())
     new_state_sequence, new_bias_energy_sequence = util.restrict_samples_to_cset(
         state_sequence, bias_energy_sequence, cset)
     assert_array_equal(new_state_sequence, ref_state_sequence)
     assert_array_equal(new_bias_energy_sequence, ref_bias_energy_sequence)
 
-
-
-
-
-
-
-
-
-
-
+####################################################################################################
+#   transition matrix renormalization
+####################################################################################################

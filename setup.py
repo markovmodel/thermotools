@@ -40,24 +40,19 @@ except ImportError:
     print("pip install numpy")
     sys_exit(1)
 
-ext_lse = Extension(
-    "thermotools.lse",
-    sources=["ext/lse/lse.pyx", "ext/lse/_lse.c"],
-    include_dirs=[get_include()],
-    extra_compile_args=["-O3"])
 ext_bar = Extension(
     "thermotools.bar",
-    sources=["ext/bar/bar.pyx", "ext/bar/_bar.c", "ext/lse/_lse.c"],
+    sources=["ext/bar/bar.pyx", "ext/bar/_bar.c", "ext/util/_util.c"],
     include_dirs=[get_include()],
     extra_compile_args=["-O3"])
 ext_wham = Extension(
     "thermotools.wham",
-    sources=["ext/wham/wham.pyx", "ext/wham/_wham.c", "ext/lse/_lse.c"],
+    sources=["ext/wham/wham.pyx", "ext/wham/_wham.c", "ext/util/_util.c"],
     include_dirs=[get_include()],
     extra_compile_args=["-O3"])
 ext_mbar = Extension(
     "thermotools.mbar",
-    sources=["ext/mbar/mbar.pyx", "ext/mbar/_mbar.c", "ext/lse/_lse.c"],
+    sources=["ext/mbar/mbar.pyx", "ext/mbar/_mbar.c", "ext/util/_util.c"],
     include_dirs=[get_include()],
     extra_compile_args=["-O3"])
 # ext_tram = Extension(
@@ -67,7 +62,7 @@ ext_mbar = Extension(
 #     extra_compile_args=["-O3"])
 ext_dtram = Extension(
     "thermotools.dtram",
-    sources=["ext/dtram/dtram.pyx", "ext/dtram/_dtram.c", "ext/lse/_lse.c"],
+    sources=["ext/dtram/dtram.pyx", "ext/dtram/_dtram.c", "ext/util/_util.c"],
     include_dirs=[get_include()],
     extra_compile_args=["-O3"])
 # ext_xtram = Extension(
@@ -87,7 +82,6 @@ cmd_class.update({'build_ext': build_ext})
 setup(
     cmdclass=cmd_class,
     ext_modules=[
-        ext_lse,
         ext_bar,
         ext_wham,
         ext_mbar,
