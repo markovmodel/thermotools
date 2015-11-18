@@ -60,5 +60,5 @@ Upcoming:
     - Replacing lse module by additional functions in util module
     - Fix missing break statement in dTRAM estimation
     - Making dTRAM prior available on Python level
-    - Adding loglikelihood tracking to WHAM
+    - Adding loglikelihood/increment tracking to WHAM/dTRAM
     - WHAM/dTRAM code cleanup
