@@ -32,7 +32,7 @@ def test_lognu_zero_counts():
     scratch_i = np.zeros(shape=(nm,), dtype=np.float64)
     new_log_lagrangian_mult = np.zeros(shape=(nt, nm), dtype=np.float64)
     ref_log_lagrangian_mult = np.log(dtram.get_prior() * np.ones(shape=(nt, nm), dtype=np.float64))
-    dtram.update_lagrangian_mult(
+    dtram.update_log_lagrangian_mult(
         log_lagrangian_mult, bias_energies, conf_energies, C_K_ij,
         scratch_i, new_log_lagrangian_mult)
     assert_allclose(new_log_lagrangian_mult, ref_log_lagrangian_mult, atol=1.0E-16)
@@ -47,7 +47,7 @@ def test_lognu_all_factors_unity():
     scratch_i = np.zeros(shape=(nm,), dtype=np.float64)
     new_log_lagrangian_mult = np.zeros(shape=(nt, nm), dtype=np.float64)
     ref_log_lagrangian_mult = np.log(nm*np.ones(shape=(nt, nm), dtype=np.float64))
-    dtram.update_lagrangian_mult(
+    dtram.update_log_lagrangian_mult(
         log_lagrangian_mult, bias_energies, conf_energies, C_K_ij,
         scratch_i, new_log_lagrangian_mult)
     assert_allclose(new_log_lagrangian_mult, ref_log_lagrangian_mult, atol=1.0E-16)
@@ -64,7 +64,7 @@ def test_lognu_K_range():
     scratch_i = np.zeros(shape=(nm,), dtype=np.float64)
     new_log_lagrangian_mult = np.zeros(shape=(nt, nm), dtype=np.float64)
     ref_log_lagrangian_mult = np.log(nm*np.ones(shape=(nt, nm), dtype=np.float64))
-    dtram.update_lagrangian_mult(
+    dtram.update_log_lagrangian_mult(
         log_lagrangian_mult, bias_energies, conf_energies, C_K_ij,
         scratch_i, new_log_lagrangian_mult)
     assert_allclose(new_log_lagrangian_mult, ref_log_lagrangian_mult, atol=1.0E-16)
