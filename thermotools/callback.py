@@ -19,7 +19,9 @@ r"""
 this module provides a custom exception to interrupt estimation runs via callback functions
 """
 
-__all__ = ['CallbackInterrupt']
+__all__ = [
+    'CallbackInterrupt',
+    'generic_callback_stop']
 
 class CallbackInterrupt(Exception):
     r"""
@@ -29,3 +31,10 @@ class CallbackInterrupt(Exception):
         self.msg = msg
     def __str__(self):
         return "[CALLBACKINTERRUPT] %s" % self.msg
+
+def generic_callback_stop(**kwargs):
+    r"""
+    This is a generic callback serving as example and for testing purposes: it just stops
+    the estimation at first evaluation of the callback function.
+    """
+    raise CallbackInterrupt("STOP")
