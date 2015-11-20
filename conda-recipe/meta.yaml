@@ -1,30 +1,29 @@
 package:
   name: thermotools
-  version: "0.1.9"
+  version: !!str dev
 
 source:
-  fn: thermotools-0.1.9.tar.gz
-  url: https://pypi.python.org/packages/source/t/thermotools/thermotools-0.1.9.tar.gz
+  path: ..
 
 requirements:
   build:
     - python
     - setuptools
     - cython >=0.20
-    - numpy >=1.7
+    - numpy x.x
     - scipy >=0.11
     - msmtools >=1.1
 
   run:
     - python
-    - numpy >=1.7
+    - numpy x.x
     - scipy >=0.11
     - msmtools >=1.1
 
 test:
   requires:
     - nose
-    - coverage
+    - coverage ==4
   imports:
     - thermotools
 
