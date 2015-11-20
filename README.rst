@@ -20,7 +20,7 @@ Installation
 
 Using conda (recommended)::
 
-   conda install -c https://conda.binstar.org/omnia thermotools
+   conda install -c omnia thermotools
 
 Using pip from PyPI::
 

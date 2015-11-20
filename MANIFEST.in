@@ -1,6 +1,5 @@
 include COPYING
 include COPYING.LESSER
-include ext/lse/_lse.h
 include ext/bar/_bar.h
 include ext/wham/_wham.h
 include ext/mbar/_mbar.h

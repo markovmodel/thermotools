@@ -78,7 +78,8 @@ class TestThreeTwoModel(object):
         cls.conf_partition_function = np.exp(-cls.biased_conf_energies)
         cls.partition_function = cls.conf_partition_function.sum(axis=1)
         cls.therm_energies = -np.log(cls.partition_function)
-        cls.biased_stationary_distribution = np.exp(-cls.bias_energies) * cls.stationary_distribution[np.newaxis, :] / cls.partition_function[:, np.newaxis]
+        cls.biased_stationary_distribution = np.exp(-cls.bias_energies) * \
+            cls.stationary_distribution[np.newaxis, :] / cls.partition_function[:, np.newaxis]
         metropolis = cls.energy[np.newaxis, :] - cls.energy[:, np.newaxis]
         metropolis[(metropolis < 0.0)] = 0.0
         selection = np.array([[0.5, 0.5, 0.0], [0.5, 0.0, 0.5], [0.0, 0.5, 0.5]], dtype=np.float64)
@@ -100,7 +101,7 @@ class TestThreeTwoModel(object):
     def teardown(self):
         pass
     def test_wham(self):
-        therm_energies, conf_energies = wham.estimate(
+        therm_energies, conf_energies, err, lll = wham.estimate(
             self.state_counts_ind, self.bias_energies, maxiter=50000, maxerr=1.0E-15)
         atol = 1.0E-1
         assert_allclose(therm_energies, self.therm_energies, atol=atol)
