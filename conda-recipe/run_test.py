@@ -36,6 +36,10 @@ nose_run = [
     "--with-doctest",
     "--doctest-options=+NORMALIZE_WHITESPACE,+ELLIPSIS"]
 
+shutil.copyfile(
+    os.path.join(src_dir, ".coveragerc"),
+    os.path.join(os.getcwd(), ".coveragerc"))
+
 res = subprocess.call(nose_run)
 
 # move .coverage file to git clone on Travis CI
