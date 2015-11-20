@@ -65,4 +65,5 @@ Version 0.1.9 (Alpha):
 
 Upcoming:
 
-    - replace _MS_VER-dependent check by a defined check for INFINITY and NAN in _util.h
+    - Replace _MS_VER-dependent check by a defined check for INFINITY and NAN in _util.h
+    - Adding a callback to WHAM and dTRAM

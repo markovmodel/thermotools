@@ -16,34 +16,25 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-thermotools is a lowlevel implementation toolbox for the analyis of free energy calculations
+this module provides a custom exception to interrupt estimation runs via callback functions
 """
 
-from . import bar
-from . import wham
-from . import mbar
-#from . import tram
-from . import dtram
-#from . import xtram
-from . import util
+__all__ = [
+    'CallbackInterrupt',
+    'generic_callback_stop']
 
-from .callback import CallbackInterrupt
+class CallbackInterrupt(Exception):
+    r"""
+    Exception class estimation interruptions via callback functions.
+    """
+    def __init__(self, msg):
+        self.msg = msg
+    def __str__(self):
+        return "[CALLBACKINTERRUPT] %s" % self.msg
 
-from ._version import get_versions
-
-__author__ = "Christoph Wehmeyer, Antonia Mey"
-__copyright__ = "Copyright 2015 Computational Molecular Biology Group, FU-Berlin"
-__credits__ = [
-    "Christoph Wehmeyer",
-    "Antonia Mey",
-    "Fabian Paul",
-    "Benjamin Trendelkamp-Schroer",
-    "Martin Scherer",
-    "Hao Wu",
-    "John D. Chodera",
-    "Frank Noe"],
-__license__ = "LGPLv3+"
-__version__ = get_versions()['version']
-__email__ = "christoph.wehmeyer@fu-berlin.de"
-
-del get_versions
+def generic_callback_stop(**kwargs):
+    r"""
+    This is a generic callback serving as example and for testing purposes: it just stops
+    the estimation at first evaluation of the callback function.
+    """
+    raise CallbackInterrupt("STOP")
