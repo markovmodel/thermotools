@@ -98,6 +98,8 @@ setup(
         ext_tram,
         ext_dtram,
         #ext_xtram,
+        ext_mbar_direct,
+        ext_tram_direct,
         ext_util,
         ],
     name='thermotools',
