@@ -26,6 +26,9 @@ from . import tram
 from . import dtram
 #from . import xtram
 from . import util
+
+from .callback import CallbackInterrupt
+
 from ._version import get_versions
 
 __author__ = "Christoph Wehmeyer, Antonia Mey, Fabian Paul"
