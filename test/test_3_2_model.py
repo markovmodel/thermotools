@@ -80,7 +80,8 @@ class TestThreeTwoModel(object):
         cls.conf_partition_function = np.exp(-cls.biased_conf_energies)
         cls.partition_function = cls.conf_partition_function.sum(axis=1)
         cls.therm_energies = -np.log(cls.partition_function)
-        cls.biased_stationary_distribution = np.exp(-cls.bias_energies) * cls.stationary_distribution[np.newaxis, :] / cls.partition_function[:, np.newaxis]
+        cls.biased_stationary_distribution = np.exp(-cls.bias_energies) * \
+            cls.stationary_distribution[np.newaxis, :] / cls.partition_function[:, np.newaxis]
         metropolis = cls.energy[np.newaxis, :] - cls.energy[:, np.newaxis]
         metropolis[(metropolis < 0.0)] = 0.0
         selection = np.array([[0.5, 0.5, 0.0], [0.5, 0.0, 0.5], [0.0, 0.5, 0.5]], dtype=np.float64)
@@ -102,7 +103,7 @@ class TestThreeTwoModel(object):
     def teardown(self):
         pass
     def test_wham(self):
-        therm_energies, conf_energies = wham.estimate(
+        therm_energies, conf_energies, err, lll = wham.estimate(
             self.state_counts_ind, self.bias_energies, maxiter=50000, maxerr=1.0E-15)
         atol = 1.0E-1
         assert_allclose(therm_energies, self.therm_energies, atol=atol)
@@ -110,7 +111,7 @@ class TestThreeTwoModel(object):
     def test_mbar(self):
         bias_energy_sequence = np.ascontiguousarray(
             self.bias_energies[:, self.conf_state_sequence_ind])
-        therm_energies, conf_energies, biased_conf_energies = mbar.estimate(
+        therm_energies, conf_energies, biased_conf_energies, err_history = mbar.estimate(
             self.state_counts_ind.sum(axis=1),
             bias_energy_sequence,
             self.conf_state_sequence_ind,
@@ -130,13 +131,10 @@ class TestThreeTwoModel(object):
         assert_allclose(conf_energies, self.conf_energies, atol=maxerr)
         assert_allclose(transition_matrices, self.transition_matrices, atol=maxerr)
     def test_tram(self):
-        logL_history = []
-        def logL_logger(**kwargs):
-            logL_history.append(kwargs['log_likelihood'])
         bias_energies = np.ascontiguousarray(self.bias_energies[:,self.conf_state_sequence])
-        biased_conf_energies, conf_energies, therm_energies, log_lagrangian_mult = tram_direct.estimate(
+        biased_conf_energies, conf_energies, therm_energies, log_lagrangian_mult, error_history, logL_history = tram.estimate(
             self.count_matrices, self.state_counts, bias_energies, self.conf_state_sequence,
-            maxiter=10000, maxerr=1.0E-12, call_back=logL_logger)
+            maxiter=10000, maxerr=1.0E-12, lll_out=10)
         transition_matrices = tram.estimate_transition_matrices(
             log_lagrangian_mult, biased_conf_energies, self.count_matrices, None)
         maxerr = 1.0E-1
@@ -145,4 +143,4 @@ class TestThreeTwoModel(object):
         assert_allclose(therm_energies, self.therm_energies, atol=maxerr)
         assert_allclose(transition_matrices, self.transition_matrices, atol=maxerr)
         # lower bound on the log-likelihood must be maximal at convergence
-        assert np.all(logL_history[-1]+1.E-5>=np.array(logL_history[0:-1]))
+        assert np.all(logL_history[-1]+1.E-5>=logL_history[0:-1])

@@ -15,8 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from thermotools.wham import update_conf_energies, update_therm_energies
-from thermotools.lse import logsumexp
+import thermotools.wham as wham
 import numpy as np
 from numpy.testing import assert_allclose
 
@@ -28,7 +27,7 @@ def test_wham_fk_with_zeros():
     scratch = np.zeros(shape=(M,), dtype=np.float64)
     therm_energies = np.zeros(shape=(T,), dtype=np.float64)
     ref = -np.log(M)
-    update_therm_energies(conf_energies, bias_energies, scratch, therm_energies)
+    wham.update_therm_energies(conf_energies, bias_energies, scratch, therm_energies)
     assert_allclose(therm_energies, ref, atol=1.0E-15)
 
 def test_wham_fk_with_ascending_K():
@@ -39,7 +38,7 @@ def test_wham_fk_with_ascending_K():
     scratch = np.zeros(shape=(M,), dtype=np.float64)
     therm_energies = np.zeros(shape=(T,), dtype=np.float64)
     ref = -np.log(np.arange(T).astype(np.float64) + 1)
-    update_therm_energies(conf_energies, bias_energies, scratch, therm_energies)
+    wham.update_therm_energies(conf_energies, bias_energies, scratch, therm_energies)
     assert_allclose(therm_energies, ref, atol=1.0E-15)
 
 def test_wham_fi_with_zeros():
@@ -48,13 +47,14 @@ def test_wham_fi_with_zeros():
     N_K_i = np.ones(shape=(T, M), dtype=np.float64)
     log_therm_state_counts = np.log(N_K_i.sum(axis=1))
     log_conf_state_counts = np.log(N_K_i.sum(axis=0))
-    conf_energies = np.zeros(shape=(M,), dtype=np.float64)
-    bias_energies = np.zeros(shape=(T, M), dtype=np.float64)
-    scratch_T = np.zeros(shape=(T,), dtype=np.float64)
     therm_energies = np.zeros(shape=(T,), dtype=np.float64)
-    ref = 0.0
-    update_conf_energies(log_therm_state_counts, log_conf_state_counts, therm_energies, bias_energies, scratch_T, conf_energies)
-    assert_allclose(conf_energies, ref, atol=1.0E-15)
+    bias_energies = np.zeros(shape=(T, M), dtype=np.float64)
+    conf_energies = np.zeros(shape=(M,), dtype=np.float64)
+    scratch_T = np.zeros(shape=(T,), dtype=np.float64)
+    wham.update_conf_energies(
+        log_therm_state_counts, log_conf_state_counts, therm_energies, bias_energies,
+        scratch_T, conf_energies)
+    assert_allclose(conf_energies, np.log(M), atol=1.0E-15)
 
 def test_wham_fi_with_ascending_K():
     T = 5
@@ -63,10 +63,12 @@ def test_wham_fi_with_ascending_K():
     log_therm_state_counts = np.log(N_K_i.sum(axis=1))
     log_conf_state_counts = np.log(N_K_i.sum(axis=0))
     conf_energies = np.zeros(shape=(M,), dtype=np.float64)
-    bias_energies = np.log(np.array([[i*M for i in range(1, M + 1)] for K in range(T)], dtype=np.float64))
+    bias_energies = np.log(
+        np.array([[i*M for i in range(1, M + 1)] for K in range(T)], dtype=np.float64))
     scratch_T = np.zeros(shape=(T,), dtype=np.float64)
     therm_energies = np.zeros(shape=(T,), dtype=np.float64)
-    ref = -np.log((np.arange(M).astype(np.float64) + 1) / (0.5 * M * (M + 1)))
-    ref -= ref.min() 
-    update_conf_energies(log_therm_state_counts, log_conf_state_counts, therm_energies, bias_energies, scratch_T, conf_energies)
+    ref = -np.log((np.arange(M).astype(np.float64) + 1))
+    wham.update_conf_energies(
+        log_therm_state_counts, log_conf_state_counts, therm_energies, bias_energies,
+        scratch_T, conf_energies)
     assert_allclose(conf_energies, ref, atol=1.0E-15)
