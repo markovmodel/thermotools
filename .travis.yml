@@ -12,14 +12,13 @@ before_install:
   - tools/install_miniconda.sh
   - conda config --set always_yes true
   - conda config --add channels omnia
+  - conda install conda-build
 install:
-  - conda install numpy scipy cython nose msmtools
-  - export CC=gcc-4.8
-  - python setup.py develop
-  - pip install coveralls
+- conda build -q conda-recipe
 script:
   - nosetests --with-coverage --cover-package=thermotools
 after_success:
+  - pip install coveralls
   - coveralls
 deploy:
   provider: pypi
