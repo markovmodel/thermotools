@@ -110,7 +110,7 @@ class TestThreeTwoModel(object):
     def test_mbar(self):
         bias_energy_sequence = np.ascontiguousarray(
             self.bias_energies[:, self.conf_state_sequence_ind])
-        therm_energies, conf_energies, biased_conf_energies = mbar.estimate(
+        therm_energies, conf_energies, biased_conf_energies, err_history = mbar.estimate(
             self.state_counts_ind.sum(axis=1),
             bias_energy_sequence,
             self.conf_state_sequence_ind,
