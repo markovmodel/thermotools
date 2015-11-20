@@ -129,7 +129,6 @@ class TestThreeTwoModel(object):
         assert_allclose(conf_energies, self.conf_energies, atol=maxerr)
         assert_allclose(transition_matrices, self.transition_matrices, atol=maxerr)
     def test_tram(self):
-        logL_history = []
         bias_energies = np.ascontiguousarray(self.bias_energies[:,self.conf_state_sequence])
         biased_conf_energies, conf_energies, therm_energies, log_lagrangian_mult, error_history, logL_history = tram.estimate(
             self.count_matrices, self.state_counts, bias_energies, self.conf_state_sequence,
@@ -142,4 +141,4 @@ class TestThreeTwoModel(object):
         assert_allclose(therm_energies, self.therm_energies, atol=maxerr)
         assert_allclose(transition_matrices, self.transition_matrices, atol=maxerr)
         # lower bound on the log-likelihood must be maximal at convergence
-        assert np.all(logL_history[-1]+1.E-5>=np.array(logL_history[0:-1]))
+        assert np.all(logL_history[-1]+1.E-5>=logL_history[0:-1])
