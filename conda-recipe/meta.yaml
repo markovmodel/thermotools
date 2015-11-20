@@ -1,10 +1,9 @@
 package:
   name: thermotools
-  version: "0.1.9"
+  version: !!str dev
 
 source:
-  fn: thermotools-0.1.9.tar.gz
-  url: https://pypi.python.org/packages/source/t/thermotools/thermotools-0.1.9.tar.gz
+  path: ..
 
 requirements:
   build:
@@ -24,7 +23,7 @@ requirements:
 test:
   requires:
     - nose
-    - coverage
+    - coverage ==4
   imports:
     - thermotools
 

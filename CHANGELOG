@@ -67,3 +67,4 @@ Upcoming:
 
     - Replace _MS_VER-dependent check by a defined check for INFINITY and NAN in _util.h
     - Adding a callback to WHAM and dTRAM
+    - Refactoring continuous integration
