@@ -5,7 +5,7 @@ from six.moves import range
 import numpy as np
 import msmtools
 import thermotools.tram as tram
-import thermotools.tram_direct as tram_direct
+#import thermotools.tram_direct as tram_direct
 
 def tower_sample(distribution):
     cdf = np.cumsum(distribution)
