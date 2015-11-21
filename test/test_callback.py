@@ -32,9 +32,9 @@ def test_callback_interrupt():
     assert_raises(CallbackInterrupt, generic_callback_stop)
     try:
         generic_callback_stop()
-    except CallbackInterrupt, e:
-        assert_true(e.msg == "STOP")
-        assert_true(e.__str__() == "[CALLBACKINTERRUPT] STOP")
+    except CallbackInterrupt as ci:
+        assert_true(ci.msg == "STOP")
+        assert_true(ci.__str__() == "[CALLBACKINTERRUPT] STOP")
 
 
 def test_wham_stop():
