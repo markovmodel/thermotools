@@ -63,8 +63,10 @@ Version 0.1.9 (Alpha):
     - Adding loglikelihood/increment tracking to WHAM/dTRAM
     - WHAM/dTRAM code cleanup
 
-Upcoming:
+Version 0.1.10 (Alpha):
 
     - Replace _MS_VER-dependent check by a defined check for INFINITY and NAN in _util.h
     - Adding a callback to WHAM and dTRAM
     - Refactoring continuous integration
+
+Upcoming:
