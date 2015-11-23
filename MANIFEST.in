@@ -1,11 +1,9 @@
 include COPYING
 include COPYING.LESSER
-include ext/bar/_bar.h
-include ext/wham/_wham.h
-include ext/mbar/_mbar.h
-include ext/tram/_tram.h
-include ext/dtram/_dtram.h
-include ext/xtram/_xtram.h
-include ext/util/_util.h
+
+# versioneer files
 include versioneer.py
 include thermotools/_version.py
+
+# include extension code
+recursive-include ext *.pyx *.c *.h
