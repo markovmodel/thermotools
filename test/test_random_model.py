@@ -6,6 +6,7 @@ import numpy as np
 import msmtools
 import thermotools.tram as tram
 import thermotools.tram_direct as tram_direct
+import sys
 
 def tower_sample(distribution):
     cdf = np.cumsum(distribution)
@@ -82,13 +83,14 @@ class TestRandom(unittest.TestCase):
         transition_matrices = tram.estimate_transition_matrices(
             log_lagrangian_mult, biased_conf_energies, self.count_matrices, None)
 
+        # check expectations (do a trivial test: recompute conf_energies with different functions)
         mu = np.zeros(shape=self.conf_state_sequence.shape[0], dtype=np.float64)
         tram.get_unbiased_pointwise_free_energies(log_lagrangian_mult, biased_conf_energies,
             self.count_matrices, self.bias_energies_sh, self.conf_state_sequence, self.state_counts,
-            conf_energies, None, None, mu)
-        pmf = np.zeros(shape=self.conf_state_sequence.shape[0], dtype=np.float64)
+            None, None, mu)
+        pmf = np.zeros(shape=4, dtype=np.float64)
         tram.get_unbiased_user_free_energies(mu, self.conf_state_sequence, pmf)
-        assert np.allclose(pmf-np.min(pmf), conf_energies-np.min(conf_energies))
+        assert np.allclose(pmf, conf_energies)
 
         biased_conf_energies -= np.min(biased_conf_energies)
         bias_energies =  self.bias_energies - np.min(self.bias_energies)
