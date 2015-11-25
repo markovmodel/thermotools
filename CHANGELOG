@@ -70,3 +70,5 @@ Version 0.1.10 (Alpha):
     - Refactoring continuous integration
 
 Upcoming:
+
+    - Fixing MANIFEST.in source distribution
