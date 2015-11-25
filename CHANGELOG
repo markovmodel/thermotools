@@ -69,8 +69,12 @@ Version 0.1.10 (Alpha): [broken]
     - Adding a callback to WHAM and dTRAM
     - Refactoring continuous integration
 
-Version 0.1.11 (Alpha):
+Version 0.1.11 (Alpha): [broken on Windows]
 
     - Fixing MANIFEST.in for building source distribution
+
+Version 0.1.12 (Alpha):
+
+    - Fixing Windows-related bug
 
 Upcoming:
