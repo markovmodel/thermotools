@@ -85,7 +85,7 @@ class TestRandom(unittest.TestCase):
 
         # check expectations (do a trivial test: recompute conf_energies with different functions)
         mu = np.zeros(shape=self.conf_state_sequence.shape[0], dtype=np.float64)
-        tram.get_unbiased_pointwise_free_energies(log_lagrangian_mult, biased_conf_energies,
+        tram.get_pointwise_unbiased_free_energies(log_lagrangian_mult, biased_conf_energies,
             self.count_matrices, self.bias_energies_sh, self.conf_state_sequence, self.state_counts,
             None, None, mu)
         pmf = np.zeros(shape=4, dtype=np.float64)
