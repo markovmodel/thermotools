@@ -6,10 +6,10 @@ thermotools
    :target: https://travis-ci.org/markovmodel/thermotools
 .. image:: https://badge.fury.io/py/thermotools.svg
    :target: https://pypi.python.org/pypi/thermotools
-.. image:: https://binstar.org/omnia/thermotools/badges/installer/conda.svg
-   :target: https://conda.binstar.org/omnia
-.. image:: https://binstar.org/omnia/thermotools/badges/version.svg
-   :target: https://binstar.org/omnia/thermotools
+.. image:: https://anaconda.org/xavier/binstar/badges/downloads.svg
+   :target: https://anaconda.org/omnia/thermotools
+.. image:: https://anaconda.org/omnia/thermotools/badges/installer/conda.svg
+   :target: https://conda.anaconda.org/omnia
 
 This Python package provides a lowlevel implementation of (transition-based) reweighting analyis
 methods.
@@ -29,8 +29,3 @@ Using pip from PyPI::
 Using pip from github (this will install the latest development version)::
 
    pip install git+https://github.com/markovmodel/thermotools.git@devel
-
-If the pip installation fails due to missing packages, you need to install (or upgrade) them manually::
-
-   pip install --upgrade cython
-   pip install --upgrade numpy
