@@ -21,77 +21,58 @@ r"""
 thermotools is a lowlevel implementation toolbox for the analyis of free energy calculations
 """
 
-from setuptools import setup
-from distutils.core import Extension
-from sys import exit as sys_exit
+from setuptools import setup, Extension
 import versioneer
 
-try:
-    from Cython.Distutils import build_ext
-except ImportError:
-    print("ERROR - please install the cython dependency manually:")
-    print("pip install cython")
-    sys_exit(1)
-
-try:
+def extensions():
     from numpy import get_include
-except ImportError:
-    print("ERROR - please install the numpy dependency manually:")
-    print("pip install numpy")
-    sys_exit(1)
-
-ext_bar = Extension(
-    "thermotools.bar",
-    sources=["ext/bar/bar.pyx", "ext/bar/_bar.c", "ext/util/_util.c"],
-    include_dirs=[get_include()],
-    extra_compile_args=["-O3"])
-ext_wham = Extension(
-    "thermotools.wham",
-    sources=["ext/wham/wham.pyx", "ext/wham/_wham.c", "ext/util/_util.c"],
-    include_dirs=[get_include()],
-    extra_compile_args=["-O3"])
-ext_mbar = Extension(
-    "thermotools.mbar",
-    sources=["ext/mbar/mbar.pyx", "ext/mbar/_mbar.c", "ext/util/_util.c"],
-    include_dirs=[get_include()],
-    extra_compile_args=["-O3"])
-ext_tram = Extension(
-    "thermotools.tram",
-    sources=["ext/tram/tram.pyx", "ext/tram/_tram.c", "ext/util/_util.c"],
-    include_dirs=[get_include()],
-    extra_compile_args=["-O3"])
-ext_dtram = Extension(
-    "thermotools.dtram",
-    sources=["ext/dtram/dtram.pyx", "ext/dtram/_dtram.c", "ext/util/_util.c"],
-    include_dirs=[get_include()],
-    extra_compile_args=["-O3"])
-# ext_xtram = Extension(
-#     "thermotools.xtram",
-#     sources=["ext/xtram/xtram.pyx", "ext/xtram/_xtram.c", "ext/lse/_lse.c"],
-#     include_dirs=[get_include()],
-#     extra_compile_args=["-O3"])
-ext_mbar_direct = Extension(
-    "thermotools.mbar_direct",
-    sources=["ext/mbar_direct/mbar_direct.pyx", "ext/mbar_direct/_mbar_direct.c", "ext/util/_util.c"],
-    include_dirs=[get_include()],
-    extra_compile_args=["-O3"])
-ext_tram_direct = Extension(
-    "thermotools.tram_direct",
-    sources=["ext/tram_direct/tram_direct.pyx", "ext/tram_direct/_tram_direct.c", "ext/util/_util.c"],
-    include_dirs=[get_include()],
-    extra_compile_args=["-O3"])
-ext_util = Extension(
-    "thermotools.util",
-    sources=["ext/util/util.pyx", "ext/util/_util.c"],
-    include_dirs=[get_include()],
-    extra_compile_args=["-O3"])
-
-cmd_class = versioneer.get_cmdclass()
-cmd_class.update({'build_ext': build_ext})
-
-setup(
-    cmdclass=cmd_class,
-    ext_modules=[
+    from Cython.Build import cythonize
+    ext_bar = Extension(
+        "thermotools.bar",
+        sources=["ext/bar/bar.pyx", "ext/bar/_bar.c", "ext/util/_util.c"],
+        include_dirs=[get_include()],
+        extra_compile_args=["-O3", "-std=c99"])
+    ext_wham = Extension(
+        "thermotools.wham",
+        sources=["ext/wham/wham.pyx", "ext/wham/_wham.c", "ext/util/_util.c"],
+        include_dirs=[get_include()],
+        extra_compile_args=["-O3", "-std=c99"])
+    ext_mbar = Extension(
+        "thermotools.mbar",
+        sources=["ext/mbar/mbar.pyx", "ext/mbar/_mbar.c", "ext/util/_util.c"],
+        include_dirs=[get_include()],
+        extra_compile_args=["-O3", "-std=c99"])
+    ext_tram = Extension(
+        "thermotools.tram",
+        sources=["ext/tram/tram.pyx", "ext/tram/_tram.c", "ext/util/_util.c"],
+        include_dirs=[get_include()],
+        extra_compile_args=["-O3", "-std=c99"])
+    ext_dtram = Extension(
+        "thermotools.dtram",
+        sources=["ext/dtram/dtram.pyx", "ext/dtram/_dtram.c", "ext/util/_util.c"],
+        include_dirs=[get_include()],
+        extra_compile_args=["-O3", "-std=c99"])
+    # ext_xtram = Extension(
+    #     "thermotools.xtram",
+    #     sources=["ext/xtram/xtram.pyx", "ext/xtram/_xtram.c", "ext/lse/_lse.c"],
+    #     include_dirs=[get_include()],
+    #     extra_compile_args=["-O3", "-std=c99"])
+    ext_mbar_direct = Extension(
+        "thermotools.mbar_direct",
+        sources=["ext/mbar_direct/mbar_direct.pyx", "ext/mbar_direct/_mbar_direct.c", "ext/util/_util.c"],
+        include_dirs=[get_include()],
+        extra_compile_args=["-O3", "-std=c99"])
+    ext_tram_direct = Extension(
+        "thermotools.tram_direct",
+        sources=["ext/tram_direct/tram_direct.pyx", "ext/tram_direct/_tram_direct.c", "ext/util/_util.c"],
+        include_dirs=[get_include()],
+        extra_compile_args=["-O3", "-std=c99"])
+    ext_util = Extension(
+        "thermotools.util",
+        sources=["ext/util/util.pyx", "ext/util/_util.c"],
+        include_dirs=[get_include()],
+        extra_compile_args=["-O3", "-std=c99"])
+    exts = [
         ext_bar,
         ext_wham,
         ext_mbar,
@@ -100,8 +81,25 @@ setup(
         #ext_xtram,
         ext_mbar_direct,
         ext_tram_direct,
-        ext_util,
-        ],
+        ext_util]
+    return cythonize(exts)
+
+class lazy_cythonize(list):
+    """evaluates extension list lazyly.
+    pattern taken from http://tinyurl.com/qb8478q"""
+    def __init__(self, callback):
+        self._list, self.callback = None, callback
+    def c_list(self):
+        if self._list is None: self._list = self.callback()
+        return self._list
+    def __iter__(self):
+        for e in self.c_list(): yield e
+    def __getitem__(self, ii): return self.c_list()[ii]
+    def __len__(self): return len(self.c_list())
+
+setup(
+    cmdclass=versioneer.get_cmdclass(),
+    ext_modules=lazy_cythonize(extensions),
     name='thermotools',
     version=versioneer.get_version(),
     description='Lowlevel implementation of free energy estimators',
@@ -137,16 +135,16 @@ setup(
     maintainer_email='christoph.wehmeyer@fu-berlin.de',
     license='LGPLv3+',
     setup_requires=[
-        'numpy>=1.7.1',
+        'numpy>=1.7',
         'cython>=0.20',
         'setuptools>=0.6'],
     tests_require=[
-        'numpy>=1.7.1',
+        'numpy>=1.7',
         'scipy>=0.11',
         'msmtools>=1.1',
         'nose>=1.3'],
     install_requires=[
-        'numpy>=1.7.1',
+        'numpy>=1.7',
         'scipy>=0.11',
         'msmtools>=1.1'],
     packages=['thermotools'],
