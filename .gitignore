@@ -14,3 +14,5 @@ dist
 MANIFEST
 .coverage
 notebooks
+clean.sh
+

@@ -32,7 +32,7 @@ from .callback import CallbackInterrupt
 
 from ._version import get_versions
 
-__author__ = "Christoph Wehmeyer, Antonia Mey, Fabian Paul"
+__author__ = "Christoph Wehmeyer, Antonia Mey, Fabian Paul, Martin Scherer"
 __copyright__ = "Copyright 2015 Computational Molecular Biology Group, FU-Berlin"
 __credits__ = [
     "Christoph Wehmeyer",
