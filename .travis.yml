@@ -4,28 +4,28 @@ env:
   global:
     - PATH=$HOME/miniconda/bin:$PATH
   matrix:
-    - python=2.7  CONDA_PY=27  CONDA_NPY=17
-    - python=3.4  CONDA_PY=34  CONDA_NPY=18
+    - python=2.7  CONDA_PY=27  CONDA_NPY=19
+    - python=2.7  CONDA_PY=27  CONDA_NPY=110
     - python=3.4  CONDA_PY=34  CONDA_NPY=19
+    - python=3.4  CONDA_PY=34  CONDA_NPY=110
     - python=3.5  CONDA_PY=35  CONDA_NPY=19
+    - python=3.5  CONDA_PY=35  CONDA_NPY=110
 before_install:
   - tools/install_miniconda.sh
   - conda config --set always_yes true
   - conda config --add channels omnia
-install:
-  - conda install numpy scipy cython nose msmtools
-  - python setup.py develop
-  - pip install coveralls
+  - conda install conda-build nose
 script:
-  - nosetests --with-coverage --cover-package=thermotools
+  - conda build -q conda-recipe
 after_success:
+  - pip install coveralls
   - coveralls
-deploy:
-  provider: pypi
-  user: cwehmeyer_deployment
-  password:
-    secure: TiB7lWHlGVdgl+Up4rluSynxAntl6uVODPOqPLqoAm6EmXNsHKno+1uExEkrORc8lnczSapQ/1OEZaMrZo7zdnQ1OyXvMwUPVNa7kZYolvpjZehnuaSJZFGozZU+/QI8Eab6hkybsFMfxLV1ileWZ+6qzr1nMJSdNPidWeZx2tDe/aA6u4TI43/cej0uAIJArg5cS5DCo0RH0cYcur/XsORor5FBFHDYRqOS5wZ2tv0JMFgHOdyQ/6ESKjT2gK4ePa7cBWSk9MzLTXDBlTA4NvCB3LoM9PyzwhIoOeMDTC5CxgN8EljFl+fGXykz/DjlU6aO6C2tJz8IPAVmpStpNXkCbTZjpu8PhhwxWv/xiukF6lBbleMk14ugPcb/1p+8GLdKx/y8EtUjpDRzU3YEMvlIBzAVu+52lMk2iEDg/FQ7Z6vQ0AN3dMDIbH15l82m7h/CRFRyc6WrPlXDLNA1hQUx2XXm+n9RuQxgLc/vDDX64N/9dPqUuh9MzPZvWwjIkz0hlrgZ7dTjLM66UrQfirgPUWPzEJFUsjJN04tsR01k4GtaiDwHE3tr2VB/zI78oOYCvN6rFLBQR1B5PXEnEDbZAJm9lGrZr1RqT8IdyK5RKFls7+KvmtEFKEqDfeuOQf1a3GfLrZ8NPTn4hNv3AvOPXJPTNEjgloTjV327nvo=
-  on:
-    tags: true
-    repo: markovmodel/thermotools
-    branch: master
+# deploy:
+#   provider: pypi
+#   user: cwehmeyer_deployment
+#   password:
+#     secure: TiB7lWHlGVdgl+Up4rluSynxAntl6uVODPOqPLqoAm6EmXNsHKno+1uExEkrORc8lnczSapQ/1OEZaMrZo7zdnQ1OyXvMwUPVNa7kZYolvpjZehnuaSJZFGozZU+/QI8Eab6hkybsFMfxLV1ileWZ+6qzr1nMJSdNPidWeZx2tDe/aA6u4TI43/cej0uAIJArg5cS5DCo0RH0cYcur/XsORor5FBFHDYRqOS5wZ2tv0JMFgHOdyQ/6ESKjT2gK4ePa7cBWSk9MzLTXDBlTA4NvCB3LoM9PyzwhIoOeMDTC5CxgN8EljFl+fGXykz/DjlU6aO6C2tJz8IPAVmpStpNXkCbTZjpu8PhhwxWv/xiukF6lBbleMk14ugPcb/1p+8GLdKx/y8EtUjpDRzU3YEMvlIBzAVu+52lMk2iEDg/FQ7Z6vQ0AN3dMDIbH15l82m7h/CRFRyc6WrPlXDLNA1hQUx2XXm+n9RuQxgLc/vDDX64N/9dPqUuh9MzPZvWwjIkz0hlrgZ7dTjLM66UrQfirgPUWPzEJFUsjJN04tsR01k4GtaiDwHE3tr2VB/zI78oOYCvN6rFLBQR1B5PXEnEDbZAJm9lGrZr1RqT8IdyK5RKFls7+KvmtEFKEqDfeuOQf1a3GfLrZ8NPTn4hNv3AvOPXJPTNEjgloTjV327nvo=
+#   on:
+#     tags: true
+#     repo: markovmodel/thermotools
+#     branch: master

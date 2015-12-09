@@ -1,0 +1,33 @@
+environment:
+
+  matrix:
+    - PYTHON: "C:\\Miniconda"
+      CONDA_PY: "27"
+      CONDA_NPY: "19"
+
+    - PYTHON: "C:\\Miniconda-x64"
+      CONDA_PY: "27" 
+      CONDA_NPY: "110"
+      ARCH: "64"
+
+    - PYTHON: "C:\\Miniconda3"
+      CONDA_PY: "34"
+      CONDA_NPY: "110"
+
+    - PYTHON: "C:\\Miniconda3-x64"
+      CONDA_PY: "34"
+      ARCH: "64"
+      CONDA_NPY: "110" 
+
+install:
+  - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%;"
+
+  - conda config --set always_yes true 
+  - conda config --add channels omnia 
+  - conda install -q conda-build 
+
+build: false # Not a C# project, build stuff at the test step instead.
+
+test_script:
+  # run testsuite and upload test results to AppVeyor; return exit code of testsuite
+  - conda build -q conda-recipe
