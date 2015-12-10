@@ -58,7 +58,7 @@ class TestRandom(unittest.TestCase):
         cls.bias_energies = np.zeros(shape=(n_therm_states, n_conf_states), dtype=np.float64)
         cls.T = np.zeros(shape=(n_therm_states, n_conf_states, n_conf_states), dtype=np.float64)
         while True:
-            # generate two random stionary distributions
+            # generate random stionary distributions
             for k in range(n_therm_states):
                 cls.bias_energies[k,:] = -np.log(np.random.rand(n_conf_states))
                 if k>0:
@@ -73,14 +73,24 @@ class TestRandom(unittest.TestCase):
             if msmtools.analysis.is_connected(cls.count_matrices.sum(axis=0), directed=True):
                 break
 
-        cls.bias_energies_sh = cls.bias_energies - cls.bias_energies[0,:]
+        cls.bias_energies_sh = cls.bias_energies - cls.bias_energies[0,:] # hide pi^{0}_i
         cls.bias_energies_sh = np.ascontiguousarray(cls.bias_energies_sh[:,cls.conf_state_sequence])
 
         cls.n_therm_states = n_therm_states
         cls.n_conf_states = n_conf_states
 
     def test_tram(self):
-        biased_conf_energies, conf_energies, therm_energies, log_lagrangian_mult, error_history, logL_history = tram.estimate(
+        self.helper_test_tram(False)
+
+    def test_tram_direct(self):
+        self.helper_test_tram(True)
+
+    def helper_test_tram(self, direct_space):
+        if direct_space:
+            _tram = tram_direct
+        else:
+            _tram = tram
+        biased_conf_energies, conf_energies, therm_energies, log_lagrangian_mult, error_history, logL_history = _tram.estimate(
             self.count_matrices, self.state_counts, self.bias_energies_sh, self.conf_state_sequence,
             maxiter=1000000, maxerr=1.0E-10, lll_out=10)
         transition_matrices = tram.estimate_transition_matrices(
@@ -112,36 +122,6 @@ class TestRandom(unittest.TestCase):
                 lagrangian_mult.T.dot(transition_matrices[k,:,:]) + lagrangian_mult,
                 self.count_matrices[k,:,:].sum(axis=0) + self.count_matrices[k,:,:].sum(axis=1))
         # (2) sum_jk v^k_j T^k_ji = sum_jk c^k_ji
-        total = np.zeros(self.n_conf_states)
-        for k in range(self.n_therm_states):
-            lagrangian_mult = np.exp(log_lagrangian_mult[k,:])
-            total += lagrangian_mult.T.dot(transition_matrices[k,:,:])
-        assert np.allclose(total, self.count_matrices.sum(axis=0).sum(axis=0))
-
-    def test_tram_direct(self):
-        biased_conf_energies, conf_energies, therm_energies, log_lagrangian_mult, error_history, logL_history = tram_direct.estimate(
-            self.count_matrices, self.state_counts, self.bias_energies_sh, self.conf_state_sequence,
-            maxiter=1000000, maxerr=1.0E-10, lll_out=10)
-        transition_matrices = tram.estimate_transition_matrices(
-            log_lagrangian_mult, biased_conf_energies, self.count_matrices, None)
-
-        biased_conf_energies -= np.min(biased_conf_energies)
-        bias_energies =  self.bias_energies - np.min(self.bias_energies)
-
-        nz = np.where(self.state_counts>0)
-        assert not np.any(np.isinf(log_lagrangian_mult[nz]))
-        assert np.allclose(biased_conf_energies, bias_energies, atol=0.1)
-        assert np.allclose(transition_matrices, self.T, atol=0.1)
-        assert np.all(logL_history[-1]+1.E-5>=logL_history[0:-1])
-
-        # check exact identities of TRAM
-        # (1)
-        for k in range(self.n_therm_states):
-            lagrangian_mult = np.exp(log_lagrangian_mult[k,:])
-            assert np.allclose(
-                lagrangian_mult.T.dot(transition_matrices[k,:,:]) + lagrangian_mult,
-                self.count_matrices[k,:,:].sum(axis=0) + self.count_matrices[k,:,:].sum(axis=1))
-        # (2)
         total = np.zeros(self.n_conf_states)
         for k in range(self.n_therm_states):
             lagrangian_mult = np.exp(log_lagrangian_mult[k,:])
