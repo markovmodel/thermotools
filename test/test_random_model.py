@@ -80,19 +80,22 @@ class TestRandom(unittest.TestCase):
         cls.n_conf_states = n_conf_states
 
     def test_tram(self):
-        self.helper_test_tram(False)
+        self.helper_tram(False, 0)
 
     def test_tram_direct(self):
-        self.helper_test_tram(True)
+        self.helper_tram(True, 0)
 
-    def helper_test_tram(self, direct_space):
+    def test_tram_direct_with_dTRAM_acceleration(self):
+        self.helper_tram(True, 1)
+
+    def helper_tram(self, direct_space, N_dtram_accelerations):
         if direct_space:
             _tram = tram_direct
         else:
             _tram = tram
         biased_conf_energies, conf_energies, therm_energies, log_lagrangian_mult, error_history, logL_history = _tram.estimate(
             self.count_matrices, self.state_counts, self.bias_energies_sh, self.conf_state_sequence,
-            maxiter=1000000, maxerr=1.0E-10, lll_out=10)
+            maxiter=1000000, maxerr=1.0E-10, lll_out=10, N_dtram_accelerations=N_dtram_accelerations)
         transition_matrices = tram.estimate_transition_matrices(
             log_lagrangian_mult, biased_conf_energies, self.count_matrices, None)
 
