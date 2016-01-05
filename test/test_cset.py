@@ -70,6 +70,20 @@ class TestCset(unittest.TestCase):
         np.testing.assert_allclose(csets[1], np.array([0, 1]))
         np.testing.assert_allclose(projected_cset, np.array([0, 1]))
 
+    def test_restrict(self):
+        csets, projected_cset = cset.compute_csets_TRAM('summed_count_matrix', self.state_counts, self.count_matrices, self.tram_sequence)
+        new_state_counts, new_count_matrices, new_tram_sequence = cset.restrict_to_csets(self.state_counts, self.count_matrices, self.tram_sequence, csets)
+        np.testing.assert_allclose(new_count_matrices, self.count_matrices)
+        np.testing.assert_allclose(new_state_counts, self.state_counts)
+        np.testing.assert_allclose(new_tram_sequence, self.tram_sequence)
+
+        csets, projected_cset = cset.compute_csets_TRAM('post_hoc_RE', self.state_counts, self.count_matrices, self.tram_sequence)
+        new_state_counts, new_count_matrices, new_tram_sequence = cset.restrict_to_csets(self.state_counts, self.count_matrices, self.tram_sequence, csets)
+        np.testing.assert_allclose(new_state_counts[0,:], 0)
+        np.testing.assert_allclose(new_state_counts[1,:], self.state_counts[1,:])
+        np.testing.assert_allclose(new_count_matrices[0,:,:], 0)
+        np.testing.assert_allclose(new_count_matrices[1,:,:], self.count_matrices[1,:,:])
+        assert len(np.where(new_tram_sequence[:,0]==0)[0])==0
 
 if __name__ == "__main__":
     unittest.main()
