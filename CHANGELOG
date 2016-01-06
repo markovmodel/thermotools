@@ -78,3 +78,5 @@ Version 0.1.12 (Alpha):
     - Fixing Windows-related bug
 
 Upcoming:
+
+    - Adding tags to estimators' C functions to allow reusing code
