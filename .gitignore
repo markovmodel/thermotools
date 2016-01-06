@@ -15,4 +15,4 @@ MANIFEST
 .coverage
 notebooks
 clean.sh
-
+docs/_build
