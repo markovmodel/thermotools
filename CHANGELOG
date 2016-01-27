@@ -80,3 +80,4 @@ Version 0.1.12 (Alpha):
 Upcoming:
 
     - Adding tags to estimators' C functions to allow reusing code
+    - Adding util function to compute bias energies from umbrella sampling
