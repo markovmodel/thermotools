@@ -77,6 +77,9 @@ Version 0.1.12 (Alpha):
 
     - Fixing Windows-related bug
 
-Upcoming:
+Version 0.1.13 (Alpha):
 
     - Adding tags to estimators' C functions to allow reusing code
+    - Adding util function to compute bias energies from umbrella sampling
+
+Upcoming:

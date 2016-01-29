@@ -185,5 +185,27 @@ def test_restriction():
     assert_array_equal(new_bias_energy_sequence, ref_bias_energy_sequence)
 
 ####################################################################################################
+#   bias calculation tools
+####################################################################################################
+
+def test_get_umbrella_bias_binary():
+    nsamples = 100
+    nthermo = 2
+    ndim = 3
+    traj = np.linspace(0.0, 2.0, nsamples)
+    for _i in range(1, ndim):
+        traj = np.vstack((traj, np.linspace(0.0, 2.0, nsamples)))
+    traj = np.ascontiguousarray(traj.T, dtype=np.float64)
+    umbrella_centers = np.zeros(shape=(nthermo, ndim), dtype=np.float64)
+    umbrella_centers[1, :] = 1.0
+    force_constants = np.array([
+        np.zeros(shape=(ndim, ndim), dtype=np.float64), np.eye(ndim, dtype=np.float64)])
+    bias = util.get_umbrella_bias(traj, umbrella_centers, force_constants)
+    ref = np.vstack((
+        np.zeros(shape=(nsamples)),
+        0.5 * ndim * np.linspace(-1.0, 1.0, nsamples)**2)).T.astype(np.float64)
+    assert_almost_equal(bias, ref, decimal=15)
+
+####################################################################################################
 #   transition matrix renormalization
 ####################################################################################################
