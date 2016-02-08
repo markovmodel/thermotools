@@ -1,6 +1,6 @@
 # This file is part of thermotools.
 #
-# Copyright 2015 Computational Molecular Biology Group, Freie Universitaet Berlin (GER)
+# Copyright 2015, 2016 Computational Molecular Biology Group, Freie Universitaet Berlin (GER)
 #
 # thermotools is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -62,5 +62,3 @@ def test_dtram_stop():
     assert_allclose(log_lagrangian_mult, np.log(M + dtram.get_prior()), atol=1.0E-15)
     assert_true(increments.shape[0] == 1)
     assert_true(loglikelihoods.shape[0] == 1)
-
-
