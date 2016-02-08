@@ -4,7 +4,9 @@
 thermotools.egg-info
 ext/wham/wham.c
 ext/mbar/mbar.c
+ext/mbar_direct/mbar_direct.c
 ext/tram/tram.c
+ext/tram_direct/tram_direct.c
 ext/dtram/dtram.c
 ext/xtram/xtram.c
 ext/bar/bar.c
