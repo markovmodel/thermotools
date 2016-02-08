@@ -1,6 +1,6 @@
 # This file is part of thermotools.
 #
-# Copyright 2015 Computational Molecular Biology Group, Freie Universitaet Berlin (GER)
+# Copyright 2015, 2016 Computational Molecular Biology Group, Freie Universitaet Berlin (GER)
 #
 # thermotools is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -36,32 +36,29 @@ def test_callback_interrupt():
         assert_true(ci.msg == "STOP")
         assert_true(ci.__str__() == "[CALLBACKINTERRUPT] STOP")
 
-
 def test_wham_stop():
     T = 5
     M = 10
-    therm_energies, conf_energies, err_traj, lll_traj = wham.estimate(
+    therm_energies, conf_energies, increments, loglikelihoods = wham.estimate(
         np.ones(shape=(T, M), dtype=np.intc),
         np.zeros(shape=(T, M), dtype=np.float64),
-        maxiter=10, maxerr=-1.0, err_out=1, lll_out=2,
+        maxiter=10, maxerr=-1.0, save_convergence_info=1,
         callback=generic_callback_stop)
     assert_allclose(therm_energies, 0.0, atol=1.0E-15)
     assert_allclose(conf_energies, np.log(M), atol=1.0E-15)
-    assert_true(err_traj.shape[0] == 1)
-    assert_true(lll_traj.shape[0] == 0)
+    assert_true(increments.shape[0] == 1)
+    assert_true(loglikelihoods.shape[0] == 1)
 
 def test_dtram_stop():
     T = 5
     M = 10
-    therm_energies, conf_energies, log_lagrangian_mult, err_traj, lll_traj = dtram.estimate(
+    therm_energies, conf_energies, log_lagrangian_mult, increments, loglikelihoods = dtram.estimate(
         np.ones(shape=(T, M, M), dtype=np.intc),
         np.zeros(shape=(T, M), dtype=np.float64),
-        maxiter=10, maxerr=-1.0, err_out=1, lll_out=2,
+        maxiter=10, maxerr=-1.0, save_convergence_info=1,
         callback=generic_callback_stop)
     assert_allclose(therm_energies, 0.0, atol=1.0E-15)
     assert_allclose(conf_energies, np.log(M), atol=1.0E-15)
     assert_allclose(log_lagrangian_mult, np.log(M + dtram.get_prior()), atol=1.0E-15)
-    assert_true(err_traj.shape[0] == 1)
-    assert_true(lll_traj.shape[0] == 0)
-
-
+    assert_true(increments.shape[0] == 1)
+    assert_true(loglikelihoods.shape[0] == 1)
