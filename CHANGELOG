@@ -83,3 +83,5 @@ Version 0.1.13 (Alpha):
     - Adding util function to compute bias energies from umbrella sampling
 
 Upcoming:
+
+    - Collect convergence information under save_convergence_info instead of err_out and lll_out
