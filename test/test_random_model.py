@@ -95,7 +95,7 @@ class TestRandom(unittest.TestCase):
             _tram = tram
         biased_conf_energies, conf_energies, therm_energies, log_lagrangian_mult, error_history, logL_history = _tram.estimate(
             self.count_matrices, self.state_counts, self.bias_energies_sh, self.conf_state_sequence,
-            maxiter=1000000, maxerr=1.0E-10, lll_out=10, N_dtram_accelerations=N_dtram_accelerations)
+            maxiter=1000000, maxerr=1.0E-10, save_convergence_info=10, N_dtram_accelerations=N_dtram_accelerations)
         transition_matrices = tram.estimate_transition_matrices(
             log_lagrangian_mult, biased_conf_energies, self.count_matrices, None)
 
