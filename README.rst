@@ -6,6 +6,8 @@ thermotools
    :target: https://travis-ci.org/markovmodel/thermotools
 .. image:: https://badge.fury.io/py/thermotools.svg
    :target: https://pypi.python.org/pypi/thermotools
+.. image:: https://img.shields.io/pypi/dm/thermotools.svg
+   :target: https://pypi.python.org/pypi/thermotools
 .. image:: https://anaconda.org/omnia/thermotools/badges/installer/conda.svg
    :target: https://conda.anaconda.org/omnia
 .. image:: https://anaconda.org/omnia/thermotools/badges/downloads.svg
