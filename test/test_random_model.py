@@ -7,6 +7,7 @@ import msmtools
 import thermotools.tram as tram
 import thermotools.tram_direct as tram_direct
 import sys
+from numpy.testing import assert_allclose
 
 def tower_sample(distribution):
     cdf = np.cumsum(distribution)
@@ -106,22 +107,22 @@ class TestRandom(unittest.TestCase):
             self.state_counts, None, None, mu)
         pmf = np.zeros(shape=4, dtype=np.float64)
         tram.get_unbiased_user_free_energies(mu, self.conf_state_sequence, pmf)
-        assert np.allclose(pmf, conf_energies)
+        assert_allclose(pmf, conf_energies)
 
         biased_conf_energies -= np.min(biased_conf_energies)
         bias_energies =  self.bias_energies - np.min(self.bias_energies)
 
         nz = np.where(self.state_counts>0)
         assert not np.any(np.isinf(log_lagrangian_mult[nz]))
-        assert np.allclose(biased_conf_energies, bias_energies, atol=0.1)
-        assert np.allclose(transition_matrices, self.T, atol=0.1)
+        assert_allclose(biased_conf_energies, bias_energies, atol=0.1)
+        assert_allclose(transition_matrices, self.T, atol=0.1)
         assert np.all(logL_history[-1]+1.E-5>=np.array(logL_history[0:-1]))
 
         # check exact identities of TRAM
         # (1) sum_j v_j T_ji + v_i = sum_j c_ij + sum_j c_ji
         for k in range(self.n_therm_states):
             lagrangian_mult = np.exp(log_lagrangian_mult[k,:])
-            assert np.allclose(
+            assert_allclose(
                 lagrangian_mult.T.dot(transition_matrices[k,:,:]) + lagrangian_mult,
                 self.count_matrices[k,:,:].sum(axis=0) + self.count_matrices[k,:,:].sum(axis=1))
         # (2) sum_jk v^k_j T^k_ji = sum_jk c^k_ji
@@ -129,7 +130,7 @@ class TestRandom(unittest.TestCase):
         for k in range(self.n_therm_states):
             lagrangian_mult = np.exp(log_lagrangian_mult[k,:])
             total += lagrangian_mult.T.dot(transition_matrices[k,:,:])
-        assert np.allclose(total, self.count_matrices.sum(axis=0).sum(axis=0))
+        assert_allclose(total, self.count_matrices.sum(axis=0).sum(axis=0))
 
 
 if __name__ == "__main__":
