@@ -133,14 +133,18 @@ def test_break_points_st_like_trajs():
     assert_array_equal(bp, np.array([0, 10, 30, 60], dtype=np.intc))
 
 def test_count_matrices_single_counts():
-    dtraj = [
-        np.array(
-            [[0, 0], [0, 0], [0, 1], [0, 1], [0, 2], [0, 2], [0, 0], [0, 2], [0, 1], [0, 0]],
-            dtype=np.intc),
-        np.array(
-            [[1, 0], [1, 0], [1, 1], [1, 1], [1, 2], [1, 2], [1, 0], [1, 2], [1, 1], [1, 0]],
-            dtype=np.intc)]
-    C_K = util.count_matrices(dtraj, 1, sparse_return=False)
+    dtrajs = [
+        np.array([0, 0, 1, 1, 2, 2, 0, 2, 1, 0], dtype=np.intc),
+        np.array([0, 0, 1, 1, 2, 2, 0, 2, 1, 0], dtype=np.intc)]
+    ttrajs = [np.array([0] * 10, dtype=np.intc), np.array([1] * 10, dtype=np.intc)]
+    # dtraj = [
+    #     np.array(
+    #         [[0, 0], [0, 0], [0, 1], [0, 1], [0, 2], [0, 2], [0, 0], [0, 2], [0, 1], [0, 0]],
+    #         dtype=np.intc),
+    #     np.array(
+    #         [[1, 0], [1, 0], [1, 1], [1, 1], [1, 2], [1, 2], [1, 0], [1, 2], [1, 1], [1, 0]],
+    #         dtype=np.intc)]
+    C_K = util.count_matrices(ttrajs, dtrajs, 1, sparse_return=False)
     ref = np.ones(shape=(2, 3, 3), dtype=np.intc)
     assert_array_equal(C_K, ref)
 
