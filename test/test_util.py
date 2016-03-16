@@ -149,13 +149,9 @@ def test_count_matrices_single_counts():
     assert_array_equal(C_K, ref)
 
 def test_count_matrices_st_traj():
-    dtraj = [np.array([
-        [0, 0], [0, 0],
-        [1, 0], [1, 1], [1, 0],
-        [0, 1], [0, 1],
-        [2, 1], [2, 2], [2, 1],
-        [0, 2], [0, 2]], dtype=np.intc)]
-    C_K = util.count_matrices(dtraj, 1, sliding=True, sparse_return=False, nthermo=4, nstates=4)
+    ttraj = [np.array([0, 0, 1, 1, 1, 0, 0, 2, 2, 2, 0, 0], dtype=np.intc)]
+    dtraj = [np.array([0, 0, 0, 1, 0, 1, 1, 1, 2, 1, 2, 2], dtype=np.intc)]
+    C_K = util.count_matrices(ttraj, dtraj, 1, sliding=True, sparse_return=False, nthermo=4, nstates=4)
     ref = np.zeros(shape=(4, 4, 4), dtype=np.intc)
     ref[0, 0, 0] = 1
     ref[0, 1, 1] = 1
