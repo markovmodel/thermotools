@@ -32,7 +32,7 @@ class TestCset(unittest.TestCase):
         
         tramtrajs = [tramtraj1, tramtraj2]
         tram_sequence = np.concatenate(tramtrajs)
-        state_counts = util.state_counts(tramtrajs)
+        state_counts = util.state_counts([t[:, 0] for t in tramtrajs], [t[:, 1] for t in tramtrajs])
         count_matrices = util.count_matrices(
             [np.ascontiguousarray(t[:, :2]).astype(np.intc) for t in tramtrajs], 1,
             sliding='sliding', sparse_return=False, nstates=2)
