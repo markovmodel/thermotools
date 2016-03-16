@@ -19,31 +19,29 @@ class TestCset(unittest.TestCase):
             return np.array([0.5*((x-m1)/s1)**2, 0.5*((x-m2)/s2)**2]).T
 
         x1 = np.random.randn(n_samples)*s1 + m1
-        tramtraj1 = np.zeros((n_samples,4))
-        tramtraj1[:,0]  = 0
-        tramtraj1[:,1]  = x1<20
-        tramtraj1[:,2:] = u(x1)
+        ttraj1 = np.zeros(n_samples, dtype=np.intc)
+        dtraj1 = (x1<20).astype(np.intc)
+        bias_traj1 = u(x1)
 
-        tramtraj2 = np.zeros((n_samples,4))
         x2 = np.random.randn(n_samples)*s2 + m2
-        tramtraj2[:,0]  = 1
-        tramtraj2[:,1]  = x2<20
-        tramtraj2[:,2:] = u(x2)
+        ttraj2 = np.ones(n_samples, dtype=np.intc)
+        dtraj2 = (x2<20).astype(np.intc)
+        bias_traj2 = u(x2)
         
-        tramtrajs = [tramtraj1, tramtraj2]
-        tram_sequence = np.concatenate(tramtrajs)
-        state_counts = util.state_counts([np.require(t[:, 0], dtype=np.intc, requirements='C') for t in tramtrajs],
-                                         [np.require(t[:, 1], dtype=np.intc, requirements='C') for t in tramtrajs])
-        count_matrices = util.count_matrices(
-            [np.require(t[:, 0], dtype=np.intc, requirements='C') for t in tramtrajs],
-            [np.require(t[:, 1], dtype=np.intc, requirements='C') for t in tramtrajs],
-            1, sliding='sliding', sparse_return=False, nstates=2)
-        cls.tram_sequence = tram_sequence
+        ttrajs = [ttraj1, ttraj2]
+        dtrajs = [dtraj1, dtraj2]
+        bias_trajs = [bias_traj1, bias_traj2]
+        state_counts = util.state_counts(ttrajs, dtrajs)
+        count_matrices = util.count_matrices(ttrajs, dtrajs, 1, sliding='sliding',
+                                             sparse_return=False, nstates=2)
+        cls.ttrajs = ttrajs
+        cls.dtrajs = dtrajs
+        cls.bias_trajs = bias_trajs
         cls.state_counts = state_counts
         cls.count_matrices = count_matrices
 
     def test_summed_count_matrix(self):
-        csets, projected_cset = cset.compute_csets_TRAM('summed_count_matrix', self.state_counts, self.count_matrices, self.tram_sequence)
+        csets, projected_cset = cset.compute_csets_TRAM('summed_count_matrix', self.state_counts, self.count_matrices, self.ttrajs, self.dtrajs, self.bias_trajs)
         np.testing.assert_allclose(csets[0], np.array([1]))
         np.testing.assert_allclose(csets[1], np.array([0, 1]))
         np.testing.assert_allclose(projected_cset, np.array([0,1]))
@@ -55,37 +53,42 @@ class TestCset(unittest.TestCase):
     #    np.testing.assert_allclose(projected_cset, np.array([0,1]))
 
     def test_cset_neighbors(self):
-        csets, projected_cset = cset.compute_csets_TRAM('neighbors', self.state_counts, self.count_matrices, self.tram_sequence, nn=1)
+        csets, projected_cset = cset.compute_csets_TRAM('neighbors', self.state_counts, self.count_matrices, self.ttrajs, self.dtrajs, self.bias_trajs, nn=1)
         np.testing.assert_allclose(csets[0], np.array([1]))
         np.testing.assert_allclose(csets[1], np.array([0, 1]))
         np.testing.assert_allclose(projected_cset, np.array([0,1]))
 
     def test_cset_post_hoc_RE(self):
-        csets, projected_cset = cset.compute_csets_TRAM('post_hoc_RE', self.state_counts, self.count_matrices, self.tram_sequence)
+        csets, projected_cset = cset.compute_csets_TRAM('post_hoc_RE', self.state_counts, self.count_matrices, self.ttrajs, self.dtrajs, self.bias_trajs)
         np.testing.assert_allclose(csets[0], np.array([]))
         np.testing.assert_allclose(csets[1], np.array([0, 1]))
         np.testing.assert_allclose(projected_cset, np.array([0, 1]))
 
     def test_cset_BAR_variance(self):
-        csets, projected_cset = cset.compute_csets_TRAM('BAR_variance', self.state_counts, self.count_matrices, self.tram_sequence)
+        csets, projected_cset = cset.compute_csets_TRAM('BAR_variance', self.state_counts, self.count_matrices, self.ttrajs, self.dtrajs, self.bias_trajs)
         np.testing.assert_allclose(csets[0], np.array([]))
         np.testing.assert_allclose(csets[1], np.array([0, 1]))
         np.testing.assert_allclose(projected_cset, np.array([0, 1]))
 
     def test_restrict(self):
-        csets, projected_cset = cset.compute_csets_TRAM('summed_count_matrix', self.state_counts, self.count_matrices, self.tram_sequence)
-        new_state_counts, new_count_matrices, new_tram_sequence = cset.restrict_to_csets(self.state_counts, self.count_matrices, self.tram_sequence, csets)
+        csets, projected_cset = cset.compute_csets_TRAM('summed_count_matrix', self.state_counts, self.count_matrices, self.ttrajs, self.dtrajs, self.bias_trajs)
+        new_state_counts, new_count_matrices, new_dtrajs, new_bias_trajs = cset.restrict_to_csets(csets, self.state_counts, self.count_matrices, self.ttrajs, self.dtrajs, self.bias_trajs)
         np.testing.assert_allclose(new_count_matrices, self.count_matrices)
         np.testing.assert_allclose(new_state_counts, self.state_counts)
-        np.testing.assert_allclose(new_tram_sequence, self.tram_sequence)
+        for x,y in zip(self.bias_trajs, new_bias_trajs):
+            np.testing.assert_allclose(x, y)
+        for x,y in zip(self.dtrajs, new_dtrajs):
+            np.testing.assert_allclose(x, y)
 
-        csets, projected_cset = cset.compute_csets_TRAM('post_hoc_RE', self.state_counts, self.count_matrices, self.tram_sequence)
-        new_state_counts, new_count_matrices, new_tram_sequence = cset.restrict_to_csets(self.state_counts, self.count_matrices, self.tram_sequence, csets)
+        csets, projected_cset = cset.compute_csets_TRAM('post_hoc_RE', self.state_counts, self.count_matrices, self.ttrajs, self.dtrajs, self.bias_trajs)
+        new_state_counts, new_count_matrices, new_dtrajs, new_bias_trajs = cset.restrict_to_csets(csets, self.state_counts, self.count_matrices, self.ttrajs, self.dtrajs, self.bias_trajs)
         np.testing.assert_allclose(new_state_counts[0,:], 0)
         np.testing.assert_allclose(new_state_counts[1,:], self.state_counts[1,:])
         np.testing.assert_allclose(new_count_matrices[0,:,:], 0)
         np.testing.assert_allclose(new_count_matrices[1,:,:], self.count_matrices[1,:,:])
-        assert len(np.where(new_tram_sequence[:,0]==0)[0])==0
+        assert len(new_bias_trajs[0])==0
+        np.testing.assert_allclose(new_bias_trajs[1], self.bias_trajs[1])
+
 
 if __name__ == "__main__":
     unittest.main()
