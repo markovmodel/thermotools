@@ -105,8 +105,8 @@ class TestRandom(unittest.TestCase):
         tram.get_pointwise_unbiased_free_energies(None, log_lagrangian_mult, biased_conf_energies,
             therm_energies, self.count_matrices, self.bias_energies_sh, self.conf_state_sequence,
             self.state_counts, None, None, mu)
-        pmf = np.zeros(shape=4, dtype=np.float64)
-        tram.get_unbiased_user_free_energies(mu, self.conf_state_sequence, pmf)
+        counts,_ = np.histogram(self.conf_state_sequence, weights=np.exp(-mu), bins=self.n_conf_states)
+        pmf = -np.log(counts)
         assert_allclose(pmf, conf_energies)
 
         biased_conf_energies -= np.min(biased_conf_energies)
