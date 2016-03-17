@@ -95,7 +95,7 @@ class TestRandom(unittest.TestCase):
         else:
             _tram = tram
         biased_conf_energies, conf_energies, therm_energies, log_lagrangian_mult, error_history, logL_history = _tram.estimate(
-            self.count_matrices, self.state_counts, self.bias_energies_sh, self.conf_state_sequence,
+            self.count_matrices, self.state_counts, [self.bias_energies_sh], [self.conf_state_sequence],
             maxiter=1000000, maxerr=1.0E-10, save_convergence_info=10, N_dtram_accelerations=N_dtram_accelerations)
         transition_matrices = tram.estimate_transition_matrices(
             log_lagrangian_mult, biased_conf_energies, self.count_matrices, None)
@@ -103,8 +103,8 @@ class TestRandom(unittest.TestCase):
         # check expectations (do a trivial test: recompute conf_energies with different functions)
         mu = np.zeros(shape=self.conf_state_sequence.shape[0], dtype=np.float64)
         tram.get_pointwise_unbiased_free_energies(None, log_lagrangian_mult, biased_conf_energies,
-            therm_energies, self.count_matrices, self.bias_energies_sh, self.conf_state_sequence,
-            self.state_counts, None, None, mu)
+            therm_energies, self.count_matrices, [self.bias_energies_sh], [self.conf_state_sequence],
+            self.state_counts, None, None, [mu])
         counts,_ = np.histogram(self.conf_state_sequence, weights=np.exp(-mu), bins=self.n_conf_states)
         pmf = -np.log(counts)
         assert_allclose(pmf, conf_energies)
