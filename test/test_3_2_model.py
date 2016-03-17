@@ -115,8 +115,8 @@ class TestThreeTwoModel(object):
             self.bias_energies[:, self.conf_state_sequence_ind])
         therm_energies, conf_energies, biased_conf_energies, err_history = mbar.estimate(
             self.state_counts_ind.sum(axis=1),
-            bias_energy_sequence,
-            self.conf_state_sequence_ind,
+            [bias_energy_sequence],
+            [self.conf_state_sequence_ind],
             maxiter=10000, maxerr=1.0E-15)
         maxerr = 1.0E-1
         assert_allclose(biased_conf_energies, self.biased_conf_energies, atol=maxerr)
@@ -127,8 +127,8 @@ class TestThreeTwoModel(object):
             self.bias_energies[:, self.conf_state_sequence_ind])
         therm_energies, conf_energies, biased_conf_energies, err_history = mbar_direct.estimate(
             self.state_counts_ind.sum(axis=1),
-            bias_energy_sequence,
-            self.conf_state_sequence_ind,
+            [bias_energy_sequence],
+            [self.conf_state_sequence_ind],
             maxiter=10000, maxerr=1.0E-15)
         maxerr = 1.0E-1
         assert_allclose(biased_conf_energies, self.biased_conf_energies, atol=maxerr)
