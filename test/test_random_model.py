@@ -79,6 +79,7 @@ class TestRandom(unittest.TestCase):
 
         cls.n_therm_states = n_therm_states
         cls.n_conf_states = n_conf_states
+        cls.n_samples = n_samples
 
     def test_tram(self):
         self.helper_tram(False, 0)
@@ -94,8 +95,11 @@ class TestRandom(unittest.TestCase):
             _tram = tram_direct
         else:
             _tram = tram
+        ca = np.ascontiguousarray
         biased_conf_energies, conf_energies, therm_energies, log_lagrangian_mult, error_history, logL_history = _tram.estimate(
-            self.count_matrices, self.state_counts, [self.bias_energies_sh], [self.conf_state_sequence],
+            self.count_matrices, self.state_counts,
+            [ca(self.bias_energies_sh[:, 0:self.n_samples//2]), ca(self.bias_energies_sh[:, self.n_samples//2:])],
+            [self.conf_state_sequence[0:self.n_samples//2], self.conf_state_sequence[self.n_samples//2:]],
             maxiter=1000000, maxerr=1.0E-10, save_convergence_info=10, N_dtram_accelerations=N_dtram_accelerations)
         transition_matrices = tram.estimate_transition_matrices(
             log_lagrangian_mult, biased_conf_energies, self.count_matrices, None)
@@ -103,8 +107,11 @@ class TestRandom(unittest.TestCase):
         # check expectations (do a trivial test: recompute conf_energies with different functions)
         mu = np.zeros(shape=self.conf_state_sequence.shape[0], dtype=np.float64)
         tram.get_pointwise_unbiased_free_energies(None, log_lagrangian_mult, biased_conf_energies,
-            therm_energies, self.count_matrices, [self.bias_energies_sh], [self.conf_state_sequence],
-            self.state_counts, None, None, [mu])
+            therm_energies, self.count_matrices,
+            [ca(self.bias_energies_sh[:, 0:self.n_samples//2]), ca(self.bias_energies_sh[:, self.n_samples//2:])],
+            [self.conf_state_sequence[0:self.n_samples//2], self.conf_state_sequence[self.n_samples//2:]],
+            self.state_counts, None, None,
+            [mu[0:self.n_samples//2], mu[self.n_samples//2:]])
         counts,_ = np.histogram(self.conf_state_sequence, weights=np.exp(-mu), bins=self.n_conf_states)
         pmf = -np.log(counts)
         assert_allclose(pmf, conf_energies)
