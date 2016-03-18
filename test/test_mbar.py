@@ -19,6 +19,8 @@ import thermotools.mbar as mbar
 import numpy as np
 from numpy.testing import assert_allclose
 
+ca = np.ascontiguousarray
+
 def test_mbar_fk_with_zeros():
     T = 5
     X = 10
@@ -28,7 +30,7 @@ def test_mbar_fk_with_zeros():
     therm_energies = np.zeros(shape=(T,), dtype=np.float64)
     new_therm_energies = np.zeros(shape=(T,), dtype=np.float64)
     mbar.update_therm_energies(
-        log_therm_state_counts, therm_energies, [bias_energies], scratch, new_therm_energies)
+        log_therm_state_counts, therm_energies, [ca(bias_energies.T)], scratch, new_therm_energies)
     assert_allclose(new_therm_energies, 0.0, atol=1.0E-15)
 
 def test_mbar_fk_with_ascending_bias():
@@ -42,5 +44,5 @@ def test_mbar_fk_with_ascending_bias():
     ref = np.array([float(K) - np.log(X) for K in range(T)], dtype=np.float64)
     ref -= ref.min()
     mbar.update_therm_energies(
-        log_therm_state_counts, therm_energies, [bias_energies], scratch, new_therm_energies)
+        log_therm_state_counts, therm_energies, [ca(bias_energies.T)], scratch, new_therm_energies)
     assert_allclose(new_therm_energies, ref, atol=1.0E-15)

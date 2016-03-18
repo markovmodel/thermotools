@@ -98,7 +98,7 @@ class TestRandom(unittest.TestCase):
         ca = np.ascontiguousarray
         biased_conf_energies, conf_energies, therm_energies, log_lagrangian_mult, error_history, logL_history = _tram.estimate(
             self.count_matrices, self.state_counts,
-            [ca(self.bias_energies_sh[:, 0:self.n_samples//2]), ca(self.bias_energies_sh[:, self.n_samples//2:])],
+            [ca(self.bias_energies_sh[:, 0:self.n_samples//2].T), ca(self.bias_energies_sh[:, self.n_samples//2:].T)],
             [self.conf_state_sequence[0:self.n_samples//2], self.conf_state_sequence[self.n_samples//2:]],
             maxiter=1000000, maxerr=1.0E-10, save_convergence_info=10, N_dtram_accelerations=N_dtram_accelerations)
         transition_matrices = tram.estimate_transition_matrices(
@@ -108,7 +108,7 @@ class TestRandom(unittest.TestCase):
         mu = np.zeros(shape=self.conf_state_sequence.shape[0], dtype=np.float64)
         tram.get_pointwise_unbiased_free_energies(None, log_lagrangian_mult, biased_conf_energies,
             therm_energies, self.count_matrices,
-            [ca(self.bias_energies_sh[:, 0:self.n_samples//2]), ca(self.bias_energies_sh[:, self.n_samples//2:])],
+            [ca(self.bias_energies_sh[:, 0:self.n_samples//2].T), ca(self.bias_energies_sh[:, self.n_samples//2:].T)],
             [self.conf_state_sequence[0:self.n_samples//2], self.conf_state_sequence[self.n_samples//2:]],
             self.state_counts, None, None,
             [mu[0:self.n_samples//2], mu[self.n_samples//2:]])

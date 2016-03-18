@@ -112,7 +112,7 @@ class TestThreeTwoModel(object):
         assert_allclose(conf_energies, self.conf_energies, atol=atol)
     def test_mbar(self):
         bias_energy_sequence = np.ascontiguousarray(
-            self.bias_energies[:, self.conf_state_sequence_ind])
+            self.bias_energies[:, self.conf_state_sequence_ind].T)
         therm_energies, conf_energies, biased_conf_energies, err_history = mbar.estimate(
             self.state_counts_ind.sum(axis=1),
             [bias_energy_sequence],
@@ -124,7 +124,7 @@ class TestThreeTwoModel(object):
         assert_allclose(therm_energies, self.therm_energies, atol=maxerr)
     def test_mbar_direct(self):
         bias_energy_sequence = np.ascontiguousarray(
-            self.bias_energies[:, self.conf_state_sequence_ind])
+            self.bias_energies[:, self.conf_state_sequence_ind].T)
         therm_energies, conf_energies, biased_conf_energies, err_history = mbar_direct.estimate(
             self.state_counts_ind.sum(axis=1),
             [bias_energy_sequence],
@@ -146,7 +146,7 @@ class TestThreeTwoModel(object):
         assert_allclose(conf_energies, self.conf_energies, atol=maxerr)
         assert_allclose(transition_matrices, self.transition_matrices, atol=maxerr)
     def test_tram(self):
-        bias_energies = np.ascontiguousarray(self.bias_energies[:,self.conf_state_sequence])
+        bias_energies = np.ascontiguousarray(self.bias_energies[:,self.conf_state_sequence].T)
         biased_conf_energies, conf_energies, therm_energies, log_lagrangian_mult, error_history, logL_history = tram.estimate(
             self.count_matrices, self.state_counts, [bias_energies], [self.conf_state_sequence],
             maxiter=10000, maxerr=1.0E-12, save_convergence_info=10)
@@ -160,7 +160,7 @@ class TestThreeTwoModel(object):
         # lower bound on the log-likelihood must be maximal at convergence
         assert np.all(logL_history[-1]+1.E-5>=logL_history[0:-1])
     def test_tram_direct(self):
-        bias_energies = np.ascontiguousarray(self.bias_energies[:,self.conf_state_sequence])
+        bias_energies = np.ascontiguousarray(self.bias_energies[:,self.conf_state_sequence].T)
         biased_conf_energies, conf_energies, therm_energies, log_lagrangian_mult, error_history, logL_history = tram_direct.estimate(
             self.count_matrices, self.state_counts, [bias_energies], [self.conf_state_sequence],
             maxiter=10000, maxerr=1.0E-12, save_convergence_info=10)
