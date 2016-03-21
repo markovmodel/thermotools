@@ -88,3 +88,6 @@ Version 0.1.14 (Alpha):
     - Adding bias averaging function
 
 Upcoming:
+
+    - Use ttrajs, dtrajs instead of the 2D dtraj argument in state_counts() and count_matrices()
+    - New feature: the state-continuous TRAM estimator
