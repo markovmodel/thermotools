@@ -24,7 +24,8 @@ from . import wham
 from . import mbar
 from . import tram
 from . import dtram
-#from . import xtram
+from . import mbar_direct
+from . import tram_direct
 from . import util
 from . import cset
 

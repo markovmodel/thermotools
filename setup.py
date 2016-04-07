@@ -52,11 +52,6 @@ def extensions():
         sources=["ext/dtram/dtram.pyx", "ext/dtram/_dtram.c", "ext/util/_util.c"],
         include_dirs=[get_include()],
         extra_compile_args=["-O3", "-std=c99"])
-    # ext_xtram = Extension(
-    #     "thermotools.xtram",
-    #     sources=["ext/xtram/xtram.pyx", "ext/xtram/_xtram.c", "ext/lse/_lse.c"],
-    #     include_dirs=[get_include()],
-    #     extra_compile_args=["-O3", "-std=c99"])
     ext_mbar_direct = Extension(
         "thermotools.mbar_direct",
         sources=["ext/mbar_direct/mbar_direct.pyx", "ext/mbar_direct/_mbar_direct.c", "ext/util/_util.c"],
@@ -78,7 +73,6 @@ def extensions():
         ext_mbar,
         ext_tram,
         ext_dtram,
-        #ext_xtram,
         ext_mbar_direct,
         ext_tram_direct,
         ext_util]
@@ -128,8 +122,7 @@ setup(
         'WHAM',
         'MBAR',
         'TRAM',
-        'dTRAM',
-        'xTRAM'],
+        'dTRAM'],
     url='https://github.com/markovmodel/thermotools',
     maintainer='Christoph Wehmeyer',
     maintainer_email='christoph.wehmeyer@fu-berlin.de',
