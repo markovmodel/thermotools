@@ -1,6 +1,6 @@
 # This file is part of thermotools.
 #
-# Copyright 2015 Computational Molecular Biology Group, Freie Universitaet Berlin (GER)
+# Copyright 2015, 2016 Computational Molecular Biology Group, Freie Universitaet Berlin (GER)
 #
 # thermotools is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-thermotools is a lowlevel implementation toolbox for the analyis of free energy calculations
+thermotools is a lowlevel implementation toolbox for the analyis of multi-ensemble calculations
 """
 
 from . import bar
@@ -33,7 +33,7 @@ from .callback import CallbackInterrupt
 from ._version import get_versions
 
 __author__ = "Christoph Wehmeyer, Antonia Mey, Fabian Paul, Martin Scherer"
-__copyright__ = "Copyright 2015 Computational Molecular Biology Group, FU-Berlin"
+__copyright__ = "Copyright 2015, 2016 Computational Molecular Biology Group, FU-Berlin"
 __credits__ = [
     "Christoph Wehmeyer",
     "Antonia Mey",

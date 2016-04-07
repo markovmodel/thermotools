@@ -28,4 +28,4 @@ This repository is organised as follows:
   * **ext** contains the C/Cython implementations of the estimators as well as convenience functions, where each subdirectory contains a C header file, a C file with the actual implementation, and a pyx file with the Python API to the C functions and docstrings.
   * **test** contains unit tests.
   * **thermotools** contains an ``__init__.py`` file which imports the external modules onto the package level namespace.
-  * **setup.py** collects all external modules' source (from **ext**) and builds shared objects during the installations.
+  * **setup.py** collects all external modules' source (from **ext**) and builds shared objects during the installation.

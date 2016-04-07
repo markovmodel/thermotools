@@ -4,6 +4,8 @@ thermotools
 
 .. image:: https://travis-ci.org/markovmodel/thermotools.svg?branch=devel
    :target: https://travis-ci.org/markovmodel/thermotools
+.. image:: https://ci.appveyor.com/api/projects/status/nsahbq5s33n81rco/branch/devel?svg=true
+   :target: https://ci.appveyor.com/project/cwehmeyer/thermotools/branch/devel
 .. image:: https://badge.fury.io/py/thermotools.svg
    :target: https://pypi.python.org/pypi/thermotools
 .. image:: https://img.shields.io/pypi/dm/thermotools.svg
@@ -13,8 +15,8 @@ thermotools
 .. image:: https://anaconda.org/omnia/thermotools/badges/downloads.svg
    :target: https://anaconda.org/omnia/thermotools
 
-This Python package provides a lowlevel implementation of (transition-based) reweighting analyis
-methods.
+This Python package provides a lowlevel implementation of (transition-based and histogram)
+reweighting analyis methods.
 
 
 Installation
