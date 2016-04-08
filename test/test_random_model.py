@@ -6,6 +6,7 @@ import numpy as np
 import msmtools
 import thermotools.tram as tram
 import thermotools.tram_direct as tram_direct
+import thermotools.trammbar as trammbar
 import sys
 from numpy.testing import assert_allclose
 
@@ -106,11 +107,11 @@ class TestRandom(unittest.TestCase):
 
         # check expectations (do a trivial test: recompute conf_energies with different functions)
         mu = np.zeros(shape=self.conf_state_sequence.shape[0], dtype=np.float64)
-        tram.get_pointwise_unbiased_free_energies(None, log_lagrangian_mult, biased_conf_energies,
+        trammbar.get_pointwise_unbiased_free_energies(None, log_lagrangian_mult, biased_conf_energies,
             therm_energies, self.count_matrices,
             [ca(self.bias_energies_sh[:, 0:self.n_samples//2].T), ca(self.bias_energies_sh[:, self.n_samples//2:].T)],
             [self.conf_state_sequence[0:self.n_samples//2], self.conf_state_sequence[self.n_samples//2:]],
-            self.state_counts, None, None,
+            self.state_counts, None, None, None,
             [mu[0:self.n_samples//2], mu[self.n_samples//2:]])
         counts,_ = np.histogram(self.conf_state_sequence, weights=np.exp(-mu), bins=self.n_conf_states)
         pmf = -np.log(counts)
