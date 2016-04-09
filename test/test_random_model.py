@@ -107,7 +107,7 @@ class TestRandom(unittest.TestCase):
             [ca(self.bias_energies_sh[:, 0:self.n_samples//2].T), ca(self.bias_energies_sh[:, self.n_samples//2:].T)],
             [self.conf_state_sequence[0:self.n_samples//2], self.conf_state_sequence[self.n_samples//2:]],
             maxiter=1000000, maxerr=1.0E-10, save_convergence_info=10, N_dtram_accelerations=N_dtram_accelerations)
-        transition_matrices = tram.estimate_transition_matrices(
+        transition_matrices = _tram.estimate_transition_matrices(
             log_lagrangian_mult, biased_conf_energies, self.count_matrices, None)
 
         # check expectations (do a trivial test: recompute conf_energies with different functions)
