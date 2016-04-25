@@ -87,7 +87,9 @@ Version 0.1.14 (Alpha):
     - Collect convergence information under save_convergence_info instead of err_out and lll_out
     - Adding bias averaging function
 
-Upcoming:
+Version 0.2.0 (Beta):
 
     - Use ttrajs, dtrajs instead of the 2D dtraj argument in state_counts() and count_matrices()
     - New feature: the state-continuous TRAM estimator
+
+Upcoming:

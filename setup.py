@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-thermotools is a lowlevel implementation toolbox for the analyis of free energy calculations.
+thermotools is a lowlevel implementation toolbox for the analyis of multi-ensemble calculations.
 """
 
 from setuptools import setup, Extension
@@ -92,15 +92,21 @@ class lazy_cythonize(list):
     def __getitem__(self, ii): return self.c_list()[ii]
     def __len__(self): return len(self.c_list())
 
+long_description = 'The thermotools package is a lowlevel implementation toolbox for the analyis \
+of multi-ensemble calculations. It contains estimators for the state-continuous transition-based \
+reweighting analysis method (TRAM) and its state-discrete variant (dTRAM), Bennet acceptance ratio \
+(BAR) and its multi-state variant (MBAR), and the weighted histogram analysis method (WHAM). \
+While you can use thermotools on its own, we recommend to use it in combination with PyEMMA.'
+
 setup(
     cmdclass=versioneer.get_cmdclass(),
     ext_modules=lazy_cythonize(extensions),
     name='thermotools',
     version=versioneer.get_version(),
-    description='Lowlevel implementation of free energy estimators',
-    long_description='Lowlevel implementation of free energy estimators',
+    description='lowlevel implementation toolbox for the analyis of multi-ensemble calculations',
+    long_description=long_description,
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Environment :: Console',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)',
@@ -117,6 +123,8 @@ setup(
         'Topic :: Scientific/Engineering :: Mathematics',
         'Topic :: Scientific/Engineering :: Physics'],
     keywords=[
+        'MEMM',
+        'multi ensemble',
         'free energy',
         'Markov state model',
         'BAR',
@@ -136,7 +144,7 @@ setup(
         'numpy>=1.7',
         'scipy>=0.11',
         'msmtools>=1.1',
-        'nose>=1.3'],
+        'nose'],
     install_requires=[
         'numpy>=1.7',
         'scipy>=0.11',
