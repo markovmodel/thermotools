@@ -17,9 +17,23 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef THERMOTOOLS_XTRAM
-#define THERMOTOOLS_XTRAM
+#include <math.h>
+#include "../util/_util.h"
+#include "_mbar_direct.h"
 
-
-
-#endif
+void _mbar_direct_update_therm_weights(
+    int *therm_state_counts, double *therm_weights, double *bias_weight_sequence,
+    int n_therm_states, int seq_length, double *new_therm_weights)
+{
+    int K, x, L;
+    double divisor;
+    /* assume that new_therm_weights was set to zero by the caller on the first call */
+    for(x=0; x<seq_length; ++x)
+    {
+        divisor = 0;
+        for(L=0; L<n_therm_states; ++L)
+            divisor += (double)therm_state_counts[L] * bias_weight_sequence[x * n_therm_states + L] / therm_weights[L];
+        for(K=0; K<n_therm_states; ++K)
+            new_therm_weights[K] += bias_weight_sequence[x * n_therm_states + K] / divisor;
+    }
+}

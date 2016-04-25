@@ -16,16 +16,18 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-thermotools is a lowlevel implementation toolbox for the analyis of multi-ensemble calculations
+thermotools is a lowlevel implementation toolbox for the analyis of multi-ensemble calculations.
 """
 
 from . import bar
 from . import wham
 from . import mbar
-#from . import tram
+from . import tram
 from . import dtram
-#from . import xtram
+from . import mbar_direct
+from . import tram_direct
 from . import util
+from . import cset
 
 from .callback import CallbackInterrupt
 

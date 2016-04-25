@@ -19,8 +19,10 @@ r"""
 Python interface to utility functions.
 """
 
+cimport cython
 import numpy as _np
 cimport numpy as _np
+from libc.math cimport exp as _libc_exp
 from scipy.sparse import csr_matrix as _csr
 from msmtools.estimation import count_matrix as _cm
 
@@ -220,7 +222,9 @@ def get_therm_state_break_points(
         <int*> _np.PyArray_DATA(T_B))
     return _np.ascontiguousarray(T_B[:nb])
 
-def count_matrices(dtraj, lag, sliding=True, sparse_return=True, nthermo=None, nstates=None):
+def count_matrices(
+    ttrajs, dtrajs, lag, sliding=True, sparse_return=True, nthermo=None, nstates=None):
+    # TODO: fix docstring
     r"""
     Count transitions at given lagtime.
 
@@ -244,8 +248,10 @@ def count_matrices(dtraj, lag, sliding=True, sparse_return=True, nthermo=None, n
     C_K : [scipy.sparse.coo_matrix] or numpy.ndarray(shape=(T, M, M), dtype=numpy.intc)
         count matrices at given lagtime
     """
-    kmax = _np.max([d[:, 0].max() for d in dtraj])
-    nmax = _np.max([d[:, 1].max() for d in dtraj])
+    cdef:
+        int kmax = int(_np.max([t.max() for t in ttrajs]))
+        int nmax = int(_np.max([d.max() for d in dtrajs]))
+        int K, i, b
     if nthermo is None:
         nthermo = kmax + 1
     elif nthermo < kmax + 1:
@@ -255,22 +261,24 @@ def count_matrices(dtraj, lag, sliding=True, sparse_return=True, nthermo=None, n
     elif nstates < nmax + 1:
         raise ValueError("nstates is smaller than the number of observed microstates")
     C_K = [_csr((nstates, nstates), dtype=_np.intc) for _ in range(nthermo)]
-    for d in dtraj:
-        bp = get_therm_state_break_points(_np.ascontiguousarray(d[:, 0]))
+    for ttraj, dtraj in zip(ttrajs, dtrajs):
+        bp = get_therm_state_break_points(
+            _np.require(ttraj, dtype=_np.intc ,requirements=['C', 'A']))
         for b in range(1, bp.shape[0]):
             if bp[b] - bp[b - 1] > lag:
-                C_K[d[bp[b - 1], 0]] = C_K[d[bp[b - 1], 0]] + _cm(
-                    _np.ascontiguousarray(d[bp[b - 1]:bp[b], 1]), lag,
-                    sliding=sliding, sparse_return=True, nstates=nstates)
-        if d.shape[0] - bp[-1] > lag:
-            C_K[d[bp[-1], 0]] = C_K[d[bp[-1], 0]] + _cm(
-                _np.ascontiguousarray(d[bp[-1]:, 1]), lag,
-                sliding=sliding, sparse_return=True, nstates=nstates)
+                C_K[ttraj[bp[b - 1]]] = C_K[ttraj[bp[b - 1]]] + _cm(
+                    _np.require(dtraj[bp[b - 1]:bp[b]], dtype=_np.intc ,requirements=['C', 'A']),
+                    lag, sliding=sliding, sparse_return=True, nstates=nstates)
+        if dtraj.shape[0] - bp[-1] > lag:
+            C_K[ttraj[bp[-1]]] = C_K[ttraj[bp[-1]]] + _cm(
+                _np.require(dtraj[bp[-1]:], dtype=_np.intc ,requirements=['C', 'A']),
+                lag, sliding=sliding, sparse_return=True, nstates=nstates)
     if sparse_return:
         return C_K
     return _np.array([C.toarray() for C in C_K], dtype=_np.intc)
 
-def state_counts(dtraj, nstates=None, nthermo=None):
+def state_counts(ttrajs, dtrajs, nstates=None, nthermo=None):
+    # TODO: fix docstring
     r"""
     Count discrete states visits in all thermodynamic states.
 
@@ -288,8 +296,10 @@ def state_counts(dtraj, nstates=None, nthermo=None):
     N : numpy.ndarray(shape=(T, M), dtype=numpy.intc)
         state counts
     """
-    kmax = int(_np.max([d[:, 0].max() for d in dtraj]))
-    nmax = int(_np.max([d[:, 1].max() for d in dtraj]))
+    cdef:
+        int kmax = int(_np.max([t.max() for t in ttrajs]))
+        int nmax = int(_np.max([d.max() for d in dtrajs]))
+        int K, i
     if nthermo is None:
         nthermo = kmax + 1
     elif nthermo < kmax + 1:
@@ -299,10 +309,11 @@ def state_counts(dtraj, nstates=None, nthermo=None):
     elif nstates < nmax + 1:
         raise ValueError("nstates is smaller than the number of observed microstates")
     N = _np.zeros(shape=(nthermo, nstates), dtype=_np.intc)
-    for d in dtraj:
+    for d, t in zip(dtrajs, ttrajs):
         for K in range(nthermo):
+            idx = (t == K)
             for i in range(nstates):
-                N[K, i] += ((d[:, 0] == K) * (d[:, 1] == i)).sum()
+                N[K, i] += _np.sum(_np.logical_and(idx, (d == i)))
     return N
 
 def restrict_samples_to_cset(state_sequence, bias_energy_sequence, cset):
@@ -343,6 +354,24 @@ def restrict_samples_to_cset(state_sequence, bias_energy_sequence, cset):
     new_state_sequence[:, 1] = conf_state_sequence[valid_samples]
     new_bias_energy_sequence = _np.ascontiguousarray(bias_energy_sequence[:, valid_samples])
     return new_state_sequence, new_bias_energy_sequence
+
+@cython.boundscheck(False)
+def _overlap_post_hoc_RE(
+    _np.ndarray[double, ndim=2, mode="c"] a not None,
+    _np.ndarray[double, ndim=2, mode="c"] b not None,
+    factor=1.0):
+    cdef:
+        unsigned int i, j, n, m
+        double n_sum, delta
+    n = a.shape[0]
+    m = b.shape[0]
+    n_sum = 0
+    for i in range(n):
+        for j in range(m):
+            delta = a[i, 0] + b[j, 1] - a[i, 1] - b[j, 0]
+            n_sum += min(_libc_exp(delta), 1.0)
+    n_avg = n_sum / (n * m)
+    return (n + m) * n_avg * factor >= 1.0
 
 ####################################################################################################
 #   bias calculation tools

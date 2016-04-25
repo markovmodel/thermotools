@@ -17,13 +17,11 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <math.h>
-#include "../lse/_lse.h"
-#include "_xtram.h"
+#ifndef THERMOTOOLS_MBAR
+#define THERMOTOOLS_MBAR
 
-/* old m$ visual studio is not c99 compliant (vs2010 eg. is not) */
-#ifdef _MSC_VER
-    #include <float.h>
-    #define INFINITY (DBL_MAX+DBL_MAX)
-    #define NAN (INFINITY-INFINITY)
+void _mbar_direct_update_therm_weights(
+    int *therm_state_counts, double *therm_weights, double *bias_weight_sequence,
+    int n_therm_states, int seq_length, double *new_therm_weights);
+
 #endif
