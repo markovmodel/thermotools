@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-thermotools is a lowlevel implementation toolbox for the analyis of multi-ensemble calculations
+thermotools is a lowlevel implementation toolbox for the analyis of multi-ensemble calculations.
 """
 
 from . import bar

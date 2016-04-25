@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-thermotools is a lowlevel implementation toolbox for the analyis of free energy calculations
+thermotools is a lowlevel implementation toolbox for the analyis of free energy calculations.
 """
 
 from setuptools import setup, Extension
@@ -27,46 +27,47 @@ import versioneer
 def extensions():
     from numpy import get_include
     from Cython.Build import cythonize
+    extra_compile_args = ["-O3", "-std=c99"]
     ext_bar = Extension(
         "thermotools.bar",
         sources=["ext/bar/bar.pyx", "ext/bar/_bar.c", "ext/util/_util.c"],
         include_dirs=[get_include()],
-        extra_compile_args=["-O3", "-std=c99"])
+        extra_compile_args=extra_compile_args)
     ext_wham = Extension(
         "thermotools.wham",
         sources=["ext/wham/wham.pyx", "ext/wham/_wham.c", "ext/util/_util.c"],
         include_dirs=[get_include()],
-        extra_compile_args=["-O3", "-std=c99"])
+        extra_compile_args=extra_compile_args)
     ext_mbar = Extension(
         "thermotools.mbar",
         sources=["ext/mbar/mbar.pyx", "ext/mbar/_mbar.c", "ext/util/_util.c"],
         include_dirs=[get_include()],
-        extra_compile_args=["-O3", "-std=c99"])
+        extra_compile_args=extra_compile_args)
     ext_tram = Extension(
         "thermotools.tram",
         sources=["ext/tram/tram.pyx", "ext/tram/_tram.c", "ext/util/_util.c"],
         include_dirs=[get_include()],
-        extra_compile_args=["-O3", "-std=c99"])
+        extra_compile_args=extra_compile_args)
     ext_dtram = Extension(
         "thermotools.dtram",
         sources=["ext/dtram/dtram.pyx", "ext/dtram/_dtram.c", "ext/util/_util.c"],
         include_dirs=[get_include()],
-        extra_compile_args=["-O3", "-std=c99"])
+        extra_compile_args=extra_compile_args)
     ext_mbar_direct = Extension(
         "thermotools.mbar_direct",
         sources=["ext/mbar_direct/mbar_direct.pyx", "ext/mbar_direct/_mbar_direct.c", "ext/util/_util.c"],
         include_dirs=[get_include()],
-        extra_compile_args=["-O3", "-std=c99"])
+        extra_compile_args=extra_compile_args)
     ext_tram_direct = Extension(
         "thermotools.tram_direct",
         sources=["ext/tram_direct/tram_direct.pyx", "ext/tram_direct/_tram_direct.c", "ext/util/_util.c"],
         include_dirs=[get_include()],
-        extra_compile_args=["-O3", "-std=c99"])
+        extra_compile_args=extra_compile_args)
     ext_util = Extension(
         "thermotools.util",
         sources=["ext/util/util.pyx", "ext/util/_util.c"],
         include_dirs=[get_include()],
-        extra_compile_args=["-O3", "-std=c99"])
+        extra_compile_args=extra_compile_args)
     exts = [
         ext_bar,
         ext_wham,
