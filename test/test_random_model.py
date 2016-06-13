@@ -112,20 +112,12 @@ class TestRandom(unittest.TestCase):
 
         # check expectations (do a trivial test: recompute conf_energies with different functions)
         mu = np.zeros(shape=self.conf_state_sequence.shape[0], dtype=np.float64)
-        if use_trammbar:
-            _tram.get_pointwise_unbiased_free_energies(None, log_lagrangian_mult, biased_conf_energies,
-                therm_energies, self.count_matrices,
-                [ca(self.bias_energies_sh[:, 0:self.n_samples//2].T), ca(self.bias_energies_sh[:, self.n_samples//2:].T)],
-                [self.conf_state_sequence[0:self.n_samples//2], self.conf_state_sequence[self.n_samples//2:]],
-                self.state_counts, None, None, None,
-                [mu[0:self.n_samples//2], mu[self.n_samples//2:]])
-        else:
-            _tram.get_pointwise_unbiased_free_energies(None, log_lagrangian_mult, biased_conf_energies,
-                therm_energies, self.count_matrices,
-                [ca(self.bias_energies_sh[:, 0:self.n_samples//2].T), ca(self.bias_energies_sh[:, self.n_samples//2:].T)],
-                [self.conf_state_sequence[0:self.n_samples//2], self.conf_state_sequence[self.n_samples//2:]],
-                self.state_counts, None, None,
-                [mu[0:self.n_samples//2], mu[self.n_samples//2:]])
+        _tram.get_pointwise_unbiased_free_energies(None, log_lagrangian_mult, biased_conf_energies,
+            therm_energies, self.count_matrices,
+            [ca(self.bias_energies_sh[:, 0:self.n_samples//2].T), ca(self.bias_energies_sh[:, self.n_samples//2:].T)],
+            [self.conf_state_sequence[0:self.n_samples//2], self.conf_state_sequence[self.n_samples//2:]],
+            self.state_counts, None, None,
+            [mu[0:self.n_samples//2], mu[self.n_samples//2:]])
         counts,_ = np.histogram(self.conf_state_sequence, weights=np.exp(-mu), bins=self.n_conf_states)
         pmf = -np.log(counts)
         assert_allclose(pmf, conf_energies)
