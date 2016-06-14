@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-thermotools is a lowlevel implementation toolbox for the analyis of free energy calculations
+thermotools is a lowlevel implementation toolbox for the analyis of multi-ensemble calculations.
 """
 
 from setuptools import setup, Extension
@@ -27,51 +27,52 @@ import versioneer
 def extensions():
     from numpy import get_include
     from Cython.Build import cythonize
+    extra_compile_args = ["-O3", "-std=c99"]
     ext_bar = Extension(
         "thermotools.bar",
         sources=["ext/bar/bar.pyx", "ext/bar/_bar.c", "ext/util/_util.c"],
         include_dirs=[get_include()],
-        extra_compile_args=["-O3", "-std=c99"])
+        extra_compile_args=extra_compile_args)
     ext_wham = Extension(
         "thermotools.wham",
         sources=["ext/wham/wham.pyx", "ext/wham/_wham.c", "ext/util/_util.c"],
         include_dirs=[get_include()],
-        extra_compile_args=["-O3", "-std=c99"])
+        extra_compile_args=extra_compile_args)
     ext_mbar = Extension(
         "thermotools.mbar",
         sources=["ext/mbar/mbar.pyx", "ext/mbar/_mbar.c", "ext/util/_util.c"],
         include_dirs=[get_include()],
-        extra_compile_args=["-O3", "-std=c99"])
+        extra_compile_args=extra_compile_args)
     ext_tram = Extension(
         "thermotools.tram",
         sources=["ext/tram/tram.pyx", "ext/tram/_tram.c", "ext/util/_util.c"],
         include_dirs=[get_include()],
-        extra_compile_args=["-O3", "-std=c99"])
+        extra_compile_args=extra_compile_args)
     ext_dtram = Extension(
         "thermotools.dtram",
         sources=["ext/dtram/dtram.pyx", "ext/dtram/_dtram.c", "ext/util/_util.c"],
         include_dirs=[get_include()],
-        extra_compile_args=["-O3", "-std=c99"])
+        extra_compile_args=extra_compile_args)
     ext_trammbar = Extension(
         "thermotools.trammbar",
         sources=["ext/trammbar/trammbar.pyx", "ext/tram/_tram.c", "ext/util/_util.c"],
         include_dirs=[get_include()],
-        extra_compile_args=["-O3", "-std=c99", "-DTRAMMBAR"])
+        extra_compile_args=extra_compile_args + ["-DTRAMMBAR"])
     ext_mbar_direct = Extension(
         "thermotools.mbar_direct",
         sources=["ext/mbar_direct/mbar_direct.pyx", "ext/mbar_direct/_mbar_direct.c", "ext/util/_util.c"],
         include_dirs=[get_include()],
-        extra_compile_args=["-O3", "-std=c99"])
+        extra_compile_args=extra_compile_args)
     ext_tram_direct = Extension(
         "thermotools.tram_direct",
         sources=["ext/tram_direct/tram_direct.pyx", "ext/tram_direct/_tram_direct.c", "ext/util/_util.c"],
         include_dirs=[get_include()],
-        extra_compile_args=["-O3", "-std=c99"])
+        extra_compile_args=extra_compile_args)
     ext_util = Extension(
         "thermotools.util",
         sources=["ext/util/util.pyx", "ext/util/_util.c"],
         include_dirs=[get_include()],
-        extra_compile_args=["-O3", "-std=c99"])
+        extra_compile_args=extra_compile_args)
     exts = [
         ext_bar,
         ext_wham,
@@ -97,15 +98,21 @@ class lazy_cythonize(list):
     def __getitem__(self, ii): return self.c_list()[ii]
     def __len__(self): return len(self.c_list())
 
+long_description = 'The thermotools package is a lowlevel implementation toolbox for the analyis \
+of multi-ensemble calculations. It contains estimators for the state-continuous transition-based \
+reweighting analysis method (TRAM) and its state-discrete variant (dTRAM), Bennet acceptance ratio \
+(BAR) and its multi-state variant (MBAR), and the weighted histogram analysis method (WHAM). \
+While you can use thermotools on its own, we recommend to use it in combination with PyEMMA.'
+
 setup(
     cmdclass=versioneer.get_cmdclass(),
     ext_modules=lazy_cythonize(extensions),
     name='thermotools',
     version=versioneer.get_version(),
-    description='Lowlevel implementation of free energy estimators',
-    long_description='Lowlevel implementation of free energy estimators',
+    description='lowlevel implementation toolbox for the analyis of multi-ensemble calculations',
+    long_description=long_description,
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Environment :: Console',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)',
@@ -122,6 +129,8 @@ setup(
         'Topic :: Scientific/Engineering :: Mathematics',
         'Topic :: Scientific/Engineering :: Physics'],
     keywords=[
+        'MEMM',
+        'multi ensemble',
         'free energy',
         'Markov state model',
         'BAR',
@@ -141,7 +150,7 @@ setup(
         'numpy>=1.7',
         'scipy>=0.11',
         'msmtools>=1.1',
-        'nose>=1.3'],
+        'nose'],
     install_requires=[
         'numpy>=1.7',
         'scipy>=0.11',

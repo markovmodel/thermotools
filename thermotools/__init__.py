@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-thermotools is a lowlevel implementation toolbox for the analyis of multi-ensemble calculations
+thermotools is a lowlevel implementation toolbox for the analyis of multi-ensemble calculations.
 """
 
 from . import bar
@@ -33,12 +33,12 @@ from .callback import CallbackInterrupt
 
 from ._version import get_versions
 
-__author__ = "Christoph Wehmeyer, Antonia Mey, Fabian Paul, Martin Scherer"
+__author__ = "Christoph Wehmeyer, Fabian Paul, Antonia Mey, Martin Scherer"
 __copyright__ = "Copyright 2015, 2016 Computational Molecular Biology Group, FU-Berlin"
 __credits__ = [
     "Christoph Wehmeyer",
-    "Antonia Mey",
     "Fabian Paul",
+    "Antonia Mey",
     "Benjamin Trendelkamp-Schroer",
     "Martin Scherer",
     "Hao Wu",
