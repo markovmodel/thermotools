@@ -68,6 +68,11 @@ def extensions():
         sources=["ext/tram_direct/tram_direct.pyx", "ext/tram_direct/_tram_direct.c", "ext/util/_util.c"],
         include_dirs=[get_include()],
         extra_compile_args=extra_compile_args)
+    ext_trammbar_direct = Extension(
+        "thermotools.trammbar_direct",
+        sources=["ext/trammbar_direct/trammbar_direct.pyx", "ext/tram_direct/_tram_direct.c", "ext/util/_util.c"],
+        include_dirs=[get_include()],
+        extra_compile_args=extra_compile_args + ["-DTRAMMBAR"])
     ext_util = Extension(
         "thermotools.util",
         sources=["ext/util/util.pyx", "ext/util/_util.c"],
@@ -82,6 +87,7 @@ def extensions():
         ext_trammbar,
         ext_mbar_direct,
         ext_tram_direct,
+        ext_trammbar_direct,
         ext_util]
     return cythonize(exts)
 

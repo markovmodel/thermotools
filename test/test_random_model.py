@@ -20,6 +20,7 @@ import msmtools
 import thermotools.tram as tram
 import thermotools.tram_direct as tram_direct
 import thermotools.trammbar as trammbar
+import thermotools.trammbar_direct as trammbar_direct
 import sys
 from numpy.testing import assert_allclose
 
@@ -105,13 +106,18 @@ class TestRandom(object):
         self.helper_tram(True, 1, False)
     def test_trammbar_as_tram(self):
         self.helper_tram(False, 0, True)
+    def test_trammbar_direct_as_tram(self):
+        self.helper_tram(True, 0, True)
     def helper_tram(self, direct_space, N_dtram_accelerations, use_trammbar):
         if direct_space:
             _tram = tram_direct
         else:
             _tram = tram
         if use_trammbar:
-            _tram = trammbar
+            if direct_space:
+                _tram = trammbar_direct
+            else:
+                _tram = trammbar
         ca = np.ascontiguousarray
         biased_conf_energies, conf_energies, therm_energies, log_lagrangian_mult, error_history, logL_history = _tram.estimate(
             self.count_matrices, self.state_counts,
