@@ -96,4 +96,8 @@ Version 0.2.1 (Beta):
 
     - New feature: TRAMMBAR, an extension of the TRAM estimator
 
+Version 0.2.2 (Beta):
+
+    - Fixes spurious division by zero warning
+
 Upcoming:
