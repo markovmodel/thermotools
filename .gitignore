@@ -10,6 +10,8 @@ ext/tram_direct/tram_direct.c
 ext/dtram/dtram.c
 ext/bar/bar.c
 ext/util/util.c
+ext/trammbar/trammbar.c
+ext/trammbar_direct/trammbar_direct.c
 build
 dist
 MANIFEST

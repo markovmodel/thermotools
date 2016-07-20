@@ -92,4 +92,8 @@ Version 0.2.0 (Beta):
     - Use ttrajs, dtrajs instead of the 2D dtraj argument in state_counts() and count_matrices()
     - New feature: the state-continuous TRAM estimator
 
+Version 0.2.1 (Beta):
+
+    - New feature: TRAMMBAR, an extension of the TRAM estimator
+
 Upcoming:
