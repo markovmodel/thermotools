@@ -8,4 +8,6 @@ API documentation
  
    wham
    dtram
+   tram
+   trammbar
    util

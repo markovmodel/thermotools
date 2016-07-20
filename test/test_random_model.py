@@ -19,6 +19,8 @@ import numpy as np
 import msmtools
 import thermotools.tram as tram
 import thermotools.tram_direct as tram_direct
+import thermotools.trammbar as trammbar
+import thermotools.trammbar_direct as trammbar_direct
 import sys
 from numpy.testing import assert_allclose
 
@@ -97,27 +99,36 @@ class TestRandom(object):
     def teardown(self):
         pass
     def test_tram(self):
-        self.helper_tram(False, 0)
+        self.helper_tram(False, 0, False)
     def test_tram_direct(self):
-        self.helper_tram(True, 0)
+        self.helper_tram(True, 0, False)
     def test_tram_direct_with_dTRAM_acceleration(self):
-        self.helper_tram(True, 1)
-    def helper_tram(self, direct_space, N_dtram_accelerations):
+        self.helper_tram(True, 1, False)
+    def test_trammbar_as_tram(self):
+        self.helper_tram(False, 0, True)
+    def test_trammbar_direct_as_tram(self):
+        self.helper_tram(True, 0, True)
+    def helper_tram(self, direct_space, N_dtram_accelerations, use_trammbar):
         if direct_space:
             _tram = tram_direct
         else:
             _tram = tram
+        if use_trammbar:
+            if direct_space:
+                _tram = trammbar_direct
+            else:
+                _tram = trammbar
         ca = np.ascontiguousarray
         biased_conf_energies, conf_energies, therm_energies, log_lagrangian_mult, error_history, logL_history = _tram.estimate(
             self.count_matrices, self.state_counts,
             [ca(self.bias_energies_sh[:, 0:self.n_samples//2].T), ca(self.bias_energies_sh[:, self.n_samples//2:].T)],
             [self.conf_state_sequence[0:self.n_samples//2], self.conf_state_sequence[self.n_samples//2:]],
             maxiter=1000000, maxerr=1.0E-10, save_convergence_info=10, N_dtram_accelerations=N_dtram_accelerations)
-        transition_matrices = tram.estimate_transition_matrices(
+        transition_matrices = _tram.estimate_transition_matrices(
             log_lagrangian_mult, biased_conf_energies, self.count_matrices, None)
         # check expectations (do a trivial test: recompute conf_energies with different functions)
         mu = np.zeros(shape=self.conf_state_sequence.shape[0], dtype=np.float64)
-        tram.get_pointwise_unbiased_free_energies(None, log_lagrangian_mult, biased_conf_energies,
+        _tram.get_pointwise_unbiased_free_energies(None, log_lagrangian_mult, biased_conf_energies,
             therm_energies, self.count_matrices,
             [ca(self.bias_energies_sh[:, 0:self.n_samples//2].T), ca(self.bias_energies_sh[:, self.n_samples//2:].T)],
             [self.conf_state_sequence[0:self.n_samples//2], self.conf_state_sequence[self.n_samples//2:]],

@@ -58,7 +58,7 @@ class TestCset(object):
     def test_summed_count_matrix(self):
         csets, projected_cset = cset.compute_csets_TRAM(
             'summed_count_matrix', self.state_counts, self.count_matrices,
-            self.ttrajs, self.dtrajs, self.bias_trajs)
+            ttrajs=self.ttrajs, dtrajs=self.dtrajs, bias_trajs=self.bias_trajs)
         np.testing.assert_allclose(csets[0], np.array([1]))
         np.testing.assert_allclose(csets[1], np.array([0, 1]))
         np.testing.assert_allclose(projected_cset, np.array([0,1]))
@@ -70,29 +70,29 @@ class TestCset(object):
     #     np.testing.assert_allclose(projected_cset, np.array([0,1]))
     def test_cset_neighbors(self):
         csets, projected_cset = cset.compute_csets_TRAM(
-            'neighbors', self.state_counts, self.count_matrices, self.ttrajs,
-            self.dtrajs, self.bias_trajs, nn=1)
+            'neighbors', self.state_counts, self.count_matrices, ttrajs=self.ttrajs,
+            dtrajs=self.dtrajs, bias_trajs=self.bias_trajs, nn=1)
         np.testing.assert_allclose(csets[0], np.array([1]))
         np.testing.assert_allclose(csets[1], np.array([0, 1]))
         np.testing.assert_allclose(projected_cset, np.array([0,1]))
     def test_cset_post_hoc_RE(self):
         csets, projected_cset = cset.compute_csets_TRAM(
-            'post_hoc_RE', self.state_counts, self.count_matrices, self.ttrajs,
-            self.dtrajs, self.bias_trajs)
+            'post_hoc_RE', self.state_counts, self.count_matrices, ttrajs=self.ttrajs,
+            dtrajs=self.dtrajs, bias_trajs=self.bias_trajs)
         np.testing.assert_allclose(csets[0], np.array([]))
         np.testing.assert_allclose(csets[1], np.array([0, 1]))
         np.testing.assert_allclose(projected_cset, np.array([0, 1]))
     def test_cset_BAR_variance(self):
         csets, projected_cset = cset.compute_csets_TRAM(
-            'BAR_variance', self.state_counts, self.count_matrices, self.ttrajs,
-            self.dtrajs, self.bias_trajs)
+            'BAR_variance', self.state_counts, self.count_matrices, ttrajs=self.ttrajs,
+            dtrajs=self.dtrajs, bias_trajs=self.bias_trajs)
         np.testing.assert_allclose(csets[0], np.array([]))
         np.testing.assert_allclose(csets[1], np.array([0, 1]))
         np.testing.assert_allclose(projected_cset, np.array([0, 1]))
     def test_restrict(self):
         csets, projected_cset = cset.compute_csets_TRAM(
             'summed_count_matrix', self.state_counts, self.count_matrices,
-            self.ttrajs, self.dtrajs, self.bias_trajs)
+            ttrajs=self.ttrajs, dtrajs=self.dtrajs, bias_trajs=self.bias_trajs)
         new_state_counts, new_count_matrices, new_dtrajs, new_bias_trajs = cset.restrict_to_csets(
             csets, self.state_counts, self.count_matrices, self.ttrajs,
             self.dtrajs, self.bias_trajs)
@@ -103,8 +103,8 @@ class TestCset(object):
         for x,y in zip(self.dtrajs, new_dtrajs):
             np.testing.assert_allclose(x, y)
         csets, projected_cset = cset.compute_csets_TRAM(
-            'post_hoc_RE', self.state_counts, self.count_matrices, self.ttrajs,
-            self.dtrajs, self.bias_trajs)
+            'post_hoc_RE', self.state_counts, self.count_matrices, ttrajs=self.ttrajs,
+            dtrajs=self.dtrajs, bias_trajs=self.bias_trajs)
         new_state_counts, new_count_matrices, new_dtrajs, new_bias_trajs = cset.restrict_to_csets(
             csets, self.state_counts, self.count_matrices, self.ttrajs,
             self.dtrajs, self.bias_trajs)
