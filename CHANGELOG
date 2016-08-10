@@ -104,3 +104,4 @@ Upcoming:
 
     - Dropping support for numpy<1.10 on conda
     - Requires msmtools>=1.1.3
+    - New feature: mbar.estimate_therm_energies() computes only the thermodynamic free energies
