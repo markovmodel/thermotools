@@ -155,12 +155,12 @@ setup(
     tests_require=[
         'numpy>=1.7',
         'scipy>=0.11',
-        'msmtools>=1.1',
+        'msmtools>=1.1.3',
         'nose'],
     install_requires=[
         'numpy>=1.7',
         'scipy>=0.11',
-        'msmtools>=1.1'],
+        'msmtools>=1.1.3'],
     packages=['thermotools'],
     test_suite='nose.collector',
     scripts=[]
