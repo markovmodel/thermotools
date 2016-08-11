@@ -7,28 +7,28 @@ matrix:
   include:
     - os: linux
       python : "2.7"
-      env: CONDA_PY=27  CONDA_NPY=19
+      env: CONDA_PY=27  CONDA_NPY=110
     - os: linux
       python : "2.7"
-      env: CONDA_PY=27  CONDA_NPY=110
+      env: CONDA_PY=27  CONDA_NPY=111
     - os: linux
       python : "3.4" 
-      env: CONDA_PY=34  CONDA_NPY=19
-    - os: linux
-      python : "3.4"
       env: CONDA_PY=34  CONDA_NPY=110
     - os: linux
-      python : "3.5"
-      env: CONDA_PY=35  CONDA_NPY=19
+      python : "3.4"
+      env: CONDA_PY=34  CONDA_NPY=111
     - os: linux
       python : "3.5"
       env: CONDA_PY=35  CONDA_NPY=110
+    - os: linux
+      python : "3.5"
+      env: CONDA_PY=35  CONDA_NPY=111
     - os: osx
       python : "2.7"
-      env: CONDA_PY=27  CONDA_NPY=110
+      env: CONDA_PY=27  CONDA_NPY=111
     - os: osx
       python : "3.5"
-      env: CONDA_PY=35  CONDA_NPY=110
+      env: CONDA_PY=35  CONDA_NPY=111
 before_install:
   - tools/install_miniconda.sh
   - conda config --set always_yes true

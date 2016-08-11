@@ -19,3 +19,4 @@ MANIFEST
 notebooks
 clean.sh
 docs/_build
+.eggs
