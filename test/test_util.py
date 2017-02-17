@@ -201,7 +201,8 @@ def test_get_umbrella_bias_binary():
     umbrella_centers[1, :] = 1.0
     force_constants = np.array([
         np.zeros(shape=(ndim, ndim), dtype=np.float64), np.eye(ndim, dtype=np.float64)])
-    bias = util.get_umbrella_bias(traj, umbrella_centers, force_constants)
+    width = np.zeros(shape=(ndim,), dtype=np.float64)
+    bias = util.get_umbrella_bias(traj, umbrella_centers, force_constants, width)
     ref = np.vstack((
         np.zeros(shape=(nsamples)),
         0.5 * ndim * np.linspace(-1.0, 1.0, nsamples)**2)).T.astype(np.float64)
