@@ -108,4 +108,8 @@ Version 0.2.3 (Beta):
     - Fixes: self-consistency check in cset
     - Removes several misleading warnings
 
+Version 0.2.4 (Beta):
+
+    - Allow periodicity when computing umbrella sampling bias energies
+
 Upcoming:
