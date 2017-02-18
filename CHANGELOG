@@ -112,4 +112,8 @@ Version 0.2.4 (Beta):
 
     - Allow periodicity when computing umbrella sampling bias energies
 
+Version 0.2.5 (Beta):
+
+    - Fix MSC-related problems
+
 Upcoming:

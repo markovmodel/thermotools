@@ -26,7 +26,18 @@
 
 #include <math.h>
 #ifdef _MSC_VER
-#include "_msvc_c99_compat.h"
+    /* handle Microsofts C99 incompatibility */
+    #include <float.h>
+    #define INFINITY (DBL_MAX+DBL_MAX)
+    #define NAN (INFINITY-INFINITY)
+#else
+    /* if not available otherwise, define INFINITY/NAN in the GNU style */
+    #ifndef INFINITY
+        #define INFINITY (1.0/0.0)
+    #endif
+    #ifndef NAN
+        #define NAN (INFINITY-INFINITY)
+    #endif
 #endif
 
 /***************************************************************************************************
@@ -65,7 +76,7 @@ extern int _get_therm_state_break_points(int *T_x, int seq_length, int *break_po
 
 extern void _get_umbrella_bias(
     double *traj, double *umbrella_centers, double *force_constants,
-    double *width, double *inverse_width,
+    double *width, double *half_width,
     int nsamples, int nthermo, int ndim, double *bias);
 
 /***************************************************************************************************
