@@ -62,12 +62,6 @@ class TestCset(object):
         np.testing.assert_allclose(csets[0], np.array([1]))
         np.testing.assert_allclose(csets[1], np.array([0, 1]))
         np.testing.assert_allclose(projected_cset, np.array([0,1]))
-    # def test_strong_in_every_ensemble(self):
-    #     csets, projected_cset = cset.compute_csets_TRAM(
-    #         'strong_in_every_ensemble', self.state_counts, self.count_matrices, self.tram_sequence)
-    #     np.testing.assert_allclose(csets[0], np.array([1]))
-    #     np.testing.assert_allclose(csets[1], np.array([0, 1]))
-    #     np.testing.assert_allclose(projected_cset, np.array([0,1]))
     def test_cset_neighbors(self):
         csets, projected_cset = cset.compute_csets_TRAM(
             'neighbors', self.state_counts, self.count_matrices, ttrajs=self.ttrajs,
