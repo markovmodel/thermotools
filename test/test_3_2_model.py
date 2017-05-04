@@ -73,7 +73,6 @@ def draw_transition_counts(transition_matrices, n_samples, x0):
 class TestThreeTwoModel(object):
     @classmethod
     def setup_class(cls):
-        np.random.seed(7777)
         cls.energy = np.array([1.0, 2.0, 0.0], dtype=np.float64)
         cls.bias_energies = np.array([[0.0, 0.0, 0.0], 2.0 - cls.energy], dtype=np.float64)
         cls.stationary_distribution = np.exp(-cls.energy) / np.exp(-cls.energy).sum()
