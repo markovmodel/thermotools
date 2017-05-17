@@ -117,3 +117,7 @@ Version 0.2.5 (Beta):
     - Fix MSC-related problems
 
 Upcoming:
+
+    - New and better algorithm ("reversible_pathways") for detecting the ergodically connected set of Markov states
+    - Changed meaning of "post_hoc_RE" and "BAR_variance" algorithms.
+      They used to be stricter versions of "summed_count_matrix", now they are based on "reversible_pathways".
