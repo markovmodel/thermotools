@@ -234,7 +234,7 @@ def _compute_csets(
     elif connectivity == 'strong_in_every_ensemble':
         # within every thermodynamic state, restrict counts to this state's
         # largest connected set
-        if equilibrium_state_counts is not None:
+        if equilibrium_state_counts is not None and _np.count_nonzero(equilibrium_state_counts)>0:
             raise Exception('Connectivity mode "strong_in_every_ensemble" doesn\'t yet support equilibrium data.')
         csets = []
         C_sum = _np.zeros((n_conf_states, n_conf_states), dtype=count_matrices.dtype)
