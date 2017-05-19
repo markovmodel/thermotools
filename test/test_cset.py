@@ -19,7 +19,43 @@ import numpy as np
 import thermotools.cset as cset
 import thermotools.util as util
 
-class TestCset(object):
+class TestCsetBasicReversiblyUnconnected(object):
+    @classmethod
+    def setup_class(cls):
+        # connected only according to the criteria of summed_count_matrix but not reversible_pathways
+        cls.count_matrices = np.zeros((2, 2, 2))
+        cls.count_matrices[0, :, :] = np.array([[0, 0], [1, 0]])
+        cls.count_matrices[1, :, :] = np.array([[0, 1], [0, 0]])
+    def test_basic_reversible_pathways(self):
+        csets, projected_cset = cset.compute_csets_dTRAM('reversible_pathways', self.count_matrices)
+        np.testing.assert_equal(len(projected_cset), 1)
+        np.testing.assert_equal(len(csets[0]), 1)
+        np.testing.assert_equal(csets[1], csets[0])
+    def test_basic_summed_count_matrix(self):
+        csets, projected_cset = cset.compute_csets_dTRAM('summed_count_matrix', self.count_matrices)
+        np.testing.assert_equal(csets[0], np.array([0, 1]))
+        np.testing.assert_equal(csets[1], np.array([0, 1]))
+        np.testing.assert_equal(projected_cset, np.array([0, 1]))
+
+class TestCsetBasicReversiblyConnected(object):
+    @classmethod
+    def setup_class(cls):
+        # conneced according to the criteria of both reversible_pathways and summed_count_matrix
+        cls.count_matrices = np.zeros((2, 3, 3))
+        cls.count_matrices[0, :, :] = np.array([[0, 1, 0], [0, 0, 0], [0, 0, 0]])
+        cls.count_matrices[1, :, :] = np.array([[0, 1, 0], [0, 0, 1], [1, 0, 0]])
+    def test_basic_reversible_pathways(self):
+        csets, projected_cset = cset.compute_csets_dTRAM('reversible_pathways', self.count_matrices)
+        np.testing.assert_equal(projected_cset, [0, 1, 2])
+        np.testing.assert_equal(csets[0], [0, 1])
+        np.testing.assert_equal(csets[1], [0, 1, 2])
+    def test_basic_summed_count_matrix(self):
+        csets, projected_cset = cset.compute_csets_dTRAM('summed_count_matrix', self.count_matrices)
+        np.testing.assert_equal(projected_cset, [0, 1, 2])
+        np.testing.assert_equal(csets[0], [0, 1])
+        np.testing.assert_equal(csets[1], [0, 1, 2])
+
+class TestCsetThermodynamicOverlap(object):
     @classmethod
     def setup_class(cls):
         m1 = 10
@@ -62,12 +98,13 @@ class TestCset(object):
         np.testing.assert_allclose(csets[0], np.array([1]))
         np.testing.assert_allclose(csets[1], np.array([0, 1]))
         np.testing.assert_allclose(projected_cset, np.array([0,1]))
-    # def test_strong_in_every_ensemble(self):
-    #     csets, projected_cset = cset.compute_csets_TRAM(
-    #         'strong_in_every_ensemble', self.state_counts, self.count_matrices, self.tram_sequence)
-    #     np.testing.assert_allclose(csets[0], np.array([1]))
-    #     np.testing.assert_allclose(csets[1], np.array([0, 1]))
-    #     np.testing.assert_allclose(projected_cset, np.array([0,1]))
+    def test_reversible_pathways(self):
+        csets, projected_cset = cset.compute_csets_TRAM(
+            'reversible_pathways', self.state_counts, self.count_matrices,
+            ttrajs=self.ttrajs, dtrajs=self.dtrajs, bias_trajs=self.bias_trajs)
+        np.testing.assert_allclose(csets[0], np.array([1]))
+        np.testing.assert_allclose(csets[1], np.array([0, 1]))
+        np.testing.assert_allclose(projected_cset, np.array([0,1]))
     def test_cset_neighbors(self):
         csets, projected_cset = cset.compute_csets_TRAM(
             'neighbors', self.state_counts, self.count_matrices, ttrajs=self.ttrajs,

@@ -36,56 +36,70 @@ def compute_csets_TRAM(
     connectivity, state_counts, count_matrices, equilibrium_state_counts=None,
     ttrajs=None, dtrajs=None, bias_trajs=None, nn=None, factor=1.0, callback=None):
     r"""
-    Computes the largest connected sets for TRAM data.
+    Computes the largest connected sets in the produce space of Markov state and
+    thermodynamic states for TRAM data.
 
     Parameters
     ----------
     connectivity : string
-        one of 'summed_count_matrix', 'strong_in_every_ensemble',
-        'neighbors', 'post_hoc_RE' or 'BAR_variance'
+        one of None, 'reversible_pathways', 'post_hoc_RE' or 'BAR_variance',
+        'neighbors', 'summed_count_matrix' or None.
         Selects the algorithm for measuring overlap between thermodynamic
-        states.
+        and Markov states.
 
-        summed_count_matrix: all thermodynamic states are assumed to
-        overlap. The connected set is then computed by summing
-        the count matrices over all thermodynamic states and
-        taking it's largest strongly connected set.
+        * 'reversible_pathways' : requires that every state in the connected set
+          can be reached by following a pathway of reversible transitions. A
+          reversible transition between two Markov states (within the same
+          thermodynamic state k) is a pair of Markov states that belong to the
+          same strongly connected component of the count matrix (from
+          thermodynamic state k). A pathway of reversible transitions is a list of
+          reversible transitions [(i_1, i_2), (i_2, i_3),..., (i_(N-2), i_(N-1)),
+          (i_(N-1), i_N)]. The thermodynamic state where the reversible
+          transitions happen, is ignored in constructing the reversible pathways.
+          This is equivalent to assuming that two ensembles overlap at some Markov
+          state whenever there exist frames from both ensembles in that Markov
+          state.
 
-        strong_in_every_ensemble: the dynamics within every thermodynamic
-        state is restricted to that state's largest connected
-        set. This is a very strong restriction and might remove
-        interesting transitions from the data.
+        * 'largest' : alias for reversible_pathways
 
-        neighbors: assume that the data comes from an Umbrella sampling
-        simulation and the number of the thermodynamic state matches
-        the position of the Umbrella along the order parameter. The
-        connected set is computed by assuming that only Umbrellas up to
-        the nn'th neighbor (along the order parameter) overlap.
-        Technically this is computed by building an adjacency matrix on
-        the product space of thermodynamic states and conformational
-        states. The largest strongly connected set of that adjacency
-        matrix determines the TRAM connected sets. In the matrix, the
-        links within each thermodynamic state (between different
-        conformational states) are just copied from the count matrices.
-        The links between different thermodynamic states (within the
-        same conformational state) are set according to the value of nn;
-        if there are samples in both states (k,n) and (l,n) and
-        |l-n|<=nn, a bidirectional link is added.
+        * 'post_hoc_RE' : similar to 'reversible_pathways' but with a more strict
+          requirement for the overlap between thermodynamic states. It is required
+          that every state in the connected set can be reached by following a
+          pathway of reversible transitions or jumping between overlapping
+          thermodynamic states while staying in the same Markov state. A reversible
+          transition between two Markov states (within the same thermodynamic
+          state k) is a pair of Markov states that belong to the same strongly
+          connected component of the count matrix (from thermodynamic state k).
+          Two thermodynamic states k and l are defined to overlap at Markov state
+          n if a replica exchange simulation [2]_ restricted to state n would show
+          at least one transition from k to l or one transition from from l to k.
+          The expected number of replica exchanges is estimated from the
+          simulation data. The minimal number required of replica exchanges
+          per Markov state can be increased by decreasing `connectivity_factor`.
 
-        post_hoc_RE: like neighbors but don't assume any neighborhood
-        relations between ensembles but compute them. A combination
-        (i,k) of configuration state i and thermodynamic state k
-        overlaps with (i,l) if a replica exchange simulation [1]_
-        restricted to state i would show at least one transition from k
-        to l or one transition from from l to k.
-        The parameters ttrajs, dtrajs, bias_trajs must be set.
+        * 'BAR_variance' : like 'post_hoc_RE' but with a different condition to
+          define the thermodynamic overlap based on the variance of the BAR
+          estimator [3]_. Two thermodynamic states k and l are defined to overlap
+          at Markov state n if the variance of the free energy difference Delta
+          f_{kl} computed with BAR (and restricted to conformations form Markov
+          state n) is less or equal than one. The minimally required variance
+          can be controlled with `connectivity_factor`.
 
-        BAR_variance: like neighbors but compute overlap between
-        thermodynamic states using the BAR variance [2]_. Two states (i,k)
-        and (i,l) overlap if the variance of the free energy difference
-        \Delta f_{kl} (restricted to conformational state i) is less or
-        equal than one.
-        The parameter ttrajs, dtrajs, bias_trajs must be set.
+        * 'neighbors' : like 'post_hoc_RE' or 'BAR_variance' but assume a
+          overlap between "neighboring" thermodynamic states. It is assumed that
+          the data comes from an Umbrella sampling simulation and the number of
+          the thermodynamic state matches the position of the Umbrella along the
+          order parameter. The overlap of thermodynamic states k and l within
+          Markov state n is set according to the value of nn; if there are
+          samples in both product-space states (k,n) and (l,n) and |l-n|<=nn,
+          the states are overlapping.
+
+        * 'summed_count_matrix' : all thermodynamic states are assumed to overlap.
+          The connected set is then computed by summing the count matrices over
+          all thermodynamic states and taking it's largest strongly connected set.
+          Not recommended!
+
+        * None : assume that everything is connected. For debugging.
 
     state_counts : numpy.ndarray((T, M), dtype=numpy.intc)
         Number of visits to the combinations of thermodynamic state t
@@ -110,7 +124,7 @@ def compute_csets_TRAM(
         scaling factor used for connectivity = 'post_hoc_RE' or
         'BAR_variance'. Values greater than 1.0 weaken the connectivity
         conditions. For 'post_hoc_RE' this multiplies the number of
-        hypothetically observed transtions. For 'BAR_variance' this
+        hypothetically observed transitions. For 'BAR_variance' this
         scales the threshold for the minimal allowed variance of free
         energy differences.
 
@@ -143,36 +157,46 @@ def compute_csets_dTRAM(connectivity, count_matrices, nn=None, callback=None):
     Parameters
     ----------
     connectivity : string
-        one of 'summed_count_matrix', 'strong_in_every_ensemble',
-        'neighbors'.
-        Selects the algortihm for measuring overlap between thermodynamic
-        states.
+        one 'reversible_pathways', 'neighbors', 'summed_count_matrix' or None.
+        Selects the algorithm for measuring overlap between thermodynamic
+        and Markov states.
 
-        summed_count_matrix: all thermodynamic states are assumed to
-        overlap. The connected set is then computed by summing
-        the count matrices over all thermodynamic states and
-        taking it's largest strongly connected set.
+        * 'reversible_pathways' : requires that every state in the connected set
+          can be reached by following a pathway of reversible transitions. A
+          reversible transition between two Markov states (within the same
+          thermodynamic state k) is a pair of Markov states that belong to the
+          same strongly connected component of the count matrix (from
+          thermodynamic state k). A pathway of reversible transitions is a list of
+          reversible transitions [(i_1, i_2), (i_2, i_3),..., (i_(N-2), i_(N-1)),
+          (i_(N-1), i_N)]. The thermodynamic state where the reversible
+          transitions happen, is ignored in constructing the reversible pathways.
+          This is equivalent to assuming that two ensembles overlap at some Markov
+          state whenever there exist frames from both ensembles in that Markov
+          state.
 
-        strong_in_every_ensemble: the dynamics within every thermodynamic
-        state is restricted to that state's largest connected
-        set. This is a very strong restriction and might remove
-        interesting transitions from the data.
+        * 'largest' : alias for reversible_pathways
 
-        neighbors: assume that the data comes from an Umbrella sampling
-        simulation and the number of the thermodynamic state matches
-        the position of the Umbrella along the order parameter. The
-        connected set is computed by assuming that only Umbrellas up to
-        the nn'th neighbor (along the order parameter) overlap. 
-        Technically this is computed by building an adjacency matrix on
-        the product space of thermodynamic states and conformational
-        states. The largest strongly connected set of that adjacency
-        matrix determines the TRAM connted sets. In the matrix, the
-        links within each thermodynamic state (between different
-        conformationals states) are just copied from the count matrices.
-        The links between different thermodynamic states (within the
-        same conformational state) are set according to the value of nn;
-        if there are samples in both states (k,n) and (l,n) and
-        |l-n|<=nn, a bidirectional link is added.
+        * 'neighbors' : similar to 'reversible_pathways' but with a more strict
+          requirement for the overlap between thermodynamic states. It is required
+          that every state in the connected set can be reached by following a
+          pathway of reversible transitions or jumping between overlapping
+          thermodynamic states while staying in the same Markov state. A reversible
+          transition between two Markov states (within the same thermodynamic
+          state k) is a pair of Markov states that belong to the same strongly
+          connected component of the count matrix (from thermodynamic state k).
+          It is assumed that the data comes from an Umbrella sampling simulation
+          and the number of the thermodynamic state matches the position of the
+          Umbrella along the order parameter. The overlap of thermodynamic states
+          k and l within Markov state n is set according to the value of nn; if
+          there are samples in both product-space states (k,n) and (l,n) and
+          |l-n|<=nn, the states are overlapping.
+
+        * 'summed_count_matrix' : all thermodynamic states are assumed to overlap.
+          The connected set is then computed by summing the count matrices over
+          all thermodynamic states and taking it's largest strongly connected set.
+          Not recommended!
+
+        * None : assume that everything is connected. For debugging.
 
     count_matrices : numpy.ndarray((T, M, M))
         Count matrices for all T thermodynamic states.
@@ -196,6 +220,7 @@ def compute_csets_dTRAM(connectivity, count_matrices, nn=None, callback=None):
     return _compute_csets(
         connectivity, state_counts, count_matrices, None, None, None, nn=nn, callback=callback)
 
+
 def _overlap_BAR_variance(a, b, factor=1.0):
     N_1 = a.shape[0]
     N_2 = b.shape[0]
@@ -209,6 +234,7 @@ def _overlap_BAR_variance(a, b, factor=1.0):
     b = (1.0 / (2.0 + 2.0 * _np.cosh(df - du - _np.log(1.0 * N_1 / N_2)))).sum()
     return (1 / b - (N_1 + N_2) / (N_1 * N_2)) < factor
 
+
 def _compute_csets(
     connectivity, state_counts, count_matrices, ttrajs, dtrajs, bias_trajs, nn,
     equilibrium_state_counts=None, factor=1.0, callback=None):
@@ -219,8 +245,13 @@ def _compute_csets(
     else:
         all_state_counts = state_counts
 
-    if connectivity == 'summed_count_matrix':
-        # assume _direct_ overlap between all umbrellas
+    if connectivity is None:
+        cset_projected = _np.where(all_state_counts.sum(axis=0) > 0)[0]
+        csets = [ _np.where(all_state_counts[k, :] > 0)[0] for k in range(n_therm_states) ]
+        return csets, cset_projected
+    elif connectivity == 'summed_count_matrix':
+        # assume that two thermodynamic states overlap when there are samples from both
+        # ensembles in some Markov state
         C_sum = count_matrices.sum(axis=0)
         if equilibrium_state_counts is not None:
             eq_states = _np.where(equilibrium_state_counts.sum(axis=0) > 0)[0]
@@ -231,29 +262,20 @@ def _compute_csets(
             cset = _np.intersect1d(_np.where(all_state_counts[k, :] > 0), cset_projected)
             csets.append(cset)
         return csets, cset_projected
-    elif connectivity == 'strong_in_every_ensemble':
-        # within every thermodynamic state, restrict counts to this state's
-        # largest connected set
-        if equilibrium_state_counts is not None and _np.count_nonzero(equilibrium_state_counts)>0:
-            raise Exception('Connectivity mode "strong_in_every_ensemble" doesn\'t yet support equilibrium data.')
+    elif connectivity == 'reversible_pathways' or connectivity == 'largest':
+        C_proxy = _np.zeros((n_conf_states, n_conf_states), dtype=int)
+        for C in count_matrices:
+            for comp in _msmtools.estimation.connected_sets(C, directed=True):
+                C_proxy[comp[0:-1], comp[1:]] = 1 # add chain of states
+        if equilibrium_state_counts is not None:
+            eq_states = _np.where(equilibrium_state_counts.sum(axis=0) > 0)[0]
+            C_proxy[eq_states, eq_states[:, _np.newaxis]] = 1
+        cset_projected = _msmtools.estimation.largest_connected_set(C_proxy, directed=False)
         csets = []
-        C_sum = _np.zeros((n_conf_states, n_conf_states), dtype=count_matrices.dtype)
         for k in range(n_therm_states):
-            if callback is not None:
-                callback(maxiter=n_therm_states, iteration_step=k)
-            cset = _msmtools.estimation.largest_connected_set(
-                count_matrices[k, :, :], directed=True)
-            csetT = cset[:, _np.newaxis]
-            C_sum[csetT, cset] += count_matrices[k, csetT, cset]
+            cset = _np.intersect1d(_np.where(all_state_counts[k, :] > 0), cset_projected)
             csets.append(cset)
-        projected_cset = _msmtools.estimation.largest_connected_set(C_sum, directed=True)
-        if len(_msmtools.estimation.connected_sets(C_sum, directed=True)) > 1:
-            # if C_sum contained more than one strongly connected component,
-            # restrict the individual csets of the thermodynamic states to
-            # the largest one
-            for k in range(n_therm_states):
-                csets[k] = _np.intersect1d(csets[k], projected_cset)
-        return csets, projected_cset
+        return csets, cset_projected
     elif connectivity in ['neighbors', 'post_hoc_RE', 'BAR_variance']:
         dim = n_therm_states * n_conf_states
         if connectivity == 'post_hoc_RE' or connectivity == 'BAR_variance':
@@ -288,8 +310,6 @@ def _compute_csets(
                                 y = i + l * n_conf_states
                                 i_s.append(x)
                                 j_s.append(y)
-                                i_s.append(y)
-                                j_s.append(x)
         else: # assume overlap between nn neighboring umbrellas
             assert nn is not None, 'With connectivity="neighbors", nn can\'t be None.'
             assert nn >= 1 and nn <= n_therm_states - 1
@@ -304,17 +324,16 @@ def _compute_csets(
                         all_state_counts[k, :] > 0, all_state_counts[k + l, :] > 0))[0]
                     a = w + k * n_conf_states
                     b = w + (k + l) * n_conf_states
-                    i_s += list(a) # bi
-                    j_s += list(b) # di
-                    i_s += list(b) # rec
-                    j_s += list(a) # tional
+                    i_s += list(a)
+                    j_s += list(b)
 
         # connectivity between conformational states:
         # just copy it from the count matrices
         for k in range(n_therm_states):
-            temp = _sp.sparse.coo_matrix(count_matrices[k, :, :])
-            i_s += list(temp.row + k * n_conf_states)
-            j_s += list(temp.col + k * n_conf_states)
+            for comp in _msmtools.estimation.connected_sets(count_matrices[k, :, :], directed=True):
+                # add chain that links all states in the component
+                i_s += list(comp[0:-1] + k * n_conf_states)
+                j_s += list(comp[1:]   + k * n_conf_states)
 
         # If there is global equilibrium data, assume full connectivity
         # between all visited conformational states within the same thermodynamic state.
@@ -325,12 +344,10 @@ def _compute_csets(
                 chain = (vertices[0:-1], vertices[1:])
                 i_s += list(chain[0] + k * n_conf_states)
                 j_s += list(chain[1] + k * n_conf_states)
-                i_s += list(chain[1] + k * n_conf_states)
-                j_s += list(chain[0] + k * n_conf_states)
 
         data = _np.ones(len(i_s), dtype=int)
         A = _sp.sparse.coo_matrix((data, (i_s, j_s)), shape=(dim, dim))
-        cset = _msmtools.estimation.largest_connected_set(A, directed=True)
+        cset = _msmtools.estimation.largest_connected_set(A, directed=False)
         # group by thermodynamic state
         cset = _np.unravel_index(cset, (n_therm_states, n_conf_states), order='C')
         csets = [[] for k in range(n_therm_states)]
@@ -376,7 +393,7 @@ def restrict_to_csets(
     state_counts, count_matrices, dtrajs, bias_trajs
 
     state_counts, count_matrices and dtrajs are in the same format
-    as the input parameters. Elements of state_counts and cont_matrices
+    as the input parameters. Elements of state_counts and count_matrices
     not in the connected sets are zero. Elements of dtrajs not in the
     connected sets are negative.
 

@@ -68,6 +68,8 @@ def draw_transition_counts(transition_matrices, n_samples, x0):
 class TestRandom(object):
     @classmethod
     def setup_class(cls):
+        cls.rng_state = np.random.get_state()
+        np.random.seed(7777)
         n_therm_states = 4
         n_conf_states = 4
         n_samples = 10000
@@ -93,7 +95,7 @@ class TestRandom(object):
         cls.n_samples = n_samples
     @classmethod
     def teardown_class(cls):
-        pass
+        np.random.set_state(cls.rng_state)
     def setup(self):
         pass
     def teardown(self):

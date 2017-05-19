@@ -30,7 +30,7 @@ matrix:
       python : "3.5"
       env: CONDA_PY=35  CONDA_NPY=111
 before_install:
-  - tools/install_miniconda.sh
+  - source tools/install_miniconda.sh
   - conda config --set always_yes true
   - conda config --add channels omnia
   - conda install conda-build nose
