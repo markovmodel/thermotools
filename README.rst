@@ -14,9 +14,10 @@ thermotools
    :target: https://conda.anaconda.org/omnia
 .. image:: https://anaconda.org/omnia/thermotools/badges/downloads.svg
    :target: https://anaconda.org/omnia/thermotools
+.. image:: https://api.codacy.com/project/badge/Grade/2c4104a5d6f64fccacd6f17489cfd5cb
+   :target: https://www.codacy.com/app/cwehmeyer/thermotools?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=markovmodel/thermotools&amp;utm_campaign=Badge_Grade
 
-This Python package provides a lowlevel implementation of (transition-based and histogram)
-reweighting analyis methods.
+This Python package provides a lowlevel implementation of (transition-based and histogram) reweighting analyis methods.
 
 
 Installation
@@ -24,7 +25,7 @@ Installation
 
 Using conda (recommended)::
 
-   conda install -c omnia thermotools
+   conda install -c conda-forge thermotools
 
 Using pip from PyPI::
 

@@ -122,6 +122,10 @@ Version 0.2.6 (Beta):
     - Changed meaning of "post_hoc_RE" and "BAR_variance" algorithms.
       They used to be stricter versions of "summed_count_matrix", now they are based on "reversible_pathways".
 
+Version 0.2.7 (Beta):
+
+    - Fix Python3 compatibility
+
 Upcoming:
 
-    -
+    - Code improvements
