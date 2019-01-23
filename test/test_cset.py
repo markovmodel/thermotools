@@ -127,7 +127,7 @@ class TestCsetThermodynamicOverlap(object):
         np.testing.assert_allclose(csets[1], np.array([0, 1]))
         np.testing.assert_allclose(projected_cset, np.array([0, 1]))
     def test_restrict(self):
-        csets, projected_cset = cset.compute_csets_TRAM(
+        csets, _ = cset.compute_csets_TRAM(
             'summed_count_matrix', self.state_counts, self.count_matrices,
             ttrajs=self.ttrajs, dtrajs=self.dtrajs, bias_trajs=self.bias_trajs)
         new_state_counts, new_count_matrices, new_dtrajs, new_bias_trajs = cset.restrict_to_csets(

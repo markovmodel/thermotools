@@ -1,9 +1,6 @@
 
 import subprocess
-import os
 import sys
-import shutil
-import re
 
 nose_run = [
     "nosetests",

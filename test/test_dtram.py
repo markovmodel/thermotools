@@ -1,6 +1,6 @@
 # This file is part of thermotools.
 #
-# Copyright 2015 Computational Molecular Biology Group, Freie Universitaet Berlin (GER)
+# Copyright 2015-2019 Computational Molecular Biology Group, Freie Universitaet Berlin (GER)
 #
 # thermotools is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -93,7 +93,6 @@ def test_fi_all_factors_unity():
     conf_energies = np.zeros(shape=(nm,), dtype=np.float64)
     C_K_ij = np.ones(shape=(nt, nm, nm), dtype=np.intc)
     scratch_TM = np.zeros(shape=(nt, nm), dtype=np.float64)
-    scratch_M = np.zeros(shape=(nm,), dtype=np.float64)
     new_conf_energies = np.zeros(shape=(nm,), dtype=np.float64)
     dtram.update_conf_energies(
         log_lagrangian_mult, bias_energies, conf_energies, C_K_ij,

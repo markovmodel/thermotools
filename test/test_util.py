@@ -79,7 +79,7 @@ def test_logsumexp_converged_geometric_series():
     assert_almost_equal(
         util.logsumexp(-data, inplace=True, sort_array=True, use_kahan=True),
         0.45867514538708193, decimal=15)
-    
+
 def test_logsumexp_truncated_diverging_geometric_series():
     data = np.ascontiguousarray(np.arange(10000)[::-1].astype(np.float64))
     assert_almost_equal(

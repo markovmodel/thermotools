@@ -1,6 +1,6 @@
 # This file is part of thermotools.
 #
-# Copyright 2015, 2016 Computational Molecular Biology Group, Freie Universitaet Berlin (GER)
+# Copyright 2015-2019 Computational Molecular Biology Group, Freie Universitaet Berlin (GER)
 #
 # thermotools is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -16,7 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import thermotools.wham as wham
-import thermotools.mbar as mbar
 import thermotools.dtram as dtram
 import numpy as np
 from numpy.testing import assert_allclose

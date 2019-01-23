@@ -1,6 +1,6 @@
 # This file is part of thermotools.
 #
-# Copyright 2015, 2016 Computational Molecular Biology Group, Freie Universitaet Berlin (GER)
+# Copyright 2015-2019 Computational Molecular Biology Group, Freie Universitaet Berlin (GER)
 #
 # thermotools is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -21,7 +21,6 @@ import thermotools.tram as tram
 import thermotools.tram_direct as tram_direct
 import thermotools.trammbar as trammbar
 import thermotools.trammbar_direct as trammbar_direct
-import sys
 from numpy.testing import assert_allclose
 
 def tower_sample(distribution):
@@ -56,7 +55,7 @@ def draw_transition_counts(transition_matrices, n_samples, x0):
         state_counts[K, x] += 1
         conf_state_sequence[h] = x
         h += 1
-        for s in range(n_samples):
+        for _ in range(n_samples):
             x_new = tower_sample(transition_matrices[K, x, :])
             count_matrices[K, x, x_new] += 1
             x = x_new
@@ -121,7 +120,7 @@ class TestRandom(object):
             else:
                 _tram = trammbar
         ca = np.ascontiguousarray
-        biased_conf_energies, conf_energies, therm_energies, log_lagrangian_mult, error_history, logL_history = _tram.estimate(
+        biased_conf_energies, conf_energies, therm_energies, log_lagrangian_mult, _, logL_history = _tram.estimate(
             self.count_matrices, self.state_counts,
             [ca(self.bias_energies_sh[:, 0:self.n_samples//2].T), ca(self.bias_energies_sh[:, self.n_samples//2:].T)],
             [self.conf_state_sequence[0:self.n_samples//2], self.conf_state_sequence[self.n_samples//2:]],
