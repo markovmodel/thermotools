@@ -1,6 +1,6 @@
 # This file is part of thermotools.
 #
-# Copyright 2016 Computational Molecular Biology Group, Freie Universitaet Berlin (GER)
+# Copyright 2016-2019 Computational Molecular Biology Group, Freie Universitaet Berlin (GER)
 #
 # thermotools is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -149,5 +149,6 @@ class TestCsetThermodynamicOverlap(object):
         np.testing.assert_allclose(new_state_counts[1,:], self.state_counts[1,:])
         np.testing.assert_allclose(new_count_matrices[0,:,:], 0)
         np.testing.assert_allclose(new_count_matrices[1,:,:], self.count_matrices[1,:,:])
-        assert len(new_bias_trajs[0])==0
+        if len(new_bias_trajs[0]) != 0:
+            raise AssertionError()
         np.testing.assert_allclose(new_bias_trajs[1], self.bias_trajs[1])

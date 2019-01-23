@@ -1,6 +1,6 @@
 # This file is part of thermotools.
 #
-# Copyright 2015, 2016 Computational Molecular Biology Group, Freie Universitaet Berlin (GER)
+# Copyright 2015-2019 Computational Molecular Biology Group, Freie Universitaet Berlin (GER)
 #
 # thermotools is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -311,8 +311,10 @@ def _compute_csets(
                                 i_s.append(x)
                                 j_s.append(y)
         else: # assume overlap between nn neighboring umbrellas
-            assert nn is not None, 'With connectivity="neighbors", nn can\'t be None.'
-            assert nn >= 1 and nn <= n_therm_states - 1
+            if nn is None:
+                raise AssertionError('With connectivity="neighbors", nn can\'t be None.')
+            if not (nn >= 1 and nn <= n_therm_states - 1):
+                raise AssertionError()
             i_s = []
             j_s = []
             # connectivity between thermodynamic states
@@ -357,7 +359,7 @@ def _compute_csets(
         projected_cset = _np.unique(_np.concatenate(csets))
         return csets, projected_cset
     else:
-        raise Exception(
+        raise VAlueError(
             'Unknown value "%s" of connectivity. Should be one of: \
             summed_count_matrix, strong_in_every_ensemble, neighbors, \
             post_hoc_RE or BAR_variance.' % connectivity)
@@ -418,35 +420,43 @@ def restrict_to_csets(
     else:
         new_count_matrices = None
     if dtrajs is not None:
-        assert ttrajs is not None, 'ttrajs can\'t be None, when dtrajs are given.'
+        if ttrajs is None:
+            raise AssertionError('ttrajs can\'t be None, when dtrajs are given.')
         n_therm_states, n_conf_states = state_counts.shape
         invalid = _np.ones((n_therm_states, n_conf_states), dtype=bool)
         for k, cset in enumerate(csets):
             if len(cset) > 0:
                 invalid[k, cset] = False
         new_dtrajs = []
-        assert len(ttrajs) == len(dtrajs)
+        if len(ttrajs) != len(dtrajs):
+          raise AssertionError()
         for t, d in zip(ttrajs, dtrajs):
-            assert len(t) == len(d)
+            if len(t) != len(d):
+                raise AssertionError()
             new_d = _np.array(d, dtype=_np.intc, copy=True, order='C', ndmin=1)
             bad = invalid[t, d]
             new_d[bad] = new_d[bad] - n_conf_states # 'numpy equivalent' indices as in x[i]==x[i+len(x)]
-            assert _np.all(new_d[bad] < 0)
+            if not _np.all(new_d[bad] < 0):
+                raise AssertionError()
             new_dtrajs.append(new_d)
     else:
         new_dtrajs = None
     if bias_trajs is not None:
-        assert ttrajs is not None, 'ttrajs can\'t be None, when bias_trajs are given.'
-        assert dtrajs is not None, 'dtrajs can\'t be None, when bias_trajs are given.'
+        if ttrajs is None:
+            raise AssertionError('ttrajs can\'t be None, when bias_trajs are given.')
+        if dtrajs is None:
+            raise AssertionError('dtrajs can\'t be None, when bias_trajs are given.')
         n_therm_states, n_conf_states = state_counts.shape
         valid = _np.zeros((n_therm_states, n_conf_states), dtype=bool)
         for k, cset in enumerate(csets):
             if len(cset) > 0:
                 valid[k, cset] = True
         new_bias_trajs = []
-        assert len(ttrajs) == len(dtrajs) == len(bias_trajs)
+        if not (len(ttrajs) == len(dtrajs) == len(bias_trajs)):
+            raise AssertionError()
         for t, d, b in zip(ttrajs, dtrajs, bias_trajs):
-            assert len(t) == len(d) == len(b)
+            if not (len(t) == len(d) == len(b)):
+                raise AssertionError()
             ok_traj = valid[t, d]
             new_b = _np.zeros((_np.count_nonzero(ok_traj), b.shape[1]), dtype=_np.float64)
             new_b[:] = b[ok_traj, :]

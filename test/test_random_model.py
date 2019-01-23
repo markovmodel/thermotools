@@ -142,10 +142,12 @@ class TestRandom(object):
         biased_conf_energies -= np.min(biased_conf_energies)
         bias_energies =  self.bias_energies - np.min(self.bias_energies)
         nz = np.where(self.state_counts > 0)
-        assert not np.any(np.isinf(log_lagrangian_mult[nz]))
+        if np.any(np.isinf(log_lagrangian_mult[nz])):
+            raise AssertionError()
         assert_allclose(biased_conf_energies, bias_energies, atol=0.1)
         assert_allclose(transition_matrices, self.T, atol=0.1)
-        assert np.all(logL_history[-1] + 1.E-5 >= np.array(logL_history[0:-1]))
+        if not np.all(logL_history[-1] + 1.E-5 >= np.array(logL_history[0:-1])):
+            raise AssertionError()
         # check exact identities of TRAM
         # (1) sum_j v_j T_ji + v_i = sum_j c_ij + sum_j c_ji
         for k in range(self.n_therm_states):
